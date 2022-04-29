@@ -1,7 +1,14 @@
 from .atomic_info import atomic_weight
 import pandas as pd
-from .atomic_info import atomic_weight
-
+from .io import import_laich
+from .io import import_config
+from .io import import_dumppos
+from .io import import_dumpbond
+from .io import import_xyz
+# from .io import output_laich
+# from .io import output_config
+# from .io import output_dumppos
+# from .io import output_dumpbond
 
 class SimulationDat():
     def __init__(self):
@@ -35,6 +42,31 @@ class SimulationDat():
         self.sumforce_info = []
         self.thermofree_info= []
         self.wall_info = []
+
+    # READ
+
+    def read_input(self,ifn : str):
+        importer = import_laich.ImportLaich(ifn)
+        importer.import_file(self)
+    
+    def read_config(self,ifn : str):
+        importer = import_config.ImportConfig(ifn)
+        importer.import_file(self)
+    
+    def read_dumppos(self,ifn : str):
+        importer = import_dumppos.ImportDumPos(ifn)
+        importer.import_file(self)
+    
+    def read_dumpbond(self,ifn : str):
+        importer = import_dumpbond.ImportDumpBond(ifn)
+        importer.import_file(self)
+
+    def read_xyz(self,ifn : str):
+        importer = import_xyz.ImportXYZ(ifn)
+        importer.import_file(self)
+    
+    
+
 
     @staticmethod
     def _get_elem_to_type():
