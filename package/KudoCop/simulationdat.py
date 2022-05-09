@@ -2,6 +2,9 @@ import pandas as pd
 from .io import read_para
 from .io import read_input
 from .io import read_config
+from .io import read_dumppos
+from .io import read_dumpbond
+from .io import read_xyz
 
 
 class SimulationDat():
@@ -12,6 +15,7 @@ class SimulationDat():
         self.atom_type_to_symbol = None
         self.atom_type_to_mass = None
         self.atom_type_set = set()
+        self.bondorder_list = None
         self.connect_list = None
 
         # variables for config.rd
@@ -41,17 +45,17 @@ class SimulationDat():
         reader = read_config.ReadConfig()
         reader.read_file(self, ifn)
 
-    # def read_dumppos(self, ifn: str) -> None:
-    #     reader = read_dumppos.ReadDumPos(ifn)
-    #     reader.read_file(self, ifn)
+    def read_dumppos(self, ifn: str) -> None:
+        reader = read_dumppos.ReadDumppos()
+        reader.read_file(self, ifn)
 
-    # def read_dumpbond(self, ifn: str) -> None:
-    #     reader = read_dumpbond.ReadDumpBond(ifn)
-    #     reader.read_file(self, ifn)
+    def read_dumpbond(self, ifn: str) -> None:
+        reader = read_dumpbond.ReadDumpbond()
+        reader.read_file(self, ifn)
 
-    # def read_xyz(self, ifn: str) -> None:
-    #     reader = read_xyz.ReadXYZ(ifn)
-    #     reader.read_file(self, ifn)
+    def read_xyz(self, ifn: str) -> None:
+        reader = read_xyz.ReadXyz()
+        reader.read_file(self, ifn)
 
     def read_para(self, ifn: str) -> None:
         reader = read_para.ReadPara()

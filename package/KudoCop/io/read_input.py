@@ -56,6 +56,7 @@ class ReadInput():
                 splines = np.array([l.split()
                                    for l in lines[idx+1:idx+1+int(spline[1])]])
                 # 0-indexed
+                index = splines[:, 0].astype(int) - 1
                 atom_data['type'] = splines[:, 1].astype(int)
                 atom_data['mask'] = splines[:, 2].astype(int)
                 atom_data['x'] = splines[:, 3].astype(float)
@@ -68,7 +69,7 @@ class ReadInput():
                 except:
                     pass
 
-                sdat.atoms = pd.DataFrame(data=atom_data)
+                sdat.atoms = pd.DataFrame(data=atom_data, index=index)
 
             if spline[0] == "#connect":
                 read_l = int(spline[1])
