@@ -30,7 +30,7 @@ class ReadXyz():
         except:
             atom_symbols = splines[:, 0].astype(str)
             if sdat.atom_symbol_to_type is None:
-                print('atom_tymbol_to_type is not defined')
+                print('error : atom_tymbol_to_type is not defined')
                 print('Read para first')
                 sys.exit(-1)
             atom_data['type'] = np.array(

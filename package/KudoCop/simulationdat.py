@@ -69,13 +69,13 @@ class SimulationDat():
         writer = to_input.ToInput()
         writer.to_file(self, ofn)
 
-    def to_dumppos(self, ofn: str) -> None:
+    def to_dumppos(self, ofn: str, time_step=None, out_columns=None) -> None:
         writer = to_dumppos.ToDumppos()
-        writer.to_file(self, ofn)
+        writer.to_file(self, ofn, time_step, out_columns)
 
-    def to_xyz(self, ofn: str) -> None:
+    def to_xyz(self, ofn: str, out_columns=None, structure_name=None) -> None:
         writer = to_xyz.ToXyz()
-        writer.to_file(self, ofn)
+        writer.to_file(self, ofn, out_columns, structure_name)
 
     # METHODS
 
