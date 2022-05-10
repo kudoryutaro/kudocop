@@ -5,7 +5,9 @@ from .io import read_config
 from .io import read_dumppos
 from .io import read_dumpbond
 from .io import read_xyz
-from .io import write_input
+from .io import to_input
+from .io import to_dumppos
+from .io import to_xyz
 
 
 class SimulationDat():
@@ -64,16 +66,16 @@ class SimulationDat():
 
     # WEITE
     def to_input(self, ofn: str) -> None:
-        writer = write_input.WriteInput()
-        writer.write_file(self, ofn)
+        writer = to_input.ToInput()
+        writer.to_file(self, ofn)
 
-    # def to_dumppos(self, ofn : str) -> None:
-    #     writer = write_dumppos.WriteDumppos()
-    #     writer.write_file(self, ofn)
+    def to_dumppos(self, ofn: str) -> None:
+        writer = to_dumppos.ToDumppos()
+        writer.to_file(self, ofn)
 
-    # def to_xyz(self, ofn : str) -> None:
-    #     writer = write_xyz.WriteXyz()
-    #     writer.write_file(self, ofn)
+    def to_xyz(self, ofn: str) -> None:
+        writer = to_xyz.ToXyz()
+        writer.to_file(self, ofn)
 
     # METHODS
 
