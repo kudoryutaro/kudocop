@@ -9,7 +9,7 @@
 <a id="anchor1"></a>
 # 変数
 
-## len(sdat.atoms)
+## self.get_total_atoms()
 
  全原子数
 
@@ -138,13 +138,18 @@ dumpbondファイルを読み込む。
 input.rdを出力する。
 第一引数(output_filename) : 保存するファイル名
 
-## to_dumppos(output_filename, time_step=None, out_columns=None)
+## to_dumppos(output_filename, time_step, out_columns)
 dumpposを出力する。
 第一引数(output_filename) : 保存するファイル名
+time_step : タイムステップ、デフォルトは0
+out_columns : 出力する列を指定
 
-## to_xyz(output_filename, out_columns=None, structure_name=None)
+## to_xyz(output_filename, out_columns, structure_name)
 xyzファイルを出力する。
 第一引数(output_filename) : 保存するファイル名
+out_columns : 出力する列を指定
+structure_name : 構造の名前
+
 
 
 <!-- 

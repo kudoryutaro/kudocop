@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import sys
 
 
 class ReadInput():
@@ -7,6 +8,11 @@ class ReadInput():
         pass
 
     def read_file(self, sdat, ifn: str):
+        if sdat.atom_symbol_to_type is None:
+            print('error : atom_tymbol_to_type is not defined')
+            print('Read para first')
+            sys.exit(-1)
+
         with open(ifn, 'r') as ifp:
             lines = ifp.readlines()
 

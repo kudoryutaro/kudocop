@@ -10,12 +10,11 @@ class ToInput():
         for dim in range(3):
             if sdat.cell[dim] == 0:
                 print(f'warning : cell[{dim}] is 0')
-                
+
             if sdat.cell[dim] is None:
                 print(f'warning : cell[{dim}] is not defined')
                 print(f'warning : cell[{dim}] has been initialized to 0')
                 sdat.cell[dim] = 0.0
-
 
         # header_line
         header_line = []

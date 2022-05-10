@@ -1,4 +1,6 @@
+import sys
 import pandas as pd
+import numpy as np
 from .io import read_para
 from .io import read_input
 from .io import read_config
@@ -77,10 +79,15 @@ class SimulationDat():
         writer = to_xyz.ToXyz()
         writer.to_file(self, ofn, out_columns, structure_name)
 
-    # METHODS
-
+    # METHODS\
     def get_total_atoms(self):
-        return len(self.atoms)
+        if self.atoms is not None:
+            return len(self.atoms)
+        elif self.bondorder_list is not None:
+            return len(self.bondorder_list)
+        else:
+            print('Read file first')
+            sys.exit(-1)
 
     def set_decomp(self):
         clx = float(1.0 / (self.ompgrid[0] * self.mpigrid[0]))
@@ -89,3 +96,38 @@ class SimulationDat():
         self.decompx = [clx] * self.ompgrid[0] * self.mpigrid[0]
         self.decompy = [cly] * self.ompgrid[1] * self.mpigrid[1]
         self.decompz = [clz] * self.ompgrid[2] * self.mpigrid[2]
+
+    def wrap_particles(self):
+        self.atoms[['x', 'y', 'z']] %= self.cell
+
+    def create_connect_list(self, cut_off):
+        if cut_off is None:
+            print('cut_off is not defined')
+            sys.exit(-1)
+        if self.bondorder_list is None:
+            print('bondorder_list is not defined')
+            print('Read dumppos first')
+            sys.exit(-1)
+        self.connect_list = [[] for _ in range(self.get_total_atoms())]
+        for atom_idx, bondorder_list in enumerate(self.bondorder_list):
+            for bond_l in bondorder_list:
+                if bond_l[-1] >= cut_off:
+                    self.connect_list[atom_idx].append(bond_l[0])
+
+    def replicate_atoms(self, replicate_directions=[1, 1, 1]):
+        shift = self.cell
+        shifted_atoms_list = [self.atoms]
+
+        for x_idx in range(replicate_directions[0]):
+            for y_idx in range(replicate_directions[1]):
+                for z_idx in range(replicate_directions[2]):
+                    if x_idx == 0 and y_idx == 0 and z_idx == 0:
+                        continue
+                    shifted_atoms = self.atoms.copy()
+                    shifted_atoms[['x', 'y', 'z']] += shift * \
+                        np.array([x_idx, y_idx, z_idx])
+                    shifted_atoms_list.append(shifted_atoms)
+        self.atoms = pd.concat(shifted_atoms_list)
+        for dim in range(3):
+            self.cell[dim] *= replicate_directions[dim]
+            
