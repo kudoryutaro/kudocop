@@ -16,12 +16,16 @@ class SimulationDat():
     def __init__(self):
         self.atoms = None
         self.cell = [None] * 3
+        self.bondorder_list = None
+        self.connect_list = None
+
+        # atom set which exist in the system
+        self.atom_type_set = set()
+
+        # variables for para.rd
         self.atom_symbol_to_type = None
         self.atom_type_to_symbol = None
         self.atom_type_to_mass = None
-        self.atom_type_set = set()
-        self.bondorder_list = None
-        self.connect_list = None
 
         # variables for config.rd
         self.mpigrid = [1] * 3
@@ -100,7 +104,7 @@ class SimulationDat():
     def wrap_particles(self):
         self.atoms[['x', 'y', 'z']] %= self.cell
 
-    def create_connect_list(self, cut_off):
+    def __create_connect_list(self, cut_off):
         if cut_off is None:
             print('cut_off is not defined')
             sys.exit(-1)
@@ -128,6 +132,13 @@ class SimulationDat():
                         np.array([x_idx, y_idx, z_idx])
                     shifted_atoms_list.append(shifted_atoms)
         self.atoms = pd.concat(shifted_atoms_list)
+        self.atoms.reset_index(drop=True, inplace=True)
         for dim in range(3):
             self.cell[dim] *= replicate_directions[dim]
-            
+
+    def concat_atoms(self, outer_sdat):
+        self.atoms = pd.concat([self.atoms, outer_sdat.atoms])
+        self.atoms.reset_index(drop=True, inplace=True)
+        self.atom_type_set |= outer_sdat.atom_type_set
+        for dim in range(3):
+            self.cell[dim] = max(self.cell[dim], outer_sdat.cell[dim])
