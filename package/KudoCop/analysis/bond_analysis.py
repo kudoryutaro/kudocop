@@ -1,4 +1,7 @@
 import sys
+from tqdm import tqdm, trange
+import pandas as pd
+import numpy as np
 
 
 def count_bonds(sdat, cut_off) -> dict:
@@ -29,3 +32,20 @@ def count_bonds(sdat, cut_off) -> dict:
             bond_counter[(atom_type, next_atom_type)] //= 2
 
     return bond_counter
+
+
+def count_bonds_sdats(sdats, cut_off):
+    dfs_count_bonds = []
+    for step_idx, step_num in enumerate(tqdm(sdats.step_nums)):
+        counter = sdats.data[step_idx].count_bonds(cut_off)
+        dfs_count_bonds.append(pd.DataFrame(counter, [step_num]))
+    df_count_bonds = pd.concat(dfs_count_bonds).fillna(0)
+    df_count_bonds.columns = list(df_count_bonds.columns)
+
+    def change_column_name(column):
+        atom_type1, atom_type2 = column
+        return f'{sdats.data[0].atom_type_to_symbol[atom_type1]}-{sdats.data[0].atom_type_to_symbol[atom_type2]}'
+
+    df_count_bonds = df_count_bonds.rename(columns=change_column_name)
+
+    return df_count_bonds

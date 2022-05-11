@@ -1,5 +1,7 @@
 import sys
 from collections import deque
+from tqdm import tqdm, trange
+import pandas as pd
 
 
 def count_mols(sdat, cut_off, lower_mol_limit, upper_mol_limit) -> dict:
@@ -41,7 +43,37 @@ def count_mols(sdat, cut_off, lower_mol_limit, upper_mol_limit) -> dict:
     return mol_counter
 
 
+def count_mols_sdats(sdats, cut_off, lower_mol_limit, upper_mol_limit, rename_columns=True) -> pd.DataFrame:
+    dfs_count_mols = []
+    for step_idx, step_num in enumerate(tqdm(sdats.step_nums)):
+        counter = sdats.data[step_idx].count_mols(
+            cut_off, lower_mol_limit, upper_mol_limit)
+        dfs_count_mols.append(pd.DataFrame(counter, [step_num]))
+    df_count_mols = pd.concat(dfs_count_mols).fillna(0)
+    df_count_mols.columns = list(df_count_mols.columns)
+
+    def change_column_name(column):
+        column_res = []
+        for atom_type, atom_num in enumerate(column[1:], start=1):
+            if atom_num == 0:
+                continue
+            if atom_type not in sdats.data[0].atom_type_to_symbol:
+                column_res.append(f'X{atom_num}')
+            else:
+                column_res.append(
+                    f'{sdats.data[0].atom_type_to_symbol[atom_type]}{atom_num}')
+        return ''.join(column_res)
+    if rename_columns:
+        df_count_mols = df_count_mols.rename(columns=change_column_name)
+
+    return df_count_mols
+
+
 def get_atom_idx_from_mol(sdat, cut_off, target_mol):
+    if target_mol is not tuple:
+        print('target_mol must be tuple')
+        sys.exit(-1)
+        
     atom_idx_from_mol = []
     sdat.get_connect_list(cut_off)
     visited = [0] * sdat.get_total_atoms()

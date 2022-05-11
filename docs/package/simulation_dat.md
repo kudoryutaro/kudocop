@@ -19,9 +19,15 @@
  - "id" : 原子のidについての一次元pandas.Seriesを格納
  - "type" : 原子のtypeについての一次元pandas.Seriesを格納
  - "mask" : 原子のマスク変数についての一次元pandas.Seriesを格納
- - "pos" : 原子の座標についての二次元pandas.Seriesを格納
- - "velo" : 原子の速度についての二次元pandas.Seriesを格納
- - "force" : 原子にかかる力のについての二次元pandas.Seriesを格納
+ - "x" : 原子のx座標についての一次元pandas.Seriesを格納
+ - "y" : 原子のy座標についての一次元pandas.Seriesを格納
+ - "z" : 原子のz座標についての一次元pandas.Seriesを格納
+ - "vx" : 原子のx方向の速度についての一次元pandas.Seriesを格納
+ - "vy" : 原子のy方向の速度についての一次元pandas.Seriesを格納
+ - "vz" : 原子のz方向の速度についての一次元pandas.Seriesを格納
+ - "fx" : 原子にかかるx方向の力についての一次元pandas.Seriesを格納
+ - "fy" : 原子にかかるy方向の力についての一次元pandas.Seriesを格納
+ - "fz" : 原子にかかるz方向の力についての一次元pandas.Seriesを格納
 
 注意
 laich内での原子のidは1から始まり、sdat内では0から始まります。
@@ -105,7 +111,7 @@ inputにおけるthermofreeについての配列
 ## get_connect_list(cut_off)
 第一引数(cut_off) : カットオフ距離
 
-cut_offを上回るボンドオーダーを示す原子ペアについてconnect_listに格納する。
+cut_offを上回るボンドオーダーを示す原子ペアについてconnect_listに格納し、connect_listを返す
 
 ## read_para(input_filename)
 para.rdを読み込む。
@@ -142,6 +148,48 @@ xyzファイルを出力する。
 第一引数(output_filename) : 保存するファイル名
 out_columns : 出力する列を指定
 structure_name : 構造の名前
+
+## replicate_particles([x, y, z])
+第一引数(replicate_particles) : 等倍したいx,y,z方向へのリスト．
+
+周期境界方向にセルを等倍し，粒子をコピーする．
+```
+*例) x,y,z方向にそれぞれセルを2倍にしてコピーする*
+sdat.replicate_particles([2,2,2])
+```
+## concat_atoms(outer_sdat)
+sdatにouter_sdatを結合する
+```
+*例) sdatにouter_sdatを結合する*
+sdat.concat_atoms(outer_sdat)
+```
+
+## count_bonds(cut_off)
+結合の強さがcut_off以上の結合数をカウントする。
+```
+>>>sdat.count_bonds(0.3)
+{(2, 2): 0, (2, 3): 3967, (2, 4): 0, (2, 5): 36, (3, 3): 0, (3, 4): 0, (3, 5): 791, (4, 4): 3344, (4, 5): 35466, (5, 5): 8090}]
+>>> sdat.atom_type_to_symbol
+{1: 'C', 2: 'H', 3: 'O', 4: 'N', 5: 'Si'}
+```
+この場合原子2と原子3の結合数が3967個ある
+## count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10)
+cut_off以上の結合を結合とみなし、分子の数を数える。
+分子内の原子の数がlower_mol_limit以上upper_mol_limit以下の分子のみがカウントされる。
+```
+>>> sdat.count_mols(0.3, upper_mol_limit=100)
+{(0, 0, 8, 4, 1, 1): 1, (0, 0, 0, 0, 1, 0): 4, (0, 0, 2, 1, 0, 0): 1225, (0, 0, 3, 1, 0, 0): 1}
+>>> sdat.atom_type_to_symbol
+{1: 'C', 2: 'H', 3: 'O', 4: 'N', 5: 'Si'}
+```
+この場合H2O分子が1225個ある
+## get_atom_idx_from_mol(cuf_off, target_mol)
+target_molの個数を数える。target_molにはタプルを渡す。
+```
+例水分子の個数を数える。
+>>> sdat.get_atom_idx_from_mol(0.3, target_mol=(0, 0, 2, 1, 0, 0))[:10]
+[[28313, 28315, 28314], [28325, 28327, 28326], [28334, 28336, 28335], [28340, 28342, 28341], [28343, 28345, 28344], [28349, 28351, 28350], [28355, 28357, 28356], [28358, 28360, 28359], [28361, 28363, 28362], [28364, 28366, 28365]]
+```
 
 
 
