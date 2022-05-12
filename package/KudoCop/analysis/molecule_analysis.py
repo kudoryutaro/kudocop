@@ -70,10 +70,10 @@ def count_mols_sdats(sdats, cut_off, lower_mol_limit, upper_mol_limit, rename_co
 
 
 def get_atom_idx_from_mol(sdat, cut_off, target_mol):
-    if target_mol is not tuple:
+    if type(target_mol) != tuple:
         print('target_mol must be tuple')
         sys.exit(-1)
-        
+
     atom_idx_from_mol = []
     sdat.get_connect_list(cut_off)
     visited = [0] * sdat.get_total_atoms()
