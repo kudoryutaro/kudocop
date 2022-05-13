@@ -30,3 +30,4 @@ class ReadDumppos():
         sdat.atoms[['type', 'mask']] = sdat.atoms[['type', 'mask']].astype(int)
         sdat.atoms.index = sdat.atoms.index - 1
         sdat.atoms.sort_index(inplace=True)
+        sdat.atom_type_set |= set(sdat.atoms['type'])

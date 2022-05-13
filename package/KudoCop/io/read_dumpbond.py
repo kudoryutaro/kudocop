@@ -8,24 +8,36 @@ class ReadDumpbond():
 
     def read_file(self, sdat, ifn: str) -> None:
         with open(ifn, 'r') as ifp:
-            lines = ifp.readlines()
+            current_row = 0
+            while True:
+                current_row += 1
+                spline = ifp.readline().split()
+                if len(spline) == 0:
+                    continue
+                if spline[0] == 'ITEM:' and spline[1] == 'NUMBER':
+                    total_atoms = int(ifp.readline())
+                    current_row += 1
+                    break
+        skip_rows = current_row
+        df_bond = pd.read_csv(ifn, skiprows=skip_rows,
+                              sep=' ', names=[0, 1, 2, 3, 4])
+        df_bond = df_bond.replace('Atom', -1)
+        df_bond[0] = df_bond[0].astype(int)
+        print(df_bond)
+        atom_ids_and_neibour_nums = df_bond.iloc[:, [
+            1, 2]][df_bond.iloc[:, 3].isna()].astype(int)
 
-        read_flag = False
-        for ind, line in enumerate(lines):
-            spline = line.split()
-            if len(spline) == 0:
-                continue
+        sdat.bondorder_list = [None] * total_atoms
+        sdat.bondorder_connect_list = [None] * total_atoms
 
-            if spline[0] == "ITEM:" and spline[1] == "NUMBER":
-                read_particle_num = int(lines[ind+1])
-                sdat.bondorder_list = [[] for _ in range(read_particle_num)]
+        df_bond_order_values = df_bond.iloc[:, [1, 2, 3, 4]].values
 
-            elif spline[0] == "Atom":
-                # 0-indexed
-                atom_idx = int(spline[1]) - 1
-                read_flag = True
+        # 0-indexed
+        df_bond_neibour_values = df_bond.iloc[:, 0].values - 1
+        for idx, atom_id, neibour_num in atom_ids_and_neibour_nums.itertuples():
 
-            elif read_flag:
-                sdat.bondorder_list[atom_idx].append(
-                    [int(s) - 1 if s.isdigit() else float(s) for s in spline])
-        
+            # atom_id - 1 == atom_idx
+            sdat.bondorder_list[atom_id -
+                                1] = df_bond_order_values[idx + 1:idx + 1 + neibour_num]
+            sdat.bondorder_connect_list[atom_id -
+                                        1] = df_bond_neibour_values[idx + 1:idx + 1 + neibour_num]

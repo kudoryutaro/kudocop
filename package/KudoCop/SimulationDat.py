@@ -20,6 +20,7 @@ class SimulationDat():
         self.atoms = None
         self.cell = [None] * 3
         self.bondorder_list = None
+        self.bondorder_connect_list = None
         self.connect_list = None
         self.connect_list_cut_off = None
 
@@ -123,10 +124,10 @@ class SimulationDat():
             print('Read dumppos first')
             sys.exit(-1)
         self.connect_list = [[] for _ in range(self.get_total_atoms())]
-        for atom_idx, bondorder_list in enumerate(self.bondorder_list):
-            for bond_l in bondorder_list:
+        for atom_idx, (neibour_idxs, bondorder_list) in enumerate(zip(self.bondorder_connect_list, self.bondorder_list)):
+            for neibour_idx, bond_l in zip(neibour_idxs, bondorder_list):
                 if bond_l[-1] >= cut_off:
-                    self.connect_list[atom_idx].append(bond_l[0])
+                    self.connect_list[atom_idx].append(neibour_idx)
 
     def replicate_atoms(self, replicate_directions=[1, 1, 1]):
         shift = self.cell
