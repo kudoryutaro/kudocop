@@ -1,15 +1,15 @@
 import sys
 import pandas as pd
 import numpy as np
-from .io import read_para
-from .io import read_input
-from .io import read_config
-from .io import read_dumppos
-from .io import read_dumpbond
-from .io import read_xyz
-from .io import to_input
-from .io import to_dumppos
-from .io import to_xyz
+from .io import import_para
+from .io import import_input
+from .io import import_config
+from .io import import_dumppos
+from .io import import_dumpbond
+from .io import import_xyz
+from .io import export_input
+from .io import export_dumppos
+from .io import export_xyz
 from .analysis import bond_analysis
 from .analysis import molecule_analysis
 from .analysis import atom_analysis
@@ -50,43 +50,43 @@ class SimulationDat():
         self.thermofree_info = []
         self.wall_info = []
 
-    # READ
-    def read_input(self, ifn: str) -> None:
-        reader = read_input.ReadInput()
-        reader.read_file(self, ifn)
+    # IMPORT
+    def import_input(self, ifn: str) -> None:
+        importer = import_input.ImportInput()
+        importer.import_file(self, ifn)
 
-    def read_config(self, ifn: str) -> None:
-        reader = read_config.ReadConfig()
-        reader.read_file(self, ifn)
+    def import_config(self, ifn: str) -> None:
+        importer = import_config.ImportConfig()
+        importer.import_file(self, ifn)
 
-    def read_dumppos(self, ifn: str) -> None:
-        reader = read_dumppos.ReadDumppos()
-        reader.read_file(self, ifn)
+    def import_dumppos(self, ifn: str) -> None:
+        importer = import_dumppos.ImportDumppos()
+        importer.import_file(self, ifn)
 
-    def read_dumpbond(self, ifn: str) -> None:
-        reader = read_dumpbond.ReadDumpbond()
-        reader.read_file(self, ifn)
+    def import_dumpbond(self, ifn: str) -> None:
+        importer = import_dumpbond.ImportDumpbond()
+        importer.import_file(self, ifn)
 
-    def read_xyz(self, ifn: str) -> None:
-        reader = read_xyz.ReadXyz()
-        reader.read_file(self, ifn)
+    def import_xyz(self, ifn: str) -> None:
+        importer = import_xyz.ImportXyz()
+        importer.import_file(self, ifn)
 
-    def read_para(self, ifn: str) -> None:
-        reader = read_para.ReadPara()
-        reader.read_file(self, ifn)
+    def import_para(self, ifn: str) -> None:
+        importer = import_para.ImportPara()
+        importer.import_file(self, ifn)
 
-    # WEITE
-    def to_input(self, ofn: str) -> None:
-        writer = to_input.ToInput()
-        writer.to_file(self, ofn)
+    # EXPORT
+    def export_input(self, ofn: str) -> None:
+        importer = to_input.ExportInput()
+        importer.to_file(self, ofn)
 
-    def to_dumppos(self, ofn: str, time_step=None, out_columns=None) -> None:
-        writer = to_dumppos.ToDumppos()
-        writer.to_file(self, ofn, time_step, out_columns)
+    def export_dumppos(self, ofn: str, time_step=None, out_columns=None) -> None:
+        importer = to_dumppos.ExportDumppos()
+        importer.to_file(self, ofn, time_step, out_columns)
 
-    def to_xyz(self, ofn: str, out_columns=None, structure_name=None) -> None:
-        writer = to_xyz.ToXyz()
-        writer.to_file(self, ofn, out_columns, structure_name)
+    def export_xyz(self, ofn: str, out_columns=None, structure_name=None) -> None:
+        importer = to_xyz.ExportXyz()
+        importer.to_file(self, ofn, out_columns, structure_name)
 
     # METHODS\
     def get_total_atoms(self):
@@ -95,7 +95,7 @@ class SimulationDat():
         elif self.bondorder_list is not None:
             return len(self.bondorder_list)
         else:
-            print('Read file first')
+            print('Import file first')
             sys.exit(-1)
 
     def set_decomp(self):
@@ -121,7 +121,7 @@ class SimulationDat():
             sys.exit(-1)
         if self.bondorder_list is None:
             print('bondorder_list is not defined')
-            print('Read dumppos first')
+            print('Import dumppos first')
             sys.exit(-1)
         self.connect_list = [[] for _ in range(self.get_total_atoms())]
         for atom_idx, (neibour_idxs, bondorder_list) in enumerate(zip(self.bondorder_connect_list, self.bondorder_list)):

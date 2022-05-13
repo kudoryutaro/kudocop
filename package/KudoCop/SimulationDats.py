@@ -4,9 +4,9 @@ import numpy as np
 import os
 from tqdm import tqdm, trange
 from .SimulationDat import SimulationDat
-from .io.read_dumppos import ReadDumppos
-from .io.read_dumpbond import ReadDumpbond
-from .io.read_para import ReadPara
+from .io.import_dumppos import ImportDumppos
+from .io.import_dumpbond import ImportDumpbond
+from .io.import_para import ImportPara
 from .analysis import bond_analysis
 from .analysis import atom_analysis
 from .analysis import molecule_analysis
@@ -36,14 +36,14 @@ class SimulationDats():
         self.data = [SimulationDat() for _ in range(len(self.step_nums))]
 
         for step_idx, step_num in enumerate(tqdm(self.step_nums)):
-            dumppos_reader = ReadDumppos()
-            dumppos_reader.read_file(
+            dumppos_importer = ImportDumppos()
+            dumppos_importer.import_file(
                 self.data[step_idx], f'{self.dir_name}/dump.pos.{step_num}')
-            dumpbond_reader = ReadDumpbond()
-            dumpbond_reader.read_file(
+            dumpbond_importer = ImportDumpbond()
+            dumpbond_importer.import_file(
                 self.data[step_idx], f'{self.dir_name}/dump.bond.{step_num}')
-            para_reader = ReadPara()
-            para_reader.read_file(
+            para_importer = ImportPara()
+            para_importer.import_file(
                 self.data[step_idx], f'{self.dir_name}/{self.para_file_name}')
 
     def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10, rename_columns=True) -> pd.DataFrame:
