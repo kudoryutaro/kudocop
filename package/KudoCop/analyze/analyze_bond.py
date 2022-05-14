@@ -3,10 +3,10 @@ from tqdm import tqdm, trange
 import pandas as pd
 import numpy as np
 
+
 class AnalyzeBond():
     def __init__():
         pass
-    
 
     def count_bonds(self, cut_off) -> dict:
         self.get_connect_list(cut_off)
@@ -38,18 +38,46 @@ class AnalyzeBond():
         return bond_counter
 
 
-    # def count_bonds_selfs(selfs, cut_off):
-    #     dfs_count_bonds = []
-    #     for step_idx, step_num in enumerate(tqdm(selfs.step_nums)):
-    #         counter = selfs.data[step_idx].count_bonds(cut_off)
-    #         dfs_count_bonds.append(pd.DataFrame(counter, [step_num]))
-    #     df_count_bonds = pd.concat(dfs_count_bonds).fillna(0)
-    #     df_count_bonds.columns = list(df_count_bonds.columns)
+class AnalyzeBondForSDats():
+    def __init__():
+        pass
 
-    #     def change_column_name(column):
-    #         atom_type1, atom_type2 = column
-    #         return f'{selfs.data[0].atom_type_to_symbol[atom_type1]}-{selfs.data[0].atom_type_to_symbol[atom_type2]}'
+    def count_bonds(self, cut_off) -> pd.DataFrame:
+        self.get_connect_lists(cut_off)
 
-    #     df_count_bonds = df_count_bonds.rename(columns=change_column_name)
+        bond_types = []
+        for atom_type1 in self.atom_type_set:
+            for atom_type2 in self.atom_type_set:
+                if (atom_type1, atom_type2) in bond_types or (atom_type2, atom_type1) in bond_types:
+                    continue
+                if atom_type2 < atom_type2:
+                    continue
+                bond_types.append((atom_type1, atom_type2))
 
-    #     return df_count_bonds
+        bond_counter = [{bond_type: 0 for bond_type in bond_types}
+                        for _ in range(len(self.step_nums))]
+
+        for step_idx, step_num in enumerate(trange(len(self.step_nums))):
+
+            self_atom_type = self.atoms[step_idx]['type'].values
+            for atom_idx, c_list in enumerate(self.connect_lists[step_idx]):
+                atom_type = self_atom_type[atom_idx]
+                for next_atom_idx in c_list:
+                    next_atom_type = self_atom_type[next_atom_idx]
+                    if next_atom_type < atom_type:
+                        continue
+                    bond_counter[step_idx][(atom_type, next_atom_type)] += 1
+
+            for (atom_type, next_atom_type) in bond_counter[step_idx]:
+                if atom_type == next_atom_type:
+                    bond_counter[step_idx][(atom_type, next_atom_type)] //= 2
+        df_bond_count = pd.DataFrame(bond_counter, index=self.step_nums)
+        print(len(df_bond_count))
+
+        def change_column_name(column):
+            atom_type1, atom_type2 = column
+            return f'{self.atom_type_to_symbol[atom_type1]}-{self.atom_type_to_symbol[atom_type2]}'
+
+        df_bond_count = df_bond_count.rename(columns=change_column_name)
+
+        return df_bond_count
