@@ -6,7 +6,7 @@ class ImportDumpbond():
     def __init__(self):
         pass
 
-    def import_file(self, sdat, ifn: str) -> None:
+    def import_dumpbond(self, ifn: str) -> None:
         with open(ifn, 'r') as ifp:
             current_row = 0
             while True:
@@ -26,8 +26,8 @@ class ImportDumpbond():
         atom_ids_and_neibour_nums = df_bond.iloc[:, [
             1, 2]][df_bond.iloc[:, 3].isna()].astype(int)
 
-        sdat.bondorder_list = [None] * total_atoms
-        sdat.bondorder_connect_list = [None] * total_atoms
+        self.bondorder_list = [None] * total_atoms
+        self.bondorder_connect_list = [None] * total_atoms
 
         df_bond_order_values = df_bond.iloc[:, [1, 2, 3, 4]].values
 
@@ -36,7 +36,7 @@ class ImportDumpbond():
         for idx, atom_id, neibour_num in atom_ids_and_neibour_nums.itertuples():
 
             # atom_id - 1 == atom_idx
-            sdat.bondorder_list[atom_id -
+            self.bondorder_list[atom_id -
                                 1] = df_bond_order_values[idx + 1:idx + 1 + neibour_num]
-            sdat.bondorder_connect_list[atom_id -
+            self.bondorder_connect_list[atom_id -
                                         1] = df_bond_neibour_values[idx + 1:idx + 1 + neibour_num]

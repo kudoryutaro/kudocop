@@ -7,9 +7,9 @@ class ImportInput():
     def __init__(self):
         pass
 
-    def import_file(self, sdat, ifn: str):
-        if sdat.atom_symbol_to_type is None:
-            print('error : atom_tymbol_to_type is not defined')
+    def import_input(self, ifn: str):
+        if self.atom_symbol_to_type is None:
+            print('error : atom_symbol_to_type is not defined')
             print('Import para first')
             sys.exit(-1)
 
@@ -21,41 +21,41 @@ class ImportInput():
             if len(spline) == 0:
                 continue
             if spline[0] == "#cellx":
-                sdat.cell[0] = float(spline[2])
+                self.cell[0] = float(spline[2])
 
             if spline[0] == "#celly":
-                sdat.cell[1] = float(spline[2])
+                self.cell[1] = float(spline[2])
 
             if spline[0] == "#cellz":
-                sdat.cell[2] = float(spline[2])
+                self.cell[2] = float(spline[2])
 
             if spline[0] == "#masses":
                 elem_num = int(spline[1])
                 for _line in lines[idx+1:idx+1+elem_num]:
                     _spline = _line.split()
-                    sdat.atom_type_to_mass[int(_spline[0])] = float(_spline[1])
-                    sdat.atom_type_set.add(int(_spline[0]))
+                    self.atom_type_to_mass[int(_spline[0])] = float(_spline[1])
+                    self.atom_type_set.add(int(_spline[0]))
 
             if spline[0] == "#fix":
-                sdat.fix_info.append(line.rstrip())
+                self.fix_info.append(line.rstrip())
 
             if spline[0] == "#move":
-                sdat.move_info.append(line.rstrip())
+                self.move_info.append(line.rstrip())
 
             if spline[0] == "#press":
-                sdat.press_info.append(line.rstrip())
+                self.press_info.append(line.rstrip())
 
             if spline[0] == "#thermostatfree":
-                sdat.thermofree_info.append(line.rstrip())
+                self.thermofree_info.append(line.rstrip())
 
             if spline[0] == "#wall":
-                sdat.wall_info.append(line.rstrip())
+                self.wall_info.append(line.rstrip())
 
             if spline[0] == "#sumforce":
-                sdat.sumforce_info.append(line.rstrip())
+                self.sumforce_info.append(line.rstrip())
                 sumforce_num = int(spline[1])
                 for _line in lines[idx+1:idx+1+sumforce_num]:
-                    sdat.sumforce_info.append(_line.rstrip())
+                    self.sumforce_info.append(_line.rstrip())
 
             atom_data = dict()
             if spline[0] == "#atoms":
@@ -75,11 +75,11 @@ class ImportInput():
                 except:
                     pass
 
-                sdat.atoms = pd.DataFrame(data=atom_data, index=index)
+                self.atoms = pd.DataFrame(data=atom_data, index=index)
 
             if spline[0] == "#connect":
                 read_l = int(spline[1])
                 splines = [l.split()
                            for l in lines[idx+1:idx+1+int(spline[1])]]
-                sdat.connect_list = [[int(v) - 1 for v in l[2:]]
+                self.connect_list = [[int(v) - 1 for v in l[2:]]
                                      for l in splines]

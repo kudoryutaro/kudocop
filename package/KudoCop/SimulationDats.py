@@ -52,12 +52,12 @@ class SimulationDats():
     def count_bonds(self, cut_off):
         return bond_analysis.count_bonds_sdats(self, cut_off)
 
-    def to_dumppos(self, output_folder, out_columns=None):
+    def export_dumppos(self, output_folder, out_columns=None):
         try:
             os.makedirs(output_folder)
         except FileExistsError:
             pass
 
         for step_idx, step_num in tqdm(enumerate(self.step_nums)):
-            self.data[step_idx].to_dumppos(
+            self.data[step_idx].export_dumppos(
                 f'{output_folder}/dump.pos.{step_num}', time_step=step_num, out_columns=out_columns)

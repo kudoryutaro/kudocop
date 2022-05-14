@@ -100,7 +100,7 @@ class ImportPara():
     def __init__(self):
         pass
 
-    def import_file(self, sdat, ifn: str) -> None:
+    def import_para(self, ifn: str) -> None:
         atom_symbol_to_type = {}
 
         with open(ifn, 'r') as ifp:
@@ -116,9 +116,9 @@ class ImportPara():
         # type -> symbol
         # symbol -> type
         # type -> mass
-        sdat.atom_symbol_to_type = atom_symbol_to_type
-        sdat.atom_type_to_symbol = {
+        self.atom_symbol_to_type = atom_symbol_to_type
+        self.atom_type_to_symbol = {
             atom_type: atom_symbol for atom_symbol, atom_type in atom_symbol_to_type.items()}
-        sdat.atom_type_to_mass = {}
-        for atom_symbol, atom_type in sdat.atom_symbol_to_type.items():
-            sdat.atom_type_to_mass[atom_type] = atom_symbol_to_mass[atom_symbol]
+        self.atom_type_to_mass = {}
+        for atom_symbol, atom_type in self.atom_symbol_to_type.items():
+            self.atom_type_to_mass[atom_type] = atom_symbol_to_mass[atom_symbol]
