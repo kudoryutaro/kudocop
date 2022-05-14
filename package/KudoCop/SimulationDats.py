@@ -85,7 +85,7 @@ class SimulationDats(
         self.connect_lists = [[[] for _ in range(
             self.get_total_atoms())] for _ in range(len(self.step_nums))]
 
-        for step_idx in trange(len(self.step_nums)):
+        for step_idx in trange(len(self.step_nums), desc='[creating connect_lists]'):
             for atom_idx, (neibour_idxs, bondorder_list) in enumerate(zip(self.bondorder_connect_lists[step_idx], self.bondorder_lists[step_idx])):
                 for neibour_idx, bond_l in zip(neibour_idxs, bondorder_list):
                     if bond_l[-1] >= cut_off:

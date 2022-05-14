@@ -118,4 +118,3 @@ class AnalyzeMoleculeForSDats():
     #         df_count_mols = df_count_mols.rename(columns=change_column_name)
 
     #     return df_count_mols
-

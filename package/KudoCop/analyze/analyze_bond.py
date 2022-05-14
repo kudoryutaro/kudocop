@@ -57,7 +57,7 @@ class AnalyzeBondForSDats():
         bond_counter = [{bond_type: 0 for bond_type in bond_types}
                         for _ in range(len(self.step_nums))]
 
-        for step_idx, step_num in enumerate(trange(len(self.step_nums))):
+        for step_idx, step_num in enumerate(trange(len(self.step_nums), desc='[counting bonds]')):
 
             self_atom_type = self.atoms[step_idx]['type'].values
             for atom_idx, c_list in enumerate(self.connect_lists[step_idx]):

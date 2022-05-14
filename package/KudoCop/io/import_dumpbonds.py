@@ -27,7 +27,7 @@ class ImportDumpbonds():
         self.bondorder_connect_lists = [
             [None] * total_atoms for _ in range(len(self.step_nums))]
 
-        for step_idx, step_num in enumerate(tqdm(self.step_nums)):
+        for step_idx, step_num in enumerate(tqdm(self.step_nums, desc='[importing dumpbond]')):
             current_file_name = f'{self.dir_name}/dump.bond.{step_num}'
             df_bond = pd.read_csv(current_file_name, skiprows=skip_rows,
                                   sep=' ', names=[0, 1, 2, 3, 4])

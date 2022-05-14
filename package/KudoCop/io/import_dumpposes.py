@@ -28,7 +28,7 @@ class ImportDumpposes():
 
         skip_rows = current_row
 
-        for step_idx, step_num in enumerate(tqdm(self.step_nums)):
+        for step_idx, step_num in enumerate(tqdm(self.step_nums, desc='[importing dumppos]')):
             current_file_name = f'{self.dir_name}/dump.pos.{step_num}'
             self.atoms[step_idx] = pd.read_csv(
                 current_file_name, skiprows=skip_rows, sep=' ', names=columns)
