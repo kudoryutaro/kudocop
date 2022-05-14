@@ -3,12 +3,14 @@ import pandas as pd
 import numpy as np
 from .io.export_file import ExportFile
 from .io.import_file import ImportFile
-from .analysis import bond_analysis
-from .analysis import molecule_analysis
-from .analysis import atom_analysis
+from .analyze.analyze import Analyze
 
 
-class SimulationDat(ImportFile, ExportFile):
+class SimulationDat(
+    ImportFile,
+    ExportFile,
+    Analyze
+):
     def __init__(self):
         self.atoms = None
         self.cell = [None] * 3
@@ -101,11 +103,3 @@ class SimulationDat(ImportFile, ExportFile):
         for dim in range(3):
             self.cell[dim] = max(self.cell[dim], outer_sdat.cell[dim])
 
-    def count_bonds(self, cut_off) -> dict:
-        return bond_analysis.count_bonds(self, cut_off)
-
-    def get_atom_idx_from_mol(self, cut_off, target_mol):
-        return molecule_analysis.get_atom_idx_from_mol(self, cut_off, target_mol)
-
-    def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10) -> dict:
-        return molecule_analysis.count_mols(self, cut_off, lower_mol_limit, upper_mol_limit)

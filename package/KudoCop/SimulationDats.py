@@ -7,9 +7,6 @@ from .SimulationDat import SimulationDat
 from .io.import_dumppos import ImportDumppos
 from .io.import_dumpbond import ImportDumpbond
 from .io.import_para import ImportPara
-from .analysis import bond_analysis
-from .analysis import atom_analysis
-from .analysis import molecule_analysis
 
 
 class SimulationDats():
