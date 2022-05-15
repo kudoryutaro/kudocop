@@ -17,7 +17,7 @@ class AnalyzeMolecule():
         # number of types 種類数
         type_num_max = max(self.atom_type_set)
 
-        self_atoms_type = self.atoms['type'].values
+        sdat_atoms_type = self.atoms['type'].values
 
         for start_atom_idx in range(self.get_total_atoms()):
             if visited[start_atom_idx]:
@@ -32,7 +32,7 @@ class AnalyzeMolecule():
                 if visited[current_atom_idx]:
                     continue
                 visited[current_atom_idx] = 1
-                current_mol_counter[self_atoms_type[current_atom_idx]] += 1
+                current_mol_counter[sdat_atoms_type[current_atom_idx]] += 1
                 for next_atom_idx in self.connect_list[current_atom_idx]:
                     if visited[next_atom_idx]:
                         continue
@@ -61,7 +61,7 @@ class AnalyzeMolecule():
             print('target_mol\'s length does not match')
             sys.exit(-1)
 
-        self_atoms_type = self.atoms['type'].values
+        sdat_atoms_type = self.atoms['type'].values
         for start_atom_idx in range(self.get_total_atoms()):
             if visited[start_atom_idx]:
                 continue
@@ -77,7 +77,7 @@ class AnalyzeMolecule():
                     continue
                 visited[current_atom_idx] = 1
                 current_mol.append(current_atom_idx)
-                current_mol_counter[self_atoms_type[current_atom_idx]] += 1
+                current_mol_counter[sdat_atoms_type[current_atom_idx]] += 1
 
                 for next_atom_idx in self.connect_list[current_atom_idx]:
                     if visited[next_atom_idx]:
@@ -94,27 +94,59 @@ class AnalyzeMoleculeForSDats():
     def __init__():
         pass
 
-    # def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10, rename_columns=True) -> pd.DataFrame:
-    #     dfs_count_mols = []
-    #     for step_idx, step_num in enumerate(tqdm(self.step_nums)):
-    #         counter = self.atoms[step_idx].count_mols(
-    #             cut_off, lower_mol_limit, upper_mol_limit)
-    #         dfs_count_mols.append(pd.DataFrame(counter, [step_num]))
-    #     df_count_mols = pd.concat(dfs_count_mols).fillna(0)
-    #     df_count_mols.columns = list(df_count_mols.columns)
+    def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10, rename_columns=True) -> pd.DataFrame:
+        dfs_count_mols = []
+        type_num_max = max(self.atom_type_set)
+        self.get_connect_lists(cut_off)
+        for step_idx, step_num in enumerate(tqdm(self.step_nums, desc='[counting mols]')):
+            mol_counter = dict()
+            visited = [0] * self.get_total_atoms()
 
-    #     def change_column_name(column):
-    #         column_res = []
-    #         for atom_type, atom_num in enumerate(column[1:], start=1):
-    #             if atom_num == 0:
-    #                 continue
-    #             if atom_type not in self.atoms[0].atom_type_to_symbol:
-    #                 column_res.append(f'X{atom_num}')
-    #             else:
-    #                 column_res.append(
-    #                     f'{self.atoms[0].atom_type_to_symbol[atom_type]}{atom_num}')
-    #         return ''.join(column_res)
-    #     if rename_columns:
-    #         df_count_mols = df_count_mols.rename(columns=change_column_name)
+            # number of types 種類数
 
-    #     return df_count_mols
+            sdat_atoms_type = self.atoms[step_idx]['type'].values
+
+            for start_atom_idx in range(self.get_total_atoms()):
+                if visited[start_atom_idx]:
+                    continue
+
+                current_mol_counter = [0] * (type_num_max + 1)
+
+                # 幅優先探索
+                que = deque([start_atom_idx])
+                while que:
+                    current_atom_idx = que.popleft()
+                    if visited[current_atom_idx]:
+                        continue
+                    visited[current_atom_idx] = 1
+                    current_mol_counter[sdat_atoms_type[current_atom_idx]] += 1
+                    for next_atom_idx in self.connect_lists[step_idx][current_atom_idx]:
+                        if visited[next_atom_idx]:
+                            continue
+                        que.append(next_atom_idx)
+
+                if lower_mol_limit <= sum(current_mol_counter) <= upper_mol_limit:
+                    current_mol_counter_tuple = tuple(current_mol_counter)
+                    if current_mol_counter_tuple not in mol_counter:
+                        mol_counter[current_mol_counter_tuple] = 0
+                    mol_counter[current_mol_counter_tuple] += 1
+
+            dfs_count_mols.append(pd.DataFrame(mol_counter, [step_num]))
+        df_count_mols = pd.concat(dfs_count_mols).fillna(0)
+        df_count_mols.columns = list(df_count_mols.columns)
+
+        def change_column_name(column):
+            column_res = []
+            for atom_type, atom_num in enumerate(column[1:], start=1):
+                if atom_num == 0:
+                    continue
+                if atom_type not in self.atom_type_to_symbol:
+                    column_res.append(f'X{atom_num}')
+                else:
+                    column_res.append(
+                        f'{self.atom_type_to_symbol[atom_type]}{atom_num}')
+            return ''.join(column_res)
+        if rename_columns:
+            df_count_mols = df_count_mols.rename(columns=change_column_name)
+
+        return df_count_mols
