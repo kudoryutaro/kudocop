@@ -78,12 +78,3 @@ class ExportInput():
         # 0-indexed
         self.atoms.index = self.atoms.index - 1
 
-        # connect_list
-        if self.flagconnect:
-            with open(ofn, 'a') as ofs:
-                print(f"#connect {len(self.connect_list)}", file=ofs)
-                for ind, connect in enumerate(self.connect_list):
-                    tmp_list = [str(ind+1), str(len(connect))]
-                    for target in connect:
-                        tmp_list.append(str(target+1))
-                    print(" ".join(tmp_list), file=ofs)
