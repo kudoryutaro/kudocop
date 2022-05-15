@@ -72,7 +72,6 @@ class AnalyzeBondForSDats():
                 if atom_type == next_atom_type:
                     bond_counter[step_idx][(atom_type, next_atom_type)] //= 2
         df_bond_count = pd.DataFrame(bond_counter, index=self.step_nums)
-        print(len(df_bond_count))
 
         def change_column_name(column):
             atom_type1, atom_type2 = column

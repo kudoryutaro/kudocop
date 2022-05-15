@@ -76,6 +76,27 @@ input.rd, dumppos, xyzから読み込まれる。
 ## atom_type_to_mass
 キーを原子タイプ(int)、値を原子量(float)とした辞書。
 
+## bondorder_connect_list
+dumpbondで読み込んだそのままの隣接リスト
+```
+sdat.bondorder_connect_list[atom_idx]
+[  703  4910 10212 12492 20328 25777 22654]
+```
+## bondorder_list
+dumpbondで読み込んだボンドオーダーが入っているリスト
+```
+>>>sdat.bondorder_list[atom_idx]
+[[0.004 0.    0.    0.004]
+ [0.002 0.    0.    0.002]
+ [0.593 0.    0.    0.593]
+ [0.729 0.003 0.    0.733]
+ [0.91  0.402 0.    1.312]
+ [0.017 0.    0.    0.017]
+ [0.122 0.    0.    0.122]]
+```
+左からσ、π、ππ、結合の合計
+bondorder_connect_list[atom_idx]の行とbondorder_list[atom_idx]の列が対応している
+
 ## mpigrid
 mpi分割についての配列(x,y,zの3方向分)
 ## ompgrid
@@ -90,10 +111,6 @@ laich計算におけるtotal_step
 laich計算におけるfile_step
 ## flagdecomp
 Decompの有無。bool型
-## flagconnect
-結合情報記述の有無。自ら設定する必要あり。(デフォルトはFalse)  
-使用例)sdat.flagconnect = Trueにしてからtrimming_particles()を実行することで，connect_listもtrimmingにより残った原子ものだけが残る．  
-一般にconnect_listを使用した処理は重くなりがちだが，この機能を用いれば一部の原子，分子のみを対象に処理できるようになる．
 
 ## fix_info
 inputにおけるfixについての配列

@@ -94,6 +94,4 @@ class SimulationDats(
                         self.connect_lists[step_idx][atom_idx].append(
                             neibour_idx)
 
-    # def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10, rename_columns=True) -> pd.DataFrame:
-    #     return molecule_analysis.count_mols_sdats(self, cut_off, lower_mol_limit, upper_mol_limit, rename_columns)
 
