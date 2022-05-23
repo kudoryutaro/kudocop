@@ -2,6 +2,7 @@ import sys
 from tqdm import tqdm, trange
 import pandas as pd
 import numpy as np
+import itertools
 
 
 class AnalyzeBond():
@@ -36,6 +37,31 @@ class AnalyzeBond():
                 bond_counter[(atom_type, next_atom_type)] //= 2
 
         return bond_counter
+
+    def get_bond_angular(self, cut_off) -> list:
+        self.get_connect_list(cut_off)
+        max_atom_type = max(self.atom_type_set)
+        # bond_angular[neibour1][mid][neibour2] : neibour1-mid-neibour2 の角度の入ったリスト
+        bond_angular = [[[[] for _ in range(max_atom_type + 1)] for _ in range(
+            max_atom_type + 1)] for _ in range(max_atom_type + 1)]
+        self_atom_type = self.atoms['type'].values
+        self_atom_xyz = self.atoms[['x', 'y', 'z']].values
+        for mid_atom_idx, c_list in enumerate(self.connect_list):
+            mid_atom_type = self_atom_type[mid_atom_idx]
+            for neibour_atom_idx1, neibour_atom_idx2 in itertools.combinations(c_list, 2):
+                neibour_atom_type1 = self_atom_type[neibour_atom_idx1]
+                neibour_atom_type2 = self_atom_type[neibour_atom_idx2]
+                angle = calc_angle_of_ABC(
+                    self_atom_xyz[neibour_atom_idx1], self_atom_xyz[mid_atom_idx], self_atom_xyz[neibour_atom_idx2])
+                if neibour_atom_type1 == neibour_atom_type2:
+                    bond_angular[neibour_atom_type1][mid_atom_type][neibour_atom_type2].append(
+                        angle)
+                else:
+                    bond_angular[neibour_atom_type1][mid_atom_type][neibour_atom_type2].append(
+                        angle)
+                    bond_angular[neibour_atom_type2][mid_atom_type][neibour_atom_type1].append(
+                        angle)
+        return bond_angular
 
 
 class AnalyzeBondForSDats():
@@ -80,3 +106,26 @@ class AnalyzeBondForSDats():
         df_bond_count = df_bond_count.rename(columns=change_column_name)
 
         return df_bond_count
+
+
+def calc_angle_of_ABC(a: np.array, b: np.array, c: np.array) -> float:
+    """
+    ABとBCのなす角度(degree)を返す
+    """
+    # ベクトルを定義
+    vec_a = a - b
+    vec_c = c - b
+
+    # コサインの計算
+    length_vec_a = np.linalg.norm(vec_a)
+    length_vec_c = np.linalg.norm(vec_c)
+    inner_product = np.inner(vec_a, vec_c)
+    cos = inner_product / (length_vec_a * length_vec_c)
+
+    # 角度（ラジアン）の計算
+    rad = np.arccos(cos)
+
+    # 弧度法から度数法（rad ➔ 度）への変換
+    degree = np.rad2deg(rad)
+
+    return degree

@@ -46,6 +46,15 @@ class SimulationDat(
         self.wall_info = []
 
     # METHODS\
+    def __getitem__(self, key): 
+        return self.atoms[key]
+
+    def __setitem__(self, key, val): 
+        self.atoms[key] = val
+
+    def __len__(self): 
+        return self.get_total_atoms()
+
     def get_total_atoms(self):
         if self.atoms is not None:
             return len(self.atoms)

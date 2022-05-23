@@ -17,7 +17,7 @@ class SimulationDats(
     ExportDumpposes,
     AnalyzeForSDats
 ):
-    def __init__(self, para_file_name='para.rd', dir_name=None, import_dumpposes_flag=True, import_dumpbonds_flag=True, step_nums=None):
+    def __init__(self, para_file_name='para.rd', dir_name=None, import_dumpposes_flag=True, import_dumpbonds_flag=True, step_nums=None, skip_num=None):
         self.cell = [None] * 3
         self.bondorder_lists = None
         self.bondorder_connect_lists = None
@@ -42,11 +42,14 @@ class SimulationDats(
             for file_name in file_names_in_current_dir:
                 if len(file_name) >= 9 and file_name[:9] == 'dump.pos.':
                     self.step_nums.append(int(file_name[9:]))
+
         else:
             self.step_nums = []
             for step_num in step_nums:
                 self.step_nums.append(step_num)
         self.step_nums.sort()
+        if skip_num is not None:
+            self.step_nums = self.step_nums[::skip_num]
 
         self.step_num_to_step_idx = {
             step_num: step_idx for step_idx, step_num in enumerate(self.step_nums)
@@ -93,5 +96,3 @@ class SimulationDats(
                     if bond_l[-1] >= cut_off:
                         self.connect_lists[step_idx][atom_idx].append(
                             neibour_idx)
-
-
