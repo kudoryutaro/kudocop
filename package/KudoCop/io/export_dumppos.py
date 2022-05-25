@@ -47,6 +47,6 @@ class ExportDumppos():
         # 1-indexed
         self.atoms.index = self.atoms.index + 1
         self.atoms.to_csv(ofn, columns=out_columns, mode='a', header=False,
-                          sep='\t', float_format='%.6f')
+                          sep=' ', float_format='%.6f')
         # 0-indexed
         self.atoms.index = self.atoms.index - 1

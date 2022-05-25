@@ -38,11 +38,11 @@ class AnalyzeBond():
 
         return bond_counter
 
-    def get_bond_angular(self, cut_off) -> list:
+    def get_bond_angle(self, cut_off) -> list:
         self.get_connect_list(cut_off)
         max_atom_type = max(self.atom_type_set)
-        # bond_angular[neibour1][mid][neibour2] : neibour1-mid-neibour2 の角度の入ったリスト
-        bond_angular = [[[[] for _ in range(max_atom_type + 1)] for _ in range(
+        # bond_angle[neibour1][mid][neibour2] : neibour1-mid-neibour2 の角度の入ったリスト
+        bond_angle = [[[[] for _ in range(max_atom_type + 1)] for _ in range(
             max_atom_type + 1)] for _ in range(max_atom_type + 1)]
         self_atom_type = self.atoms['type'].values
         self_atom_xyz = self.atoms[['x', 'y', 'z']].values
@@ -54,14 +54,14 @@ class AnalyzeBond():
                 angle = calc_angle_of_ABC(
                     self_atom_xyz[neibour_atom_idx1], self_atom_xyz[mid_atom_idx], self_atom_xyz[neibour_atom_idx2])
                 if neibour_atom_type1 == neibour_atom_type2:
-                    bond_angular[neibour_atom_type1][mid_atom_type][neibour_atom_type2].append(
+                    bond_angle[neibour_atom_type1][mid_atom_type][neibour_atom_type2].append(
                         angle)
                 else:
-                    bond_angular[neibour_atom_type1][mid_atom_type][neibour_atom_type2].append(
+                    bond_angle[neibour_atom_type1][mid_atom_type][neibour_atom_type2].append(
                         angle)
-                    bond_angular[neibour_atom_type2][mid_atom_type][neibour_atom_type1].append(
+                    bond_angle[neibour_atom_type2][mid_atom_type][neibour_atom_type1].append(
                         angle)
-        return bond_angular
+        return bond_angle
 
 
 class AnalyzeBondForSDats():

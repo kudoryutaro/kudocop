@@ -53,6 +53,6 @@ class ExportDumpposes():
             # 1-indexed
             self.atoms[step_idx].index = self.atoms[step_idx].index + 1
             self.atoms[step_idx].to_csv(ofn, columns=out_columns, mode='a', header=False,
-                                        sep='\t', float_format='%.6f')
+                                        sep=' ', float_format='%.6f')
             # 0-indexed
             self.atoms[step_idx].index = self.atoms[step_idx].index - 1
