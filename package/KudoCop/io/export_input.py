@@ -71,10 +71,23 @@ class ExportInput():
             out_columns.append('vy')
             out_columns.append('vz')
 
+        self.wrap_particles()
+        self.atoms['x'] = np.where(
+            self.atoms['x'] == 0, 0.001, self.atoms['x'])
+        self.atoms['y'] = np.where(
+            self.atoms['y'] == 0, 0.001, self.atoms['y'])
+        self.atoms['z'] = np.where(
+            self.atoms['z'] == 0, 0.001, self.atoms['z'])
+
         # 1-indexed
         self.atoms.index = self.atoms.index + 1
-        self.atoms.to_csv(ofn, columns=out_columns, mode='a', header=False,
-                          sep='\t', float_format='%.6f')
+        body_line = []
+        for row in self.atoms[out_columns].itertuples():
+            body_line.append('    '.join(map(str, row)))
+            body_line.append('\n')
+
+        with open(ofn, 'a') as ofs:
+            ofs.writelines(body_line)
+
         # 0-indexed
         self.atoms.index = self.atoms.index - 1
-
