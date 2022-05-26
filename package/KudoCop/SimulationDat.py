@@ -4,6 +4,7 @@ import numpy as np
 from .io.export_file import ExportFile
 from .io.import_file import ImportFile
 from .analyze.analyze import Analyze
+from .analyze import neighbor
 
 
 class SimulationDat(
@@ -18,6 +19,8 @@ class SimulationDat(
         self.bondorder_connect_list = None
         self.connect_list = None
         self.connect_list_cut_off = None
+        self.connect_list_from_dumppos = None
+        self.connect_list_cut_off_from_dumppos = None
 
         # atom set which exist in the system
         self.atom_type_set = set()
@@ -46,13 +49,13 @@ class SimulationDat(
         self.wall_info = []
 
     # METHODS\
-    def __getitem__(self, key): 
+    def __getitem__(self, key):
         return self.atoms[key]
 
-    def __setitem__(self, key, val): 
+    def __setitem__(self, key, val):
         self.atoms[key] = val
 
-    def __len__(self): 
+    def __len__(self):
         return self.get_total_atoms()
 
     def get_total_atoms(self):
@@ -87,6 +90,20 @@ class SimulationDat(
                 if bond_l[-1] >= cut_off:
                     self.connect_list[atom_idx].append(neibour_idx)
 
+    def get_connect_list_from_dumppos(self, cut_off):
+        if self.connect_list_cut_off_from_dumppos != cut_off or self.connect_list_from_dumppos is None:
+            self.__create_connect_list_from_dumppos(cut_off)
+        self.connect_list_cut_off_from_dumppos = cut_off
+        return self.connect_list_from_dumppos
+
+    def __create_connect_list_from_dumppos(self, cut_off):
+        self.particles = dict()
+        self.particles['pos'] = self.atoms[['x', 'y', 'z']].values
+        self.total_particle = self.get_total_atoms()
+        self.newcell = self.cell
+        self.connect_list_from_dumppos = neighbor.make_neighbor(self, cut_off)
+        return self.connect_list_from_dumppos
+
     def replicate_atoms(self, replicate_directions=[1, 1, 1]):
         shift = self.cell
         shifted_atoms_list = [self.atoms]
@@ -111,4 +128,3 @@ class SimulationDat(
         self.atom_type_set |= outer_sdat.atom_type_set
         for dim in range(3):
             self.cell[dim] = max(self.cell[dim], outer_sdat.cell[dim])
-
