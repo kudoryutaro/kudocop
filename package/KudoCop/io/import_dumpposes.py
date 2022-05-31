@@ -32,8 +32,16 @@ class ImportDumpposes():
             current_file_name = f'{self.dir_name}/dump.pos.{step_num}'
             self.atoms[step_idx] = pd.read_csv(
                 current_file_name, skiprows=skip_rows, sep=' ', names=columns)
-            self.atoms[step_idx][['type', 'mask']
-                                 ] = self.atoms[step_idx][['type', 'mask']].astype(int)
+
+            if 'type' in self.atoms[step_idx]:
+                self.atoms[step_idx]['type'
+                                     ] = self.atoms[step_idx]['type'].astype(int)
+
+            if 'mask' in self.atoms[step_idx]:
+                self.atoms[step_idx]['mask'
+                                     ] = self.atoms[step_idx]['mask'].astype(int)
+
             self.atoms[step_idx].index = self.atoms[step_idx].index - 1
             self.atoms[step_idx].sort_index(inplace=True)
-            self.atom_type_set |= set(self.atoms[step_idx]['type'])
+            if 'type' in self.atoms[step_idx]:
+                self.atom_type_set |= set(self.atoms[step_idx]['type'])
