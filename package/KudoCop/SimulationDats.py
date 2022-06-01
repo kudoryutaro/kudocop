@@ -96,3 +96,16 @@ class SimulationDats(
                     if bond_l[-1] >= cut_off:
                         self.connect_lists[step_idx][atom_idx].append(
                             neibour_idx)
+
+    def delete_atoms(self, condition, reindex):
+        # Trueの原子を削除する
+        for step_idx in range(len(self.step_nums)):
+            if callable(condition):
+                target_atoms = condition(self, step_idx)
+                self.atoms[step_idx] = self.atoms[step_idx][~target_atoms]
+            else:
+                self.atoms[step_idx] = self.atoms[step_idx][~condition]
+            if reindex:
+                self.atoms[step_idx].reset_index(drop=True, inplace=True)
+
+    

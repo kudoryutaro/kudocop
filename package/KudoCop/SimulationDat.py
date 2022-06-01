@@ -128,3 +128,13 @@ class SimulationDat(
         self.atom_type_set |= outer_sdat.atom_type_set
         for dim in range(3):
             self.cell[dim] = max(self.cell[dim], outer_sdat.cell[dim])
+
+    def delete_atoms(self, condition, reindex):
+        # Trueの原子を削除する
+        if callable(condition):
+            target_atoms = condition(self)
+            self.atoms = self.atoms[~target_atoms]
+        else:
+            self.atoms = self.atoms[~condition]
+        if reindex:
+            self.atoms.reset_index(drop=True, inplace=True)
