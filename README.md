@@ -23,7 +23,10 @@ git push origin main
 #bashの場合 -> $HOME/.bashrcに下記を追記
 export PYTHONPATH="$PYTHONPATH:$HOME/kudocop/package"
 #cshellの場合 -> $HOME/.cshrcに下記を追記
-setenv PYTHONPATH "$HOME/kudocop/package/:$PYTHONPATH"
+# すでにPYTHONPATHがある場合はすでにあるPYTHONPATHに追加
+PYTHONPATH ${PYTHONPATH}:$HOME/molcop/package
+# PYTHONPATHが無い場合
+PYTHONPATH $HOME/kudocop/package
 ```
 
 # Setting of VSCode
