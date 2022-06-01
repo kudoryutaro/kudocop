@@ -68,6 +68,12 @@ class SimulationDat(
             sys.exit(-1)
 
     def wrap_particles(self):
+        if self.cell is None:
+            print('set sdat.cell')
+            sys.exit(-1)
+        if 0 in self.cell:
+            print('cell size must not be 0')
+            sys.exit(-1)
         self.atoms[['x', 'y', 'z']] %= self.cell
 
     def get_connect_list(self, cut_off):

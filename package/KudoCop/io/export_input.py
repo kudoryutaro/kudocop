@@ -78,7 +78,7 @@ class ExportInput():
             self.atoms['y'] == 0, 0.001, self.atoms['y'])
         self.atoms['z'] = np.where(
             self.atoms['z'] == 0, 0.001, self.atoms['z'])
-
+            
         # 1-indexed
         self.atoms.index = self.atoms.index + 1
         body_line = []
