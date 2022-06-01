@@ -26,6 +26,15 @@ export PYTHONPATH="$PYTHONPATH:$HOME/kudocop/package"
 setenv PYTHONPATH "$HOME/kudocop/package/:$PYTHONPATH"
 ```
 
+# Setting of VSCode
+補完が出るようになります
+```
+例
+"python.analysis.extraPaths": [
+    "/nfshome15/rkudo/kudocop/package"
+],
+
+```
 
 # Data structure of KudoCop
 - [SimulationDat(sdat)](./docs/package/SimulationDat.md)
