@@ -27,7 +27,11 @@ class ImportDumppos():
         skip_rows = current_row
         self.atoms = pd.read_csv(
             ifn, skiprows=skip_rows, sep=' ', names=columns)
-        self.atoms[['type', 'mask']] = self.atoms[['type', 'mask']].astype(int)
+        if 'type' in self.atoms:
+            self.atoms['type'] = self.atoms['type'].astype(int)
+        if 'mask' in self.atoms:
+            self.atoms['mask'] = self.atoms['mask'].astype(int)
+
         self.atoms.index = self.atoms.index - 1
         self.atoms.sort_index(inplace=True)
         self.atom_type_set |= set(self.atoms['type'])

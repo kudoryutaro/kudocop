@@ -5,13 +5,17 @@ import numpy as np
 import itertools
 import math
 
+
 class AnalyzeBond():
     def __init__():
         pass
 
-    def count_bonds(self, cut_off) -> dict:
+    def count_bonds(self, cut_off, condition=None) -> dict:
         self.get_connect_list(cut_off)
-
+        if condition is None:
+            target_atoms = np.array([True] * self.get_total_atoms())
+        else:
+            target_atoms = condition(self)
         # bond_counter[(atom_type1,atom_type2)] atom1,atom2の結合数
         bond_counter = dict()
 
@@ -25,8 +29,12 @@ class AnalyzeBond():
 
         sdat_atom_type = self.atoms['type'].values
         for atom_idx, c_list in enumerate(self.connect_list):
+            if not target_atoms[atom_idx]:
+                continue
             atom_type = sdat_atom_type[atom_idx]
             for next_atom_idx in c_list:
+                if not target_atoms[next_atom_idx]:
+                    continue
                 next_atom_type = sdat_atom_type[next_atom_idx]
                 if next_atom_type < atom_type:
                     continue
@@ -102,7 +110,6 @@ class AnalyzeBond():
     #     sdat_atom_type = self.atoms['type'].values
     #     sdat_atom_xyz = self.atoms[['x', 'y', 'z']].values
 
-
     #     for atom_idx, c_list in enumerate(self.connect_list):
     #         atom_type = sdat_atom_type[atom_idx]
     #         atom_xyz = sdat_atom_xyz[atom_idx]
@@ -122,17 +129,13 @@ class AnalyzeBond():
     #                             ] /= bond_counter[(atom_type, next_atom_type)]
 
     #     return bond_length
-    
-
-        
-
 
 
 class AnalyzeBondForSDats():
     def __init__():
         pass
 
-    def count_bonds(self, cut_off) -> pd.DataFrame:
+    def count_bonds(self, cut_off, condition=None) -> pd.DataFrame:
         self.get_connect_lists(cut_off)
 
         bond_types = []
@@ -148,11 +151,18 @@ class AnalyzeBondForSDats():
                         for _ in range(len(self.step_nums))]
 
         for step_idx, step_num in enumerate(trange(len(self.step_nums), desc='[counting bonds]')):
-
+            if condition is None:
+                target_atoms = np.array([True] * self.get_total_atoms())
+            else:
+                target_atoms = condition(self, step_idx)
             sdat_atom_type = self.atoms[step_idx]['type'].values
             for atom_idx, c_list in enumerate(self.connect_lists[step_idx]):
+                if not target_atoms[atom_idx]:
+                    continue
                 atom_type = sdat_atom_type[atom_idx]
                 for next_atom_idx in c_list:
+                    if not target_atoms[next_atom_idx]:
+                        continue
                     next_atom_type = sdat_atom_type[next_atom_idx]
                     if next_atom_type < atom_type:
                         continue
