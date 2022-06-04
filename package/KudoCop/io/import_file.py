@@ -16,3 +16,23 @@ class ImportFile(
 ):
     def __init__():
         super().__init__()
+
+    def import_file(self, import_file_name: str, import_file_type: str):
+        if import_file_type == 'input':
+            self.import_input(import_file_name)
+
+        elif import_file_type == 'dumpbond':
+            self.import_dumpbond(import_file_name)
+
+        elif import_file_type == 'dumppos':
+            self.import_dumppos(import_file_name)
+
+        elif import_file_type == 'para':
+            self.import_para(import_file_name)
+            
+        elif import_file_type == 'config':
+            self.import_config(import_file_name)
+            
+        elif import_file_type == 'xyz':
+            self.import_xyz(import_file_name)
+

@@ -19,7 +19,8 @@ class AnalyzeMolecule():
         else:
             target_atoms = condition(self)
         # number of types 種類数
-        type_num_max = max(self.atom_type_set)
+        atom_type_set = self.get_atom_type_set()
+        type_num_max = max(atom_type_set)
         sdat_atoms_type = self.atoms['type'].values
 
         for start_atom_idx in range(self.get_total_atoms()):
@@ -71,7 +72,8 @@ class AnalyzeMolecule():
         visited = [0] * self.get_total_atoms()
 
         # number of types 種類数
-        type_num_max = max(self.atom_type_set)
+        atom_type_set = self.get_atom_type_set()
+        type_num_max = max(atom_type_set)
         if len(target_mol) != type_num_max + 1:
             print('target_mol\'s length does not match')
             sys.exit(-1)
@@ -113,7 +115,8 @@ class AnalyzeMoleculeForSDats():
 
     def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10, condition=None) -> pd.DataFrame:
         dfs_count_mols = []
-        type_num_max = max(self.atom_type_set)
+        atom_type_set = self.get_atom_type_set()
+        type_num_max = max(atom_type_set)
         self.get_connect_lists(cut_off)
         for step_idx, step_num in enumerate(tqdm(self.step_nums, desc='[counting mols]')):
             mol_counter = dict()

@@ -18,9 +18,9 @@ class AnalyzeBond():
             target_atoms = condition(self)
         # bond_counter[(atom_type1,atom_type2)] atom1,atom2の結合数
         bond_counter = dict()
-
-        for atom_type1 in self.atom_type_set:
-            for atom_type2 in self.atom_type_set:
+        atom_type_set = self.get_atom_type_set()
+        for atom_type1 in atom_type_set:
+            for atom_type2 in atom_type_set:
                 if (atom_type1, atom_type2) in bond_counter or (atom_type2, atom_type1) in bond_counter:
                     continue
                 if atom_type2 < atom_type1:
@@ -57,7 +57,9 @@ class AnalyzeBond():
             target_atoms = np.array([True] * self.get_total_atoms())
         else:
             target_atoms = condition(self)
-        max_atom_type = max(self.atom_type_set)
+        atom_type_set = self.get_atom_type_set()
+
+        max_atom_type = max(atom_type_set)
         # bond_angle[(neibour1, mid, neibour2)] : neibour1-mid-neibour2 の角度の入ったリスト
         bond_angle = dict()
         for neibour_atom_type1 in range(1, max_atom_type + 1):
@@ -101,9 +103,9 @@ class AnalyzeBond():
         else:
             target_atoms = condition(self)
         coordination_counter = dict()
-
-        for atom_type1 in self.atom_type_set:
-            for atom_type2 in self.atom_type_set:
+        atom_type_set = self.get_atom_type_set()
+        for atom_type1 in atom_type_set:
+            for atom_type2 in atom_type_set:
                 coordination_counter[(atom_type1, atom_type2)] = 0
 
         sdat_atom_type = self.atoms['type'].values
@@ -133,8 +135,8 @@ class AnalyzeBond():
     #     self.get_connect_list(cut_off)
     #     bond_length = dict()
 
-    #     for atom_type1 in self.atom_type_set:
-    #         for atom_type2 in self.atom_type_set:
+    #     for atom_type1 in atom_type_set:
+    #         for atom_type2 in atom_type_set:
     #             if (atom_type1, atom_type2) in bond_length or (atom_type2, atom_type1) in bond_length:
     #                 continue
     #             if atom_type2 < atom_type1:
@@ -173,8 +175,9 @@ class AnalyzeBondForSDats():
         self.get_connect_lists(cut_off)
 
         bond_types = []
-        for atom_type1 in self.atom_type_set:
-            for atom_type2 in self.atom_type_set:
+        atom_type_set = self.get_atom_type_set()
+        for atom_type1 in atom_type_set:
+            for atom_type2 in atom_type_set:
                 if (atom_type1, atom_type2) in bond_types or (atom_type2, atom_type1) in bond_types:
                     continue
                 if atom_type2 < atom_type1:

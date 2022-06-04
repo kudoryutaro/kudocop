@@ -63,6 +63,12 @@ class SimulationDats(
         if import_dumpbonds_flag:
             self.import_dumpbonds()
 
+    def __getitem__(self, key):
+        return self.atoms[key]
+
+    def __len__(self):
+        return len(self.step_nums)
+
     def get_total_atoms(self):
         if self.atoms[0] is not None:
             return len(self.atoms[0])
