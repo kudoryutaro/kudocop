@@ -2,27 +2,32 @@ import sys
 from collections import deque
 from tqdm import tqdm, trange
 import pandas as pd
+import numpy as np
 
 
 class AnalyzeMolecule():
     def __init__():
         pass
 
-    def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10) -> dict:
+    def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10, condition=None) -> dict:
         mol_counter = dict()
         self.get_connect_list(cut_off)
 
         visited = [0] * self.get_total_atoms()
-
+        if condition is None:
+            target_atoms = np.array([True] * self.get_total_atoms())
+        else:
+            target_atoms = condition(self)
         # number of types 種類数
         type_num_max = max(self.atom_type_set)
-
         sdat_atoms_type = self.atoms['type'].values
 
         for start_atom_idx in range(self.get_total_atoms()):
             if visited[start_atom_idx]:
                 continue
-
+            # 調べる範囲内に一つでも原子が入っている分子はすべてカウントする
+            if not target_atoms[start_atom_idx]:
+                continue
             current_mol_counter = [0] * (type_num_max + 1)
 
             # 幅優先探索
@@ -43,14 +48,24 @@ class AnalyzeMolecule():
                 if current_mol_counter_tuple not in mol_counter:
                     mol_counter[current_mol_counter_tuple] = 0
                 mol_counter[current_mol_counter_tuple] += 1
+        mol_counter_renamed = dict()
+        for mol, count in mol_counter.items():
+            mol_renamed = ''
+            for atom_type, atom_count in enumerate(mol[1:], start=1):
+                if atom_count != 0:
+                    mol_renamed += f'{self.atom_type_to_symbol[atom_type]}{atom_count}'
+            mol_counter_renamed[mol_renamed] = count
 
-        return mol_counter
+        return mol_counter_renamed
 
-    def get_atom_idx_from_mol(self, cut_off, target_mol) -> list:
+    def get_atom_idx_from_mol(self, cut_off, target_mol, condition=None) -> list:
         if type(target_mol) != tuple:
             print('target_mol must be tuple')
             sys.exit(-1)
-
+        if condition is None:
+            target_atoms = np.array([True] * self.get_total_atoms())
+        else:
+            target_atoms = condition(self)
         atom_idx_from_mol = []
         self.get_connect_list(cut_off)
         visited = [0] * self.get_total_atoms()
@@ -65,7 +80,9 @@ class AnalyzeMolecule():
         for start_atom_idx in range(self.get_total_atoms()):
             if visited[start_atom_idx]:
                 continue
-
+            # 調べる範囲内に一つでも原子が入っている分子はすべてカウントする
+            if not target_atoms[start_atom_idx]:
+                continue
             current_mol_counter = [0] * (type_num_max + 1)
             current_mol = []
 
@@ -94,14 +111,17 @@ class AnalyzeMoleculeForSDats():
     def __init__():
         pass
 
-    def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10, rename_columns=True) -> pd.DataFrame:
+    def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10, condition=None) -> pd.DataFrame:
         dfs_count_mols = []
         type_num_max = max(self.atom_type_set)
         self.get_connect_lists(cut_off)
         for step_idx, step_num in enumerate(tqdm(self.step_nums, desc='[counting mols]')):
             mol_counter = dict()
             visited = [0] * self.get_total_atoms()
-
+            if condition is None:
+                target_atoms = np.array([True] * self.get_total_atoms())
+            else:
+                target_atoms = condition(self, step_idx)
             # number of types 種類数
 
             sdat_atoms_type = self.atoms[step_idx]['type'].values
@@ -109,7 +129,8 @@ class AnalyzeMoleculeForSDats():
             for start_atom_idx in range(self.get_total_atoms()):
                 if visited[start_atom_idx]:
                     continue
-
+                if not target_atoms[start_atom_idx]:
+                    continue
                 current_mol_counter = [0] * (type_num_max + 1)
 
                 # 幅優先探索
@@ -146,7 +167,6 @@ class AnalyzeMoleculeForSDats():
                     column_res.append(
                         f'{self.atom_type_to_symbol[atom_type]}{atom_num}')
             return ''.join(column_res)
-        if rename_columns:
-            df_count_mols = df_count_mols.rename(columns=change_column_name)
+        df_count_mols = df_count_mols.rename(columns=change_column_name)
 
         return df_count_mols

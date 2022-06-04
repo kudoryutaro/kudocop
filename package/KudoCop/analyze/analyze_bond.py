@@ -43,18 +43,34 @@ class AnalyzeBond():
         for (atom_type, next_atom_type) in bond_counter:
             if atom_type == next_atom_type:
                 bond_counter[(atom_type, next_atom_type)] //= 2
+        bond_counter_renamed = dict()
+        for (atom_type, next_atom_type) in bond_counter:
+            bond_renamed = f'{self.atom_type_to_symbol[atom_type]}-{self.atom_type_to_symbol[next_atom_type]}'
+            bond_counter_renamed[bond_renamed] = bond_counter[(
+                atom_type, next_atom_type)]
 
-        return bond_counter
+        return bond_counter_renamed
 
-    def get_bond_angle(self, cut_off) -> list:
+    def get_bond_angle(self, cut_off, condition=None) -> list:
         self.get_connect_list(cut_off)
+        if condition is None:
+            target_atoms = np.array([True] * self.get_total_atoms())
+        else:
+            target_atoms = condition(self)
         max_atom_type = max(self.atom_type_set)
-        # bond_angle[neibour1][mid][neibour2] : neibour1-mid-neibour2 の角度の入ったリスト
-        bond_angle = [[[[] for _ in range(max_atom_type + 1)] for _ in range(
-            max_atom_type + 1)] for _ in range(max_atom_type + 1)]
+        # bond_angle[(neibour1, mid, neibour2)] : neibour1-mid-neibour2 の角度の入ったリスト
+        bond_angle = dict()
+        for neibour_atom_type1 in range(1, max_atom_type + 1):
+            for mid_atom_type in range(1, max_atom_type + 1):
+                for neibour_atom_type2 in range(1, max_atom_type + 1):
+                    bond_angle[(neibour_atom_type1, mid_atom_type,
+                                neibour_atom_type2)] = []
         sdat_atom_type = self.atoms['type'].values
         sdat_atom_xyz = self.atoms[['x', 'y', 'z']].values
         for mid_atom_idx, c_list in enumerate(self.connect_list):
+            # midが入っているならカウントする
+            if not target_atoms[mid_atom_idx]:
+                continue
             mid_atom_type = sdat_atom_type[mid_atom_idx]
             for neibour_atom_idx1, neibour_atom_idx2 in itertools.combinations(c_list, 2):
                 neibour_atom_type1 = sdat_atom_type[neibour_atom_idx1]
@@ -62,38 +78,56 @@ class AnalyzeBond():
                 angle = calc_angle_of_ABC(
                     sdat_atom_xyz[neibour_atom_idx1], sdat_atom_xyz[mid_atom_idx], sdat_atom_xyz[neibour_atom_idx2])
                 if neibour_atom_type1 == neibour_atom_type2:
-                    bond_angle[neibour_atom_type1][mid_atom_type][neibour_atom_type2].append(
+                    bond_angle[(neibour_atom_type1, mid_atom_type, neibour_atom_type2)].append(
                         angle)
                 else:
-                    bond_angle[neibour_atom_type1][mid_atom_type][neibour_atom_type2].append(
+                    bond_angle[(neibour_atom_type1, mid_atom_type, neibour_atom_type2)].append(
                         angle)
-                    bond_angle[neibour_atom_type2][mid_atom_type][neibour_atom_type1].append(
+                    bond_angle[(neibour_atom_type2, mid_atom_type, neibour_atom_type1)].append(
                         angle)
-        return bond_angle
+        bond_angle_renamed = dict()
+        for (neibour_atom_type1, mid_atom_type, neibour_atom_type2), count in bond_angle.items():
+            neibour_atom_symbol1 = self.atom_type_to_symbol[neibour_atom_type1]
+            mid_atom_symbol = self.atom_type_to_symbol[mid_atom_type]
+            neibour_atom_symbol2 = self.atom_type_to_symbol[neibour_atom_type2]
+            angle_renamed = f'{neibour_atom_symbol1}-{mid_atom_symbol}-{neibour_atom_symbol2}'
+            bond_angle_renamed[angle_renamed] = count
+        return bond_angle_renamed
 
-    def get_coordination_number(self, cut_off):
+    def get_coordination_number(self, cut_off, condition=None):
         self.get_connect_list(cut_off)
-        bond_counter = dict()
+        if condition is None:
+            target_atoms = np.array([True] * self.get_total_atoms())
+        else:
+            target_atoms = condition(self)
+        coordination_counter = dict()
 
         for atom_type1 in self.atom_type_set:
             for atom_type2 in self.atom_type_set:
-                bond_counter[(atom_type1, atom_type2)] = 0
+                coordination_counter[(atom_type1, atom_type2)] = 0
 
         sdat_atom_type = self.atoms['type'].values
         for atom_idx, c_list in enumerate(self.connect_list):
+            # X-YでXが入っていたらカウントする
+            if not target_atoms[atom_idx]:
+                continue
             atom_type = sdat_atom_type[atom_idx]
             for next_atom_idx in c_list:
                 next_atom_type = sdat_atom_type[next_atom_idx]
-                bond_counter[(atom_type, next_atom_type)] += 1
+                coordination_counter[(atom_type, next_atom_type)] += 1
 
-        for (atom_type, next_atom_type) in bond_counter:
+        for (atom_type, next_atom_type) in coordination_counter:
             if atom_type == next_atom_type:
-                bond_counter[(atom_type, next_atom_type)] //= 2
-            atom_number = len(self.atoms[self.atoms['type'] == atom_type])
+                coordination_counter[(atom_type, next_atom_type)] //= 2
+            atom_number = len(
+                self.atoms[(self.atoms['type'] == atom_type) & target_atoms])
             if atom_number != 0:
-                bond_counter[(atom_type, next_atom_type)] /= atom_number
-
-        return bond_counter
+                coordination_counter[(
+                    atom_type, next_atom_type)] /= atom_number
+        coordination_counter_renamed = dict()
+        for (atom_type1, atom_type2), count in coordination_counter.items():
+            coordination_counter_renamed[f'{self.atom_type_to_symbol[atom_type1]}-{self.atom_type_to_symbol[atom_type2]}'] = count
+        return coordination_counter_renamed
 
     # def get_bond_length(self, cut_off):
     #     self.get_connect_list(cut_off)
