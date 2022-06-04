@@ -34,4 +34,3 @@ class ImportDumppos():
 
         self.atoms.index = self.atoms.index - 1
         self.atoms.sort_index(inplace=True)
-        self.atom_type_set |= set(self.atoms['type'])

@@ -43,4 +43,3 @@ class ImportXyz():
 
         self.atoms = pd.DataFrame(data=atom_data, index=index)
         self.atoms.sort_index(inplace=True)
-        self.atom_type_set |= set(self.atoms['type'])

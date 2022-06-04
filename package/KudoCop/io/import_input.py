@@ -34,7 +34,6 @@ class ImportInput():
                 for _line in lines[idx+1:idx+1+elem_num]:
                     _spline = _line.split()
                     self.atom_type_to_mass[int(_spline[0])] = float(_spline[1])
-                    self.atom_type_set.add(int(_spline[0]))
 
             if spline[0] == "#fix":
                 self.fix_info.append(line.rstrip())

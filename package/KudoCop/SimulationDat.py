@@ -22,9 +22,6 @@ class SimulationDat(
         self.connect_list_from_dumppos = None
         self.connect_list_cut_off_from_dumppos = None
 
-        # atom set which exist in the system
-        self.atom_type_set = set()
-
         # variables for para.rd
         self.atom_symbol_to_type = None
         self.atom_type_to_symbol = None
@@ -66,6 +63,9 @@ class SimulationDat(
         else:
             print('Import file first')
             sys.exit(-1)
+
+    def get_atom_type_set(self):
+        return set(self.atoms['type'])
 
     def wrap_particles(self):
         if self.cell is None:
@@ -131,7 +131,6 @@ class SimulationDat(
     def concat_atoms(self, outer_sdat):
         self.atoms = pd.concat([self.atoms, outer_sdat.atoms])
         self.atoms.reset_index(drop=True, inplace=True)
-        self.atom_type_set |= outer_sdat.atom_type_set
         for dim in range(3):
             self.cell[dim] = max(self.cell[dim], outer_sdat.cell[dim])
 

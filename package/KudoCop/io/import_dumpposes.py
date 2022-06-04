@@ -43,5 +43,3 @@ class ImportDumpposes():
 
             self.atoms[step_idx].index = self.atoms[step_idx].index - 1
             self.atoms[step_idx].sort_index(inplace=True)
-            if 'type' in self.atoms[step_idx]:
-                self.atom_type_set |= set(self.atoms[step_idx]['type'])

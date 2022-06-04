@@ -24,8 +24,7 @@ class SimulationDats(
         self.connect_lists = None
         self.connect_list_cut_off = None
 
-        # atom set which exist in the system
-        self.atom_type_set = set()
+
 
         # variables for para.rd
         self.atom_symbol_to_type = None
@@ -72,6 +71,9 @@ class SimulationDats(
         else:
             print('Import file first')
             sys.exit(-1)
+
+    def get_atom_type_set(self):
+        return set(self.atoms[0]['type'])
 
     def get_connect_lists(self, cut_off):
         if self.connect_list_cut_off != cut_off or self.connect_lists is None:
