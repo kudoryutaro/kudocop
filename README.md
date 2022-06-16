@@ -24,7 +24,7 @@ git push origin main
 export PYTHONPATH="$PYTHONPATH:$HOME/kudocop/package"
 #cshellの場合 -> $HOME/.cshrcに下記を追記
 # すでにPYTHONPATHがある場合はすでにあるPYTHONPATHに追加
-setenv PYTHONPATH ${PYTHONPATH}:$HOME/molcop/package
+setenv PYTHONPATH ${PYTHONPATH}:$HOME/kudocop/package
 # PYTHONPATHが無い場合
 setenv PYTHONPATH $HOME/kudocop/package
 ```
@@ -32,7 +32,7 @@ setenv PYTHONPATH $HOME/kudocop/package
 # Setting of VSCode
 補完が出るようになります
 ```
-例
+例 (nfshome15/rkudo を変えてください)
 "python.analysis.extraPaths": [
     "/nfshome15/rkudo/kudocop/package"
 ],
