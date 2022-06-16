@@ -51,7 +51,7 @@ class AnalyzeAtomForSDats():
 
     def count_triplets(self, cut_off: float, condition=None):
         self.get_connect_lists(cut_off)
-        # count_triplets[step_idx][neibour1][mid][neibour2] :step_idxでのneibour1-mid-neibour2構造の数
+        # count_triplets[step_idx][(neibour1, mid, neibour2)] :step_idxでのneibour1-mid-neibour2構造の数
         count_triplets = [dict() for _ in range(len(self.step_nums))]
         atom_type_set = self.get_atom_type_set()
         for step_idx in range(len(self.step_nums)):

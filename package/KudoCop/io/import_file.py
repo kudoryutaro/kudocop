@@ -3,7 +3,9 @@ from .import_config import ImportConfig
 from .import_input import ImportInput
 from .import_dumppos import ImportDumppos
 from .import_dumpbond import ImportDumpbond
+from .import_outmol import ImportOutmol
 from .import_xyz import ImportXyz
+from .import_energy import ImportEnergy
 
 
 class ImportFile(
@@ -12,7 +14,9 @@ class ImportFile(
     ImportInput,
     ImportDumppos,
     ImportDumpbond,
-    ImportXyz
+    ImportXyz,
+    ImportOutmol,
+    ImportEnergy
 ):
     def __init__():
         super().__init__()
@@ -29,10 +33,15 @@ class ImportFile(
 
         elif import_file_type == 'para':
             self.import_para(import_file_name)
-            
+
         elif import_file_type == 'config':
             self.import_config(import_file_name)
-            
+
         elif import_file_type == 'xyz':
             self.import_xyz(import_file_name)
 
+        elif import_file_type == 'outmol':
+            self.import_outmol(import_file_name)
+
+        elif import_file_type == 'energy':
+            self.import_energy(import_file_name)
