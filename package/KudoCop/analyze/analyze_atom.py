@@ -9,7 +9,7 @@ class AnalyzeAtom():
         pass
 
     def count_triplets(self, cut_off=0.5,bond_type='dumpbond', condition=None):
-        self.get_connect_list(cut_off)
+        connect_list = self.get_connect_list(cut_off=cut_off,bond_type=bond_type)
         # count_triplets[(neibour1, mid, neibour2)] : neibour1-mid-neibour2構造の数
         count_triplets = dict()
         if condition is None:
@@ -22,7 +22,7 @@ class AnalyzeAtom():
                 for atom_type3 in atom_type_set:
                     count_triplets[(atom_type1, atom_type2, atom_type3)] = 0
         sdat_atom_type = self.atoms['type'].values
-        for mid_atom_idx, c_list in enumerate(self.connect_list):
+        for mid_atom_idx, c_list in enumerate(connect_list):
             if not target_atoms[mid_atom_idx]:
                 continue
             mid_atom_type = sdat_atom_type[mid_atom_idx]

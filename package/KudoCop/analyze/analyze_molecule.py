@@ -59,7 +59,7 @@ class AnalyzeMolecule():
 
         return mol_counter_renamed
 
-    def get_atom_idx_from_mol(self, cut_off, target_mol, condition=None) -> list:
+    def get_atom_idx_from_mol(self, cut_off=0.5,bond_type='dumpbond', target_mol=None, condition=None) -> list:
         if type(target_mol) != tuple:
             print('target_mol must be tuple')
             sys.exit(-1)
@@ -68,7 +68,6 @@ class AnalyzeMolecule():
         else:
             target_atoms = condition(self)
         atom_idx_from_mol = []
-        self.get_connect_list(cut_off)
         visited = [0] * self.get_total_atoms()
 
         # number of types 種類数
@@ -77,7 +76,7 @@ class AnalyzeMolecule():
         if len(target_mol) != type_num_max + 1:
             print('target_mol\'s length does not match')
             sys.exit(-1)
-
+        connect_list = self.get_connect_list(cut_off,bond_type)
         sdat_atoms_type = self.atoms['type'].values
         for start_atom_idx in range(self.get_total_atoms()):
             if visited[start_atom_idx]:
@@ -98,7 +97,7 @@ class AnalyzeMolecule():
                 current_mol.append(current_atom_idx)
                 current_mol_counter[sdat_atoms_type[current_atom_idx]] += 1
 
-                for next_atom_idx in self.connect_list[current_atom_idx]:
+                for next_atom_idx in connect_list[current_atom_idx]:
                     if visited[next_atom_idx]:
                         continue
                     que.append(next_atom_idx)

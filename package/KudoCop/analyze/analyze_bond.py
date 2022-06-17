@@ -10,8 +10,9 @@ class AnalyzeBond():
     def __init__():
         pass
 
-    def count_bonds(self, cut_off, condition=None) -> dict:
-        self.get_connect_list(cut_off)
+    def count_bonds(self, cut_off=0.5, bond_type='dumpbond', condition=None) -> dict:
+        connect_list = self.get_connect_list(
+            cut_off=cut_off, bond_type=bond_type)
         if condition is None:
             target_atoms = np.array([True] * self.get_total_atoms())
         else:
@@ -28,7 +29,7 @@ class AnalyzeBond():
                 bond_counter[(atom_type1, atom_type2)] = 0
 
         sdat_atom_type = self.atoms['type'].values
-        for atom_idx, c_list in enumerate(self.connect_list):
+        for atom_idx, c_list in enumerate(connect_list):
             if not target_atoms[atom_idx]:
                 continue
             atom_type = sdat_atom_type[atom_idx]
@@ -51,8 +52,9 @@ class AnalyzeBond():
 
         return bond_counter_renamed
 
-    def get_bond_angle(self, cut_off, condition=None) -> list:
-        self.get_connect_list(cut_off)
+    def get_bond_angle(self, cut_off=0.5, bond_type='dumpbond', condition=None) -> list:
+        connect_list = self.get_connect_list(
+            cut_off=cut_off, bond_type=bond_type)
         if condition is None:
             target_atoms = np.array([True] * self.get_total_atoms())
         else:
@@ -69,7 +71,7 @@ class AnalyzeBond():
                                 neibour_atom_type2)] = []
         sdat_atom_type = self.atoms['type'].values
         sdat_atom_xyz = self.atoms[['x', 'y', 'z']].values
-        for mid_atom_idx, c_list in enumerate(self.connect_list):
+        for mid_atom_idx, c_list in enumerate(connect_list):
             # midが入っているならカウントする
             if not target_atoms[mid_atom_idx]:
                 continue
@@ -96,8 +98,8 @@ class AnalyzeBond():
             bond_angle_renamed[angle_renamed] = count
         return bond_angle_renamed
 
-    def get_coordination_number(self, cut_off, condition=None):
-        self.get_connect_list(cut_off)
+    def get_coordination_number(self, cut_off=0.5,bond_type='dumpbond', condition=None):
+        connect_list = self.get_connect_list(cut_off=cut_off,bond_type=bond_type)
         if condition is None:
             target_atoms = np.array([True] * self.get_total_atoms())
         else:
@@ -109,7 +111,7 @@ class AnalyzeBond():
                 coordination_counter[(atom_type1, atom_type2)] = 0
 
         sdat_atom_type = self.atoms['type'].values
-        for atom_idx, c_list in enumerate(self.connect_list):
+        for atom_idx, c_list in enumerate(connect_list):
             # X-YでXが入っていたらカウントする
             if not target_atoms[atom_idx]:
                 continue
