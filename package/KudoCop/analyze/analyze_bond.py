@@ -98,8 +98,9 @@ class AnalyzeBond():
             bond_angle_renamed[angle_renamed] = count
         return bond_angle_renamed
 
-    def get_coordination_number(self, cut_off=0.5,bond_type='dumpbond', condition=None):
-        connect_list = self.get_connect_list(cut_off=cut_off,bond_type=bond_type)
+    def get_coordination_number(self, cut_off=0.5, bond_type='dumpbond', condition=None):
+        connect_list = self.get_connect_list(
+            cut_off=cut_off, bond_type=bond_type)
         if condition is None:
             target_atoms = np.array([True] * self.get_total_atoms())
         else:
@@ -173,8 +174,9 @@ class AnalyzeBondForSDats():
     def __init__():
         pass
 
-    def count_bonds(self, cut_off, condition=None) -> pd.DataFrame:
-        self.get_connect_lists(cut_off)
+    def count_bonds(self, cut_off=0.5, bond_type='dumpbond', condition=None) -> pd.DataFrame:
+        connect_lists = self.get_connect_lists(
+            cut_off=cut_off, bond_type=bond_type)
 
         bond_types = []
         atom_type_set = self.get_atom_type_set()
@@ -195,7 +197,7 @@ class AnalyzeBondForSDats():
             else:
                 target_atoms = condition(self, step_idx)
             sdat_atom_type = self.atoms[step_idx]['type'].values
-            for atom_idx, c_list in enumerate(self.connect_lists[step_idx]):
+            for atom_idx, c_list in enumerate(connect_lists[step_idx]):
                 if not target_atoms[atom_idx]:
                     continue
                 atom_type = sdat_atom_type[atom_idx]

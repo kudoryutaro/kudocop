@@ -8,8 +8,9 @@ class AnalyzeAtom():
     def __init__():
         pass
 
-    def count_triplets(self, cut_off=0.5,bond_type='dumpbond', condition=None):
-        connect_list = self.get_connect_list(cut_off=cut_off,bond_type=bond_type)
+    def count_triplets(self, cut_off=0.5, bond_type='dumpbond', condition=None):
+        connect_list = self.get_connect_list(
+            cut_off=cut_off, bond_type=bond_type)
         # count_triplets[(neibour1, mid, neibour2)] : neibour1-mid-neibour2構造の数
         count_triplets = dict()
         if condition is None:
@@ -49,8 +50,9 @@ class AnalyzeAtomForSDats():
     def __init__():
         pass
 
-    def count_triplets(self, cut_off: float, condition=None):
-        self.get_connect_lists(cut_off)
+    def count_triplets(self, cut_off=0.5, bond_type='dumpbond', condition=None):
+        connect_lists = self.get_connect_lists(
+            cut_off=cut_off, bond_type=bond_type)
         # count_triplets[step_idx][(neibour1, mid, neibour2)] :step_idxでのneibour1-mid-neibour2構造の数
         count_triplets = [dict() for _ in range(len(self.step_nums))]
         atom_type_set = self.get_atom_type_set()
@@ -68,7 +70,7 @@ class AnalyzeAtomForSDats():
                 target_atoms = condition(self, step_idx)
 
             sdat_atom_type = self.atoms[step_idx]['type'].values
-            for mid_atom_idx, c_list in enumerate(self.connect_lists[step_idx]):
+            for mid_atom_idx, c_list in enumerate(connect_lists[step_idx]):
                 if not target_atoms[mid_atom_idx]:
                     continue
                 mid_atom_type = sdat_atom_type[mid_atom_idx]

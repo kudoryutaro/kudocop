@@ -134,11 +134,11 @@ class AnalyzeMoleculeForSDats():
     def __init__():
         pass
 
-    def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10, condition=None) -> pd.DataFrame:
+    def count_mols(self, cut_off=0.5,bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=10, condition=None) -> pd.DataFrame:
         dfs_count_mols = []
         atom_type_set = self.get_atom_type_set()
         type_num_max = max(atom_type_set)
-        self.get_connect_lists(cut_off)
+        connect_lists = self.get_connect_lists(cut_off=cut_off,bond_type=bond_type)
         for step_idx, step_num in enumerate(tqdm(self.step_nums, desc='[counting mols]')):
             mol_counter = dict()
             visited = [0] * self.get_total_atoms()
@@ -165,7 +165,7 @@ class AnalyzeMoleculeForSDats():
                         continue
                     visited[current_atom_idx] = 1
                     current_mol_counter[sdat_atoms_type[current_atom_idx]] += 1
-                    for next_atom_idx in self.connect_lists[step_idx][current_atom_idx]:
+                    for next_atom_idx in connect_lists[step_idx][current_atom_idx]:
                         if visited[next_atom_idx]:
                             continue
                         que.append(next_atom_idx)

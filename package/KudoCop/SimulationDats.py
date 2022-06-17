@@ -8,7 +8,8 @@ from .io.import_dumpposes import ImportDumpposes
 from .io.import_dumpbonds import ImportDumpbonds
 from .io.export_dumpposes import ExportDumpposes
 from .analyze.analyze import AnalyzeForSDats
-
+from .SimulationDat import SimulationDat
+from .analyze import neighbor
 
 class SimulationDats(
     ImportPara,
@@ -21,9 +22,12 @@ class SimulationDats(
         self.cell = [None] * 3
         self.bondorder_lists = None
         self.bondorder_connect_lists = None
-        self.connect_lists = None
-        self.connect_list_cut_off = None
 
+        self.connect_lists_from_dumpbonds = None
+        self.connect_list_cut_off_from_dumpbonds = None
+
+        self.connect_lists_from_dumpposes = None
+        self.connect_list_cut_off_from_dumpposes = None
 
 
         # variables for para.rd
@@ -81,13 +85,47 @@ class SimulationDats(
     def get_atom_type_set(self):
         return set(self.atoms[0]['type'])
 
-    def get_connect_lists(self, cut_off):
-        if self.connect_list_cut_off != cut_off or self.connect_lists is None:
-            self.__create_connect_lists(cut_off)
-        self.connect_list_cut_off = cut_off
-        return self.connect_lists
+    def get_connect_lists(self,cut_off=0.5, bond_type='dumpbond'):
+        if bond_type == 'dumppos':
+            return self.get_connect_lists_from_dumpposes(cut_off)
+        elif bond_type == 'dumpbond':
+            return self.get_connect_lists_from_dumpbonds(cut_off)
+        elif bond_type == 'dumpbond_gc':
+            return self.get_connect_lists_from_dumpbonds()
+        else:
+            print('unsupported bond_type')
+            sys.exit(-1)
+        
+    def get_connect_lists_from_dumpposes(self,cut_off):
+        if self.connect_list_cut_off_from_dumpposes != cut_off or self.connect_lists_from_dumpposes is None:
+            self.__create_connect_lists_from_dumpposes(cut_off)
+        self.connect_list_cut_off_from_dumpposes = cut_off
+        return self.connect_lists_from_dumpposes
+    
+    def __create_connect_lists_from_dumpposes(self,cut_off):
+        if cut_off is None:
+            print('cut_off is not defined')
+            sys.exit(-1)
 
-    def __create_connect_lists(self, cut_off):
+        self.connect_lists_from_dumpposes = [None for _ in range(len(self.step_nums))]
+
+        for step_idx in trange(len(self.step_nums), desc='[creating connect_lists]'):
+            sdat = SimulationDat()
+            sdat.particles = dict()
+            sdat.particles['pos'] = self.atoms[step_idx][['x', 'y', 'z']].values
+            sdat.total_particle = self.get_total_atoms()
+            sdat.newcell = self.cell
+            self.connect_lists_from_dumpposes[step_idx] = neighbor.make_neighbor(sdat, cut_off)
+        return self.connect_lists_from_dumpposes
+
+
+    def get_connect_lists_from_dumpbonds(self, cut_off):
+        if self.connect_list_cut_off_from_dumpbonds != cut_off or self.connect_lists_from_dumpbonds is None:
+            self.__create_connect_lists_from_dumpbonds(cut_off)
+        self.connect_list_cut_off_from_dumpbonds = cut_off
+        return self.connect_lists_from_dumpbonds
+
+    def __create_connect_lists_from_dumpbonds(self, cut_off):
         if cut_off is None:
             print('cut_off is not defined')
             sys.exit(-1)
@@ -95,14 +133,14 @@ class SimulationDats(
             print('bondorder_list is not defined')
             print('Import dumppos first')
             sys.exit(-1)
-        self.connect_lists = [[[] for _ in range(
+        self.connect_lists_from_dumpbonds = [[[] for _ in range(
             self.get_total_atoms())] for _ in range(len(self.step_nums))]
 
         for step_idx in trange(len(self.step_nums), desc='[creating connect_lists]'):
             for atom_idx, (neibour_idxs, bondorder_list) in enumerate(zip(self.bondorder_connect_lists[step_idx], self.bondorder_lists[step_idx])):
                 for neibour_idx, bond_l in zip(neibour_idxs, bondorder_list):
                     if bond_l[-1] >= cut_off:
-                        self.connect_lists[step_idx][atom_idx].append(
+                        self.connect_lists_from_dumpbonds[step_idx][atom_idx].append(
                             neibour_idx)
 
     def delete_atoms(self, condition, reindex):
