@@ -9,9 +9,9 @@ class AnalyzeMolecule():
     def __init__():
         pass
 
-    def count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10, condition=None) -> dict:
+    def count_mols(self, cut_off,bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=10, condition=None) -> dict:
         mol_counter = dict()
-        self.get_connect_list(cut_off)
+        connect_list = self.get_connect_list(cut_off=cut_off,bond_type=bond_type)
 
         visited = [0] * self.get_total_atoms()
         if condition is None:
@@ -39,7 +39,7 @@ class AnalyzeMolecule():
                     continue
                 visited[current_atom_idx] = 1
                 current_mol_counter[sdat_atoms_type[current_atom_idx]] += 1
-                for next_atom_idx in self.connect_list[current_atom_idx]:
+                for next_atom_idx in connect_list[current_atom_idx]:
                     if visited[next_atom_idx]:
                         continue
                     que.append(next_atom_idx)
@@ -107,6 +107,28 @@ class AnalyzeMolecule():
                 atom_idx_from_mol.append(current_mol)
 
         return atom_idx_from_mol
+
+    def get_connected_atoms_from_atom_idx(self, cut_off, start_atom_idx):
+        ''''
+        原子のインデックスがstart_atom_idxの原子につながっている原子のインデックスが入ったリストを返す
+        '''
+
+        connect_list = self.get_connect_list(cut_off)
+        connected_atoms_idxs = set()
+        que = deque([start_atom_idx])
+
+        while que:
+            atom_idx = que.popleft()
+            if atom_idx in connected_atoms_idxs:
+                continue
+            connected_atoms_idxs.add(atom_idx)
+
+            for next_atom_idx in connect_list[atom_idx]:
+                if next_atom_idx in connected_atoms_idxs:
+                    continue
+                que.append(next_atom_idx)
+
+        return list(connected_atoms_idxs)
 
 
 class AnalyzeMoleculeForSDats():

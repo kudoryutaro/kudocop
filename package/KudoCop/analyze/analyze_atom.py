@@ -8,7 +8,7 @@ class AnalyzeAtom():
     def __init__():
         pass
 
-    def count_triplets(self, cut_off: float, condition=None):
+    def count_triplets(self, cut_off=0.5,bond_type='dumpbond', condition=None):
         self.get_connect_list(cut_off)
         # count_triplets[(neibour1, mid, neibour2)] : neibour1-mid-neibour2構造の数
         count_triplets = dict()

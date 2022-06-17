@@ -17,10 +17,14 @@ class SimulationDat(
         self.cell = [None] * 3
         self.bondorder_list = None
         self.bondorder_connect_list = None
-        self.connect_list = None
-        self.connect_list_cut_off = None
+
+        self.connect_list_cut_off_from_dumpbond = None
+        self.connect_list_from_dumpbond = None
+
         self.connect_list_from_dumppos = None
         self.connect_list_cut_off_from_dumppos = None
+        
+        self.connect_list_from_dumpbond_gc = None
 
         # variables for para.rd
         self.atom_symbol_to_type = None
@@ -76,13 +80,24 @@ class SimulationDat(
             sys.exit(-1)
         self.atoms[['x', 'y', 'z']] %= self.cell
 
-    def get_connect_list(self, cut_off):
-        if self.connect_list_cut_off != cut_off or self.connect_list is None:
-            self.__create_connect_list(cut_off)
-        self.connect_list_cut_off = cut_off
+    def get_connect_list(self,cut_off=0.5,bond_type='dumpbond'):
+        if bond_type == 'dumppos':
+            return self.get_connect_list_from_dumppos(cut_off)
+        elif bond_type == 'dumpbond':
+            return self.get_connect_list_from_dumpbond(cut_off)
+        elif bond_type == 'dumpbond_gc':
+            return self.connect_list_from_dumpbond_gc
+        else:
+            print('unsupported bond_type')
+            sys.exit(-1)
+
+    def get_connect_list_from_dumpbond(self, cut_off):
+        if self.connect_list_cut_off_from_dumpbond != cut_off or self.connect_list is None:
+            self.__create_connect_list_from_dumpbond(cut_off)
+        self.connect_list_cut_off_from_dumpbond = cut_off
         return self.connect_list
 
-    def __create_connect_list(self, cut_off):
+    def __create_connect_list_from_dumpbond(self, cut_off):
         if cut_off is None:
             print('cut_off is not defined')
             sys.exit(-1)
@@ -143,3 +158,4 @@ class SimulationDat(
             self.atoms = self.atoms[~condition]
         if reindex:
             self.atoms.reset_index(drop=True, inplace=True)
+
