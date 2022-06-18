@@ -8,7 +8,36 @@ class AnalyzeAtom():
     def __init__():
         pass
 
-    def count_triplets(self, cut_off=0.5, bond_type='dumpbond', condition=None):
+    def count_triplets(self, cut_off=0.5, bond_type='dumpbond', condition=None) -> dict:
+        """
+        ３体間の原子をカウントする関数
+        例えば、水分子一つにH-O-Hは1個含まれている。
+        メタン分子一つにはcombination(4,2) = 6より、H-C-Hは6個含まれている。
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        condition : function
+            3体間のうち、カウントしたい部分を指定する関数
+
+        Returns
+        -------
+        count_triplets : dict
+            3体間をkey、その3体間のカウントがvaluesとなるdict
+        """
         connect_list = self.get_connect_list(
             cut_off=cut_off, bond_type=bond_type)
         # count_triplets[(neibour1, mid, neibour2)] : neibour1-mid-neibour2構造の数
@@ -50,7 +79,36 @@ class AnalyzeAtomForSDats():
     def __init__():
         pass
 
-    def count_triplets(self, cut_off=0.5, bond_type='dumpbond', condition=None):
+    def count_triplets(self, cut_off=0.5, bond_type='dumpbond', condition=None) -> pd.DataFrame:
+        """
+        ３体間の原子をカウントする関数
+        例えば、水分子一つにH-O-Hは1個含まれている。
+        メタン分子一つにはcombination(4,2) = 6より、H-C-Hは6個含まれている。
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        condition : function
+            3体間のうち、カウントしたい部分を指定する関数
+
+        Returns
+        -------
+        df_count_triplets : DataFrame
+            step_numをindex、3体間をcolumns、その3体間のカウントがdataとなるDataFrame
+        """
         connect_lists = self.get_connect_lists(
             cut_off=cut_off, bond_type=bond_type)
         # count_triplets[step_idx][(neibour1, mid, neibour2)] :step_idxでのneibour1-mid-neibour2構造の数

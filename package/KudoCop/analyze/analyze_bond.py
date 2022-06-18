@@ -11,6 +11,33 @@ class AnalyzeBond():
         pass
 
     def count_bonds(self, cut_off=0.5, bond_type='dumpbond', condition=None) -> dict:
+        """
+        結合数をカウントする関数
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        condition : function
+            カウントしたい結合の条件を指定する関数
+
+        Returns
+        -------
+        bond_counter : dict
+            keyが結合、valueがその結合の個数となるdict
+        """
         connect_list = self.get_connect_list(
             cut_off=cut_off, bond_type=bond_type)
         if condition is None:
@@ -53,6 +80,33 @@ class AnalyzeBond():
         return bond_counter_renamed
 
     def get_bond_angle(self, cut_off=0.5, bond_type='dumpbond', condition=None) -> list:
+        """
+        keyが三体間の種類、valueが3体間の結合角のはいったlistというdictを返す関数
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        condition : function
+            カウントしたい三体間の角度の条件を指定する関数
+
+        Returns
+        -------
+        bond_counter : dict
+            keyが三体間の種類、valueが3体間の結合角のはいったlistとなるdict
+        """
         connect_list = self.get_connect_list(
             cut_off=cut_off, bond_type=bond_type)
         if condition is None:
@@ -175,6 +229,33 @@ class AnalyzeBondForSDats():
         pass
 
     def count_bonds(self, cut_off=0.5, bond_type='dumpbond', condition=None) -> pd.DataFrame:
+        """
+        結合数をカウントする関数
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        condition : function
+            カウントしたい結合の条件を指定する関数
+
+        Returns
+        -------
+        df_bond_counter : DataFrame
+            indexがstep_num、columnsが結合種、dataがその結合の個数となるDataFrame
+        """
         connect_lists = self.get_connect_lists(
             cut_off=cut_off, bond_type=bond_type)
 
@@ -226,6 +307,18 @@ class AnalyzeBondForSDats():
 def calc_angle_of_ABC(a: np.array, b: np.array, c: np.array) -> float:
     """
     ABとBCのなす角度(degree)を返す
+
+    Parameters
+    ----------
+    a : np.array
+    b : np.array
+    c : np.array
+        それぞれA, B, Cの座標のnp.array
+    
+    Returns
+    -------
+    degree : float
+         ABとBCのなす角度(degree)
     """
     # ベクトルを定義
     vec_a = a - b

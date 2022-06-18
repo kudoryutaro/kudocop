@@ -10,6 +10,39 @@ class AnalyzeMolecule():
         pass
 
     def count_mols(self, cut_off=0.5, bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=10, condition=None) -> dict:
+        """
+        分子数をカウントする関数
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        lower_mol_limit : int
+            分子内の原子数がlower_mol_limit以上の分子のみをカウントする
+
+        upper_mol_limit : int
+            分子内の原子数がupper_mol_limit以下の分子のみをカウントする
+
+        condition : function
+            カウントしたい分子の条件を指定する関数
+
+        Returns
+        -------
+        mol_counter : dict
+            keyが分子、valueがその分子の個数となるdict
+        """
         mol_counter = dict()
         connect_list = self.get_connect_list(
             cut_off=cut_off, bond_type=bond_type)
@@ -61,6 +94,45 @@ class AnalyzeMolecule():
         return mol_counter_renamed
 
     def get_atom_idx_from_mol(self, cut_off=0.5, bond_type='dumpbond', target_mol=None, condition=None) -> list:
+        """
+        分子を指定し、その分子のindexが入ったリストを返す関数
+        例えば水分子の場合、
+        [[315, 634, 123], [13, 75, 4124], [43, 1324, 63]]
+        というリストが帰った場合、[315, 634, 123]が一つの水分子になっている。
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        target_mol : tuple
+            調べたい分子の中に何の原子が何個あるのかを指定するタプル。
+            たとえば水分子を指定する時は
+            {'C' : 1, 'H' : 2, 'O' : 3, 'N' : 4, 'Si' : 5}
+            の場合は
+            target_mol = (0, 0, 2, 1, 0, 0)
+            となる。注意点はtarget_molのうちのtarget_mol[0]には0が入っていなければならない
+            今後target_molは文字列で指定できるようにしたい。'H2O'みたいな
+
+        condition : function
+            カウントしたい分子の条件を指定する関数
+
+        Returns
+        -------
+        atom_idx_from_mol : list
+            それぞれにまとまった分子のindexが入ったリストのリスト
+        """
         if type(target_mol) != tuple:
             print('target_mol must be tuple')
             sys.exit(-1)
@@ -108,12 +180,37 @@ class AnalyzeMolecule():
 
         return atom_idx_from_mol
 
-    def get_connected_atoms_from_atom_idx(self, cut_off, start_atom_idx):
+    def get_connected_atoms_from_atom_idx(self, cut_off=0.5,bond_type='dumppos', start_atom_idx=0) -> list:
         ''''
-        原子のインデックスがstart_atom_idxの原子につながっている原子のインデックスが入ったリストを返す
+        start_atom_idxの原子につながっているすべての原子のインデックスが入ったリストを返す
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        start_atom_idx : int
+            つながっている原子すべてを数えるが、その始まりの原子のインデックス
+        
+        Returns
+        -------
+        connected_atoms_idxs : list
+            start_atom_idxの原子につながっているすべての原子のインデックスが入ったリスト
+
         '''
 
-        connect_list = self.get_connect_list(cut_off)
+        connect_list = self.get_connect_list(cut_off=cut_off,bond_type=bond_type)
         connected_atoms_idxs = set()
         que = deque([start_atom_idx])
 
@@ -136,6 +233,39 @@ class AnalyzeMoleculeForSDats():
         pass
 
     def count_mols(self, cut_off=0.5, bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=10, condition=None) -> pd.DataFrame:
+        """
+        分子数をカウントする関数
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        lower_mol_limit : int
+            分子内の原子数がlower_mol_limit以上の分子のみをカウントする
+
+        upper_mol_limit : int
+            分子内の原子数がupper_mol_limit以下の分子のみをカウントする
+
+        condition : function
+            カウントしたい分子の条件を指定する関数
+
+        Returns
+        -------
+        df_mol_counter : DataFrame
+            indexがstep_num、columnsが分子、dataがその分子の個数となるDataFrame
+        """
         dfs_count_mols = []
         atom_type_set = self.get_atom_type_set()
         type_num_max = max(atom_type_set)
