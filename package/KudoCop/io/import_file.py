@@ -6,6 +6,7 @@ from .import_dumpbond import ImportDumpbond
 from .import_outmol import ImportOutmol
 from .import_xyz import ImportXyz
 from .import_energy import ImportEnergy
+from .import_dumpbond_cg import ImportDumpbondCG
 
 
 class ImportFile(
@@ -16,7 +17,8 @@ class ImportFile(
     ImportDumpbond,
     ImportXyz,
     ImportOutmol,
-    ImportEnergy
+    ImportEnergy,
+    ImportDumpbondCG
 ):
     def __init__():
         super().__init__()
@@ -45,3 +47,6 @@ class ImportFile(
 
         elif import_file_type == 'energy':
             self.import_energy(import_file_name)
+
+        elif import_file_type == 'dumpbond_gc':
+            self.import_dumpbond_cg(import_file_name)

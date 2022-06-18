@@ -90,7 +90,7 @@ class SimulationDats(
             return self.get_connect_lists_from_dumpposes(cut_off)
         elif bond_type == 'dumpbond':
             return self.get_connect_lists_from_dumpbonds(cut_off)
-        elif bond_type == 'dumpbond_gc':
+        elif bond_type == 'dumpbond_cg':
             return self.get_connect_lists_from_dumpbonds()
         else:
             print('unsupported bond_type')

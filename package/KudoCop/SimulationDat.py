@@ -23,7 +23,7 @@ class SimulationDat(
 
         self.connect_list_from_dumppos = None
         self.connect_list_cut_off_from_dumppos = None
-        
+
         self.connect_list_from_dumpbond_gc = None
 
         # variables for para.rd
@@ -64,6 +64,8 @@ class SimulationDat(
             return len(self.atoms)
         elif self.bondorder_list is not None:
             return len(self.bondorder_list)
+        elif self.connect_list_from_dumpbond_gc is not None:
+            return len(self.connect_list_from_dumpbond_gc)
         else:
             print('Import file first')
             sys.exit(-1)
@@ -80,12 +82,12 @@ class SimulationDat(
             sys.exit(-1)
         self.atoms[['x', 'y', 'z']] %= self.cell
 
-    def get_connect_list(self,cut_off=0.5,bond_type='dumpbond'):
+    def get_connect_list(self, cut_off=0.5, bond_type='dumpbond'):
         if bond_type == 'dumppos':
             return self.get_connect_list_from_dumppos(cut_off)
         elif bond_type == 'dumpbond':
             return self.get_connect_list_from_dumpbond(cut_off)
-        elif bond_type == 'dumpbond_gc':
+        elif bond_type == 'dumpbond_cg':
             return self.connect_list_from_dumpbond_gc
         else:
             print('unsupported bond_type')
@@ -158,4 +160,3 @@ class SimulationDat(
             self.atoms = self.atoms[~condition]
         if reindex:
             self.atoms.reset_index(drop=True, inplace=True)
-

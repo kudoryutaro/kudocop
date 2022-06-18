@@ -9,9 +9,10 @@ class AnalyzeMolecule():
     def __init__():
         pass
 
-    def count_mols(self, cut_off,bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=10, condition=None) -> dict:
+    def count_mols(self, cut_off=0.5, bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=10, condition=None) -> dict:
         mol_counter = dict()
-        connect_list = self.get_connect_list(cut_off=cut_off,bond_type=bond_type)
+        connect_list = self.get_connect_list(
+            cut_off=cut_off, bond_type=bond_type)
 
         visited = [0] * self.get_total_atoms()
         if condition is None:
@@ -59,7 +60,7 @@ class AnalyzeMolecule():
 
         return mol_counter_renamed
 
-    def get_atom_idx_from_mol(self, cut_off=0.5,bond_type='dumpbond', target_mol=None, condition=None) -> list:
+    def get_atom_idx_from_mol(self, cut_off=0.5, bond_type='dumpbond', target_mol=None, condition=None) -> list:
         if type(target_mol) != tuple:
             print('target_mol must be tuple')
             sys.exit(-1)
@@ -76,7 +77,7 @@ class AnalyzeMolecule():
         if len(target_mol) != type_num_max + 1:
             print('target_mol\'s length does not match')
             sys.exit(-1)
-        connect_list = self.get_connect_list(cut_off,bond_type)
+        connect_list = self.get_connect_list(cut_off, bond_type)
         sdat_atoms_type = self.atoms['type'].values
         for start_atom_idx in range(self.get_total_atoms()):
             if visited[start_atom_idx]:
@@ -134,11 +135,12 @@ class AnalyzeMoleculeForSDats():
     def __init__():
         pass
 
-    def count_mols(self, cut_off=0.5,bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=10, condition=None) -> pd.DataFrame:
+    def count_mols(self, cut_off=0.5, bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=10, condition=None) -> pd.DataFrame:
         dfs_count_mols = []
         atom_type_set = self.get_atom_type_set()
         type_num_max = max(atom_type_set)
-        connect_lists = self.get_connect_lists(cut_off=cut_off,bond_type=bond_type)
+        connect_lists = self.get_connect_lists(
+            cut_off=cut_off, bond_type=bond_type)
         for step_idx, step_num in enumerate(tqdm(self.step_nums, desc='[counting mols]')):
             mol_counter = dict()
             visited = [0] * self.get_total_atoms()
