@@ -6,16 +6,19 @@ class ImportDumpbondCG():
     def __init__(self):
         pass
 
-    def import_dumpbond_cg(self, ifn: str) -> None:
-        with open(ifn, 'r') as ifp:
-            lines = ifp.readlines()
-        total_atoms = len(lines) - 1
-        self.connect_list_from_dumpbond_gc = [[] for _ in range(total_atoms)]
-        for line in lines[1:]:
-            spline = list(map(int, line.split()))
-            atom_idx = spline[0] - 1
-            c_list = spline[2:]
-            for i in range(len(c_list)):
-                c_list[i] -= 1
+    def import_dumpbond_cg(self, ifn: str, max_coordination_num=6) -> None:
+        df = pd.read_csv(ifn, skiprows=1, sep=' ',
+                         header=None, names=range(max_coordination_num))
+        df.drop([0, 2], axis=1, inplace=True)
+        df = df.fillna(-1).astype(int) - 1
+        self.connect_list_from_dumpbond_cg = [
+            None for _ in range(len(df.index))]
 
-            self.connect_list_from_dumpbond_gc[atom_idx] = c_list
+        values = df.values
+
+        for row in values:
+            atom_idx = row[0]
+            for col_i, next_atom_idx in enumerate(row):
+                if next_atom_idx < 0:
+                    break
+            self.connect_list_from_dumpbond_cg[atom_idx] = row[1:col_i]
