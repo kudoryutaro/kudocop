@@ -180,7 +180,7 @@ class AnalyzeMolecule():
 
         return atom_idx_from_mol
 
-    def get_connected_atoms_from_atom_idx(self, cut_off=0.5,bond_type='dumppos', start_atom_idx=0) -> list:
+    def get_connected_atoms_from_atom_idx(self, cut_off=0.5, bond_type='dumppos', start_atom_idx=0, res_type='list') -> list:
         ''''
         start_atom_idxの原子につながっているすべての原子のインデックスが入ったリストを返す
 
@@ -202,30 +202,51 @@ class AnalyzeMolecule():
 
         start_atom_idx : int
             つながっている原子すべてを数えるが、その始まりの原子のインデックス
-        
+
+        res_type : str
+            res_type == 'list' の時は、つながっている原子すべてのインデックスが入ったリストを返す
+            res_type == 'bool' の時は、つながっている原子はTrue,つながっていない原子は
+            Falseとなっているnp_arrayを返す
+
         Returns
         -------
-        connected_atoms_idxs : list
-            start_atom_idxの原子につながっているすべての原子のインデックスが入ったリスト
+        connected_atoms_idxs : list or np.array
+            res_type == 'list' の時は、つながっている原子すべてのインデックスが入ったリストを返す
+            res_type == 'bool' の時は、つながっている原子はTrue,つながっていない原子は
+            Falseとなっているnp_arrayを返す
 
         '''
 
-        connect_list = self.get_connect_list(cut_off=cut_off,bond_type=bond_type)
-        connected_atoms_idxs = set()
+        connect_list = self.get_connect_list(
+            cut_off=cut_off, bond_type=bond_type)
         que = deque([start_atom_idx])
 
-        while que:
-            atom_idx = que.popleft()
-            if atom_idx in connected_atoms_idxs:
-                continue
-            connected_atoms_idxs.add(atom_idx)
-
-            for next_atom_idx in connect_list[atom_idx]:
-                if next_atom_idx in connected_atoms_idxs:
+        if res_type == 'list':
+            connected_atoms_idxs = set()
+            while que:
+                atom_idx = que.popleft()
+                if atom_idx in connected_atoms_idxs:
                     continue
-                que.append(next_atom_idx)
+                connected_atoms_idxs.add(atom_idx)
 
-        return list(connected_atoms_idxs)
+                for next_atom_idx in connect_list[atom_idx]:
+                    if next_atom_idx in connected_atoms_idxs:
+                        continue
+                    que.append(next_atom_idx)
+
+            return list(connected_atoms_idxs)
+        elif res_type == 'bool':
+            connected_atoms_bool = np.array([False] * self.get_total_atoms())
+            while que:
+                atom_idx = que.popleft()
+                if connected_atoms_bool[atom_idx]:
+                    continue
+                connected_atoms_bool[atom_idx] = True
+                for next_atom_idx in connect_list[atom_idx]:
+                    if connected_atoms_bool[next_atom_idx]:
+                        continue
+                    que.append(next_atom_idx)
+            return connected_atoms_bool
 
 
 class AnalyzeMoleculeForSDats():
