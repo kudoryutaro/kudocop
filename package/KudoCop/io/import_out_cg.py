@@ -19,8 +19,11 @@ class ImportOutCg():
                     columns = spline[1:]
                     skiprows = current_row
                     break
+        columns.append('sec')
         df_out_cg = pd.read_csv(
-            ifn, skiprows=skiprows, sep='\s+', header=None, names=columns, index_col=False)
+            ifn, skiprows=skiprows, sep='\s+', header=None, names=columns, index_col=False, low_memory=False)
+
+        df_out_cg.drop('sec', axis=1, inplace=True)
 
         break_points = df_out_cg.loc[df_out_cg['STEP'] == 'break', [
             'TEMP', 'KineticE', 'PotentialE']].values.tolist()
@@ -30,7 +33,6 @@ class ImportOutCg():
         for i in range(len(self.break_points)):
             self.break_points[i] = [int(break_points[i][0]), int(
                 break_points[i][1]), float(break_points[i][2])]
-        print(df_out_cg[~(df_out_cg['STEP'] == 'break')])
         df_out_cg = df_out_cg.loc[~(
             (df_out_cg['STEP'] == 'break') | (df_out_cg['STEP'] == '#')), :]
 

@@ -5,6 +5,7 @@ import os
 from tqdm import tqdm, trange
 from .io.import_para import ImportPara
 from .io.import_dumpposes import ImportDumpposes
+from .io.import_dumpbonds_cg import ImportDumpbondsCG
 from .io.import_dumpbonds import ImportDumpbonds
 from .io.export_dumpposes import ExportDumpposes
 from .analyze.analyze import AnalyzeForSDats
@@ -15,10 +16,12 @@ class SimulationDats(
     ImportPara,
     ImportDumpposes,
     ImportDumpbonds,
+    ImportDumpbondsCG,
     ExportDumpposes,
     AnalyzeForSDats
 ):
-    def __init__(self, para_file_name='para.rd', dir_name=None, import_dumpposes_flag=True, import_dumpbonds_flag=True, step_nums=None, skip_num=None):
+    def __init__(self, para_file_name='para.rd', dir_name=None, import_dumpposes_flag=True, import_dumpbonds_flag=True, step_nums=None, skip_num=None,bond_type='dumpbond',max_coordination_num=6):
+
         self.cell = [None] * 3
         self.bondorder_lists = None
         self.bondorder_connect_lists = None
@@ -64,8 +67,12 @@ class SimulationDats(
 
         if import_dumpposes_flag:
             self.import_dumpposes()
+        
         if import_dumpbonds_flag:
-            self.import_dumpbonds()
+            if bond_type == 'dumpbond':
+                self.import_dumpbonds()
+            elif bond_type == 'dumpbond_cg':
+                self.import_dumpbonds_cg(max_coordination_num)
 
     def __getitem__(self, key):
         return self.atoms[key]
