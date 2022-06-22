@@ -248,6 +248,57 @@ class AnalyzeMolecule():
                     que.append(next_atom_idx)
             return connected_atoms_bool
 
+    def add_mol_q_to_atoms(self, cut_off=0.5, bond_type='dumpbond') -> None:
+        """
+        分子ごとの電荷を計算し、atomsにmol_qとして追加する
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+        """
+        visited = [False] * self.get_total_atoms()
+        sdat_q = self.atoms['q'].values
+        sdat_mol_q = np.array([0.] * self.get_total_atoms())
+        connect_list = self.get_connect_list(
+            cut_off=cut_off, bond_type=bond_type)
+        for atom_idx in range(self.get_total_atoms()):
+            mol = []
+            if visited[atom_idx]:
+                continue
+            que = deque()
+
+            que.append(atom_idx)
+
+            while que:
+                current_atom_idx = que.popleft()
+                if visited[current_atom_idx]:
+                    continue
+                visited[current_atom_idx] = True
+                mol.append(current_atom_idx)
+                for next_atom_idx in connect_list[current_atom_idx]:
+                    if visited[next_atom_idx]:
+                        continue
+                    que.append(next_atom_idx)
+            q = 0
+            for atom_idx_in_mol in mol:
+                q += sdat_q[atom_idx_in_mol]
+            q = round(q, 6)
+            for atom_idx_in_mol in mol:
+                sdat_mol_q[atom_idx_in_mol] = q
+        self.atoms['mol_q'] = sdat_mol_q
+
 
 class AnalyzeMoleculeForSDats():
     def __init__():
@@ -347,3 +398,56 @@ class AnalyzeMoleculeForSDats():
         df_count_mols = df_count_mols.rename(columns=change_column_name)
 
         return df_count_mols
+
+    def add_mol_q_to_atoms(self, cut_off=0.5, bond_type='dumpbond') -> None:
+        """
+        分子ごとの電荷を計算し、atomsにmol_qとして追加する
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+        """
+        connect_lists = self.get_connect_lists(
+            cut_off=cut_off, bond_type=bond_type)
+        for step_idx in range(len(self.step_nums)):
+
+            visited = [False] * self.get_total_atoms()
+            sdat_q = self.atoms[step_idx]['q'].values
+            sdat_mol_q = np.array([0.] * self.get_total_atoms())
+            for atom_idx in range(self.get_total_atoms()):
+                mol = []
+                if visited[atom_idx]:
+                    continue
+                que = deque()
+
+                que.append(atom_idx)
+
+                while que:
+                    current_atom_idx = que.popleft()
+                    if visited[current_atom_idx]:
+                        continue
+                    visited[current_atom_idx] = True
+                    mol.append(current_atom_idx)
+                    for next_atom_idx in connect_lists[step_idx][current_atom_idx]:
+                        if visited[next_atom_idx]:
+                            continue
+                        que.append(next_atom_idx)
+                q = 0
+                for atom_idx_in_mol in mol:
+                    q += sdat_q[atom_idx_in_mol]
+                q = round(q, 6)
+                for atom_idx_in_mol in mol:
+                    sdat_mol_q[atom_idx_in_mol] = q
+            self.atoms[step_idx]['mol_q'] = sdat_mol_q
