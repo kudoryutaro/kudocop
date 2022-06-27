@@ -44,7 +44,7 @@ class ImportInput():
             if spline[0] == "#press":
                 self.press_info.append(line.rstrip())
 
-            if spline[0] == "#thermostatfree":
+            if spline[0] == "#thermofree":
                 self.thermofree_info.append(line.rstrip())
 
             if spline[0] == "#wall":
