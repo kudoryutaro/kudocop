@@ -47,6 +47,7 @@ class ExportDumpposes():
         for step_idx, step_num in enumerate(tqdm(self.step_nums, desc='[exporting dumppos]')):
             ofn = f'{output_folder}/dump.pos.{step_num}'
             header_line[1] = f"{step_num}\n"
+            header_line[3] = f"{len(self.atoms[step_idx])}\n"
             with open(ofn, 'w') as ofp:
                 ofp.writelines(header_line)
 

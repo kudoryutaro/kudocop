@@ -63,8 +63,15 @@ class AnalyzeAtom():
                     continue
                 neibour_atom_type1 = sdat_atom_type[neibour_atom_idx1]
                 neibour_atom_type2 = sdat_atom_type[neibour_atom_idx2]
-                count_triplets[(neibour_atom_type1,
+                if neibour_atom_type1 == neibour_atom_type2:
+                    count_triplets[(neibour_atom_type1,
                                 mid_atom_type, neibour_atom_type2)] += 1
+                else:
+                    count_triplets[(neibour_atom_type1,
+                                mid_atom_type, neibour_atom_type2)] += 1
+                    count_triplets[(neibour_atom_type2,
+                                mid_atom_type, neibour_atom_type1)] += 1
+
         count_triplets_renamed = dict()
         for (neibour1, mid, neibour2), count in count_triplets.items():
             neibour_type1 = self.atom_type_to_symbol[neibour1]
@@ -139,9 +146,14 @@ class AnalyzeAtomForSDats():
                         continue
                     neibour_atom_type1 = sdat_atom_type[neibour_atom_idx1]
                     neibour_atom_type2 = sdat_atom_type[neibour_atom_idx2]
-                    count_triplets[step_idx][(neibour_atom_type1,
-                                              mid_atom_type, neibour_atom_type2)] += 1
-
+                    if neibour_atom_type1 == neibour_atom_type2:
+                        count_triplets[step_idx][(neibour_atom_type1,
+                                    mid_atom_type, neibour_atom_type2)] += 1
+                    else:
+                        count_triplets[step_idx][(neibour_atom_type1,
+                                    mid_atom_type, neibour_atom_type2)] += 1
+                        count_triplets[step_idx][(neibour_atom_type2,
+                                    mid_atom_type, neibour_atom_type1)] += 1
         df_count_triplets = pd.DataFrame(count_triplets, index=self.step_nums)
 
         def change_column_name(column):

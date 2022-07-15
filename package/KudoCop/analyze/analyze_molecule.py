@@ -180,7 +180,7 @@ class AnalyzeMolecule():
 
         return atom_idx_from_mol
 
-    def get_connected_atoms_from_atom_idx(self, cut_off=0.5, bond_type='dumppos', start_atom_idx=0, res_type='list') -> list:
+    def get_connected_atoms_from_atom_idx(self, cut_off=0.5, bond_type='dumpbond', start_atom_idx=0, res_type='list') -> list:
         ''''
         start_atom_idxの原子につながっているすべての原子のインデックスが入ったリストを返す
 

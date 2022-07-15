@@ -79,6 +79,54 @@ class AnalyzeBond():
 
         return bond_counter_renamed
 
+    def count_terminal(self, cut_off=0.5, bond_type='dumpbond', condition=None):
+        count_bond = self.count_bonds(
+            cut_off=cut_off, bond_type=bond_type, condition=condition)
+
+        bond_H = []
+        for bond in count_bond.keys():
+            if 'H-' in bond or '-H' in bond:
+                if bond == 'H-H' or bond == 'H-O' or bond == 'O-H':
+                    continue
+                bond_H.append(bond)
+        connect_list = self.get_connect_list(
+            cut_off=cut_off, bond_type=bond_type)
+        O_type = self.atom_symbol_to_type['O']
+        H_type = self.atom_symbol_to_type['H']
+        # type_set_num = len(set(self.atoms[0]['type']))
+        count_OH = {}
+        sdat_atom_type = self.atoms['type'].values
+        for atom_idx in range(self.get_total_atoms()):
+            if sdat_atom_type[atom_idx] != O_type:
+                continue
+            if len(connect_list[atom_idx]) != 2:
+                continue
+            atom_type1 = sdat_atom_type[connect_list
+                                        [atom_idx][0]]
+            atom_type2 = sdat_atom_type[connect_list
+                                        [atom_idx][1]]
+            if atom_type1 == H_type:
+                if atom_type2 == H_type or atom_type2 == O_type:
+                    continue
+                X_OH = f'{self.atom_type_to_symbol[atom_type2]}-O-H'
+            if atom_type2 == H_type:
+                if atom_type1 == H_type or atom_type1 == O_type:
+                    continue
+                X_OH = f'{self.atom_type_to_symbol[atom_type1]}-O-H'
+            if X_OH not in count_OH:
+                count_OH[X_OH] = 0
+            count_OH[X_OH] += 1
+        count_terminal = dict()
+        for key, val in count_bond.items():
+            if key not in bond_H:
+                continue
+            count_terminal[key] = val
+
+        for key, val in count_OH.items():
+            count_terminal[key] = val
+
+        return count_terminal
+
     def get_bond_angle(self, cut_off=0.5, bond_type='dumpbond', condition=None) -> list:
         """
         keyが三体間の種類、valueが3体間の結合角のはいったlistというdictを返す関数
@@ -303,6 +351,49 @@ class AnalyzeBondForSDats():
 
         return df_bond_count
 
+    def count_terminal(self, cut_off=0.5, bond_type='dumpbond', condition=None):
+        df_count_bond = self.count_bonds(
+            cut_off=cut_off, bond_type=bond_type, condition=condition)
+
+        cols_bond = []
+        for col in df_count_bond.columns:
+            if 'H-' in col or '-H' in col:
+                if col == 'H-H' or col == 'H-O' or col == 'O-H':
+                    continue
+                cols_bond.append(col)
+        connect_lists = self.get_connect_lists(
+            cut_off=cut_off, bond_type=bond_type)
+        O_type = self.atom_symbol_to_type['O']
+        H_type = self.atom_symbol_to_type['H']
+        # type_set_num = len(set(self.atoms[0]['type']))
+        count_OH = [{} for _ in range(len(self.step_nums))]
+        sdat_atom_type = self.atoms[0]['type'].values
+        for step_idx in trange(len(self.step_nums), desc='[counting OH]'):
+            for atom_idx in range(self.get_total_atoms()):
+                if sdat_atom_type[atom_idx] != O_type:
+                    continue
+                if len(connect_lists[step_idx][atom_idx]) != 2:
+                    continue
+                atom_type1 = sdat_atom_type[connect_lists[step_idx]
+                                            [atom_idx][0]]
+                atom_type2 = sdat_atom_type[connect_lists[step_idx]
+                                            [atom_idx][1]]
+                if atom_type1 == H_type:
+                    if atom_type2 == H_type or atom_type2 == O_type:
+                        continue
+                    X_OH = f'{self.atom_type_to_symbol[atom_type2]}-O-H'
+                if atom_type2 == H_type:
+                    if atom_type1 == H_type or atom_type1 == O_type:
+                        continue
+                    X_OH = f'{self.atom_type_to_symbol[atom_type1]}-O-H'
+                if X_OH not in count_OH[step_idx]:
+                    count_OH[step_idx][X_OH] = 0
+                count_OH[step_idx][X_OH] += 1
+        df_count_OH = pd.DataFrame(count_OH, index=self.step_nums).fillna(0)
+        df_count_terminal = pd.concat(
+            [df_count_bond[cols_bond], df_count_OH], axis=1)
+        return df_count_terminal
+
 
 def calc_angle_of_ABC(a: np.array, b: np.array, c: np.array) -> float:
     """
@@ -314,7 +405,7 @@ def calc_angle_of_ABC(a: np.array, b: np.array, c: np.array) -> float:
     b : np.array
     c : np.array
         それぞれA, B, Cの座標のnp.array
-    
+
     Returns
     -------
     degree : float
