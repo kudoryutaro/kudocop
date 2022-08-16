@@ -8,6 +8,7 @@ from .import_xyz import ImportXyz
 from .import_energy import ImportEnergy
 from .import_dumpbond_cg import ImportDumpbondCG
 from .import_out_cg import ImportOutCg
+from .import_car import ImportCar
 
 
 class ImportFile(
@@ -20,7 +21,8 @@ class ImportFile(
     ImportOutmol,
     ImportEnergy,
     ImportDumpbondCG,
-    ImportOutCg
+    ImportOutCg,
+    ImportCar
 ):
     def __init__():
         super().__init__()
@@ -55,3 +57,6 @@ class ImportFile(
 
         elif import_file_type == 'out_cg':
             self.import_out_cg(import_file_name)
+
+        elif import_file_type == 'car':
+            self.import_car(import_file_name)

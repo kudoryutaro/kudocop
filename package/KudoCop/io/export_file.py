@@ -1,12 +1,14 @@
 from .export_input import ExportInput
 from .export_dumppos import ExportDumppos
 from .export_xyz import ExportXyz
+from .export_car import ExportCar
 
 
 class ExportFile(
     ExportDumppos,
     ExportInput,
-    ExportXyz
+    ExportXyz,
+    ExportCar
 ):
     def __init__():
         super().__init__()
@@ -20,3 +22,6 @@ class ExportFile(
 
         elif export_file_type == 'xyz':
             self.export_xyz(export_file_name)
+
+        elif export_file_type == 'car':
+            self.export_car(export_file_name)
