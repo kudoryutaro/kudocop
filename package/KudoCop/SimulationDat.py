@@ -49,6 +49,8 @@ class SimulationDat(
         self.thermofree_info = []
         self.wall_info = []
 
+        self.sumforce = None
+
     # METHODS\
     def __getitem__(self, key) -> pd.DataFrame:
         """

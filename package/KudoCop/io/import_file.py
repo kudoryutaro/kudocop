@@ -9,7 +9,7 @@ from .import_energy import ImportEnergy
 from .import_dumpbond_cg import ImportDumpbondCG
 from .import_out_cg import ImportOutCg
 from .import_car import ImportCar
-
+from .import_sumforce import ImportSumforce
 
 class ImportFile(
     ImportPara,
@@ -22,12 +22,13 @@ class ImportFile(
     ImportEnergy,
     ImportDumpbondCG,
     ImportOutCg,
-    ImportCar
+    ImportCar,
+    ImportSumforce
 ):
     def __init__():
         super().__init__()
 
-    def import_file(self, import_file_name: str, import_file_type: str):
+    def import_file(self, import_file_name: str, import_file_type: str, particle_cluster_idx=None):
         if import_file_type == 'input':
             self.import_input(import_file_name)
 
@@ -60,3 +61,6 @@ class ImportFile(
 
         elif import_file_type == 'car':
             self.import_car(import_file_name)
+
+        elif import_file_type =='sumforce':
+            self.import_sumforce(self, particle_cluster_idx=particle_cluster_idx, ifn=import_file_name)
