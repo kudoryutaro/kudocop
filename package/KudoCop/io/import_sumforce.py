@@ -38,7 +38,7 @@ class ImportSumforce():
             self.sumforce = {}
         if cluster_idx is not None:
             df_sumforce = pd.read_csv(
-                f'sumforce_{cluster_idx}.dat', sep='\s+', index_col=0)
+                f'./sumforce_{cluster_idx}.dat', sep='\s+', index_col=0)
         else:
             df_sumforce = pd.read_csv(ifn, sep='\s+')
 

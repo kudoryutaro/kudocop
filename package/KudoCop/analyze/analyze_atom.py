@@ -81,6 +81,13 @@ class AnalyzeAtom():
             count_triplets_renamed[triplets_renamed] = count
         return count_triplets_renamed
 
+    def count_atom_types(self, res_type='series'):
+        if res_type == 'series':
+            return self.atoms['type'].value_counts().rename(index=self.atom_type_to_symbol)
+        elif res_type == 'dict':
+            return self.atoms['type'].value_counts().rename(index=self.atom_type_to_symbol).to_dict()
+        else:
+            raise ValueError(f'res_type: {res_type} is not supported. supported res_type : [series, dict]')
 
 class AnalyzeAtomForSDats():
     def __init__():
@@ -163,3 +170,14 @@ class AnalyzeAtomForSDats():
             columns=change_column_name)
 
         return df_count_triplets
+
+    def count_atom_types(self):
+        count_atom_types_list = []
+        for step_idx in range(len(self.step_nums)):
+            count_dict = self.atoms[step_idx]['type'].value_counts().to_dict()
+            count_atom_types_list.append(count_dict)
+        df_count_atom_types = pd.DataFrame(data=count_atom_types_list, index=self.step_nums)
+        df_count_atom_types.rename(columns=self.atom_type_to_symbol, inplace=True)
+        return df_count_atom_types
+
+
