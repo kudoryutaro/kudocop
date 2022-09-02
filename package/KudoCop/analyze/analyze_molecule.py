@@ -381,7 +381,7 @@ class AnalyzeMoleculeForSDats():
                     mol_counter[current_mol_counter_tuple] += 1
 
             dfs_count_mols.append(pd.DataFrame(mol_counter, [step_num]))
-        df_count_mols = pd.concat(dfs_count_mols).fillna(0)
+        df_count_mols = pd.concat(dfs_count_mols).fillna(0).astype(int)
         df_count_mols.columns = list(df_count_mols.columns)
 
         def change_column_name(column):

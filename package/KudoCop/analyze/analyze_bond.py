@@ -91,31 +91,36 @@ class AnalyzeBond():
                 bond_H.append(bond)
         connect_list = self.get_connect_list(
             cut_off=cut_off, bond_type=bond_type)
-        O_type = self.atom_symbol_to_type['O']
-        H_type = self.atom_symbol_to_type['H']
-        # type_set_num = len(set(self.atoms[0]['type']))
+        O_atom_type = self.atom_symbol_to_type['O']
+        H_atom_type = self.atom_symbol_to_type['H']
         count_OH = {}
-        sdat_atom_type = self.atoms['type'].values
+        sdat_atom_types = self.atoms['type'].values
         for atom_idx in range(self.get_total_atoms()):
-            if sdat_atom_type[atom_idx] != O_type:
+            atom_type = sdat_atom_types[atom_idx]
+            if atom_type == O_atom_type or atom_type == H_atom_type:
                 continue
-            if len(connect_list[atom_idx]) != 2:
-                continue
-            atom_type1 = sdat_atom_type[connect_list
-                                        [atom_idx][0]]
-            atom_type2 = sdat_atom_type[connect_list
-                                        [atom_idx][1]]
-            if atom_type1 == H_type:
-                if atom_type2 == H_type or atom_type2 == O_type:
+            for neighbor_atom_idx in connect_list[atom_idx]:
+                neighbor_atom_type = sdat_atom_types[neighbor_atom_idx]
+                if neighbor_atom_type != O_atom_type:
                     continue
-                X_OH = f'{self.atom_type_to_symbol[atom_type2]}-O-H'
-            if atom_type2 == H_type:
-                if atom_type1 == H_type or atom_type1 == O_type:
+                if len(connect_list[neighbor_atom_idx]) != 2:
                     continue
-                X_OH = f'{self.atom_type_to_symbol[atom_type1]}-O-H'
-            if X_OH not in count_OH:
-                count_OH[X_OH] = 0
-            count_OH[X_OH] += 1
+                if atom_idx == connect_list[neighbor_atom_idx][0]:
+                    neighbor_neighbor_atom_idx = connect_list[neighbor_atom_idx][1]
+                else:
+                    neighbor_neighbor_atom_idx = connect_list[neighbor_atom_idx][0]
+
+                neighbor_neighbor_atom_type = sdat_atom_types[neighbor_neighbor_atom_idx]
+                if neighbor_neighbor_atom_type != H_atom_type:
+                    continue
+                # atom_idx - neighbor_atom_idx - neighbor_neighbor_atom_idx
+                # atom     -        O          -            H
+                X_OH = f'{self.atom_type_to_symbol[atom_type]}-O-H'
+                if X_OH not in count_OH:
+                    count_OH[X_OH] = 0
+                count_OH[X_OH] += 1
+
+            
         count_terminal = dict()
         for key, val in count_bond.items():
             if key not in bond_H:
@@ -363,33 +368,38 @@ class AnalyzeBondForSDats():
                 cols_bond.append(col)
         connect_lists = self.get_connect_lists(
             cut_off=cut_off, bond_type=bond_type)
-        O_type = self.atom_symbol_to_type['O']
-        H_type = self.atom_symbol_to_type['H']
+        O_atom_type = self.atom_symbol_to_type['O']
+        H_atom_type = self.atom_symbol_to_type['H']
         # type_set_num = len(set(self.atoms[0]['type']))
         count_OH = [{} for _ in range(len(self.step_nums))]
-        sdat_atom_type = self.atoms[0]['type'].values
+        sdat_atom_types = self.atoms[0]['type'].values
         for step_idx in trange(len(self.step_nums), desc='[counting OH]'):
             for atom_idx in range(self.get_total_atoms()):
-                if sdat_atom_type[atom_idx] != O_type:
+                atom_type = sdat_atom_types[atom_idx]
+                if atom_type == O_atom_type or atom_type == H_atom_type:
                     continue
-                if len(connect_lists[step_idx][atom_idx]) != 2:
-                    continue
-                atom_type1 = sdat_atom_type[connect_lists[step_idx]
-                                            [atom_idx][0]]
-                atom_type2 = sdat_atom_type[connect_lists[step_idx]
-                                            [atom_idx][1]]
-                if atom_type1 == H_type:
-                    if atom_type2 == H_type or atom_type2 == O_type:
+                for neighbor_atom_idx in connect_lists[step_idx][atom_idx]:
+                    neighbor_atom_type = sdat_atom_types[neighbor_atom_idx]
+                    if neighbor_atom_type != O_atom_type:
                         continue
-                    X_OH = f'{self.atom_type_to_symbol[atom_type2]}-O-H'
-                if atom_type2 == H_type:
-                    if atom_type1 == H_type or atom_type1 == O_type:
+                    if len(connect_lists[step_idx][neighbor_atom_idx]) != 2:
                         continue
-                    X_OH = f'{self.atom_type_to_symbol[atom_type1]}-O-H'
-                if X_OH not in count_OH[step_idx]:
-                    count_OH[step_idx][X_OH] = 0
-                count_OH[step_idx][X_OH] += 1
-        df_count_OH = pd.DataFrame(count_OH, index=self.step_nums).fillna(0)
+                    if atom_idx == connect_lists[step_idx][neighbor_atom_idx][0]:
+                        neighbor_neighbor_atom_idx = connect_lists[step_idx][neighbor_atom_idx][1]
+                    else:
+                        neighbor_neighbor_atom_idx = connect_lists[step_idx][neighbor_atom_idx][0]
+
+                    neighbor_neighbor_atom_type = sdat_atom_types[neighbor_neighbor_atom_idx]
+                    if neighbor_neighbor_atom_type != H_atom_type:
+                        continue
+                    # atom_idx - neighbor_atom_idx - neighbor_neighbor_atom_idx
+                    # atom     -        O          -            H
+                    X_OH = f'{self.atom_type_to_symbol[atom_type]}-O-H'
+                    if X_OH not in count_OH[step_idx]:
+                        count_OH[step_idx][X_OH] = 0
+                    count_OH[step_idx][X_OH] += 1
+
+        df_count_OH = pd.DataFrame(count_OH, index=self.step_nums).fillna(0).astype(int)
         df_count_terminal = pd.concat(
             [df_count_bond[cols_bond], df_count_OH], axis=1)
         return df_count_terminal
