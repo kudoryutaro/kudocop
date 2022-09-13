@@ -1,22 +1,17 @@
 # KudoCop
-
-# KudoCopとMolCopの違い
-
-- I/OがKudoCopの方が8倍程度速い
-- よりシンプルに書ける
-- dumppos, dumpbondなどをステップごとの操作を一度にできる
-
-
+Kudo's COworking python Package
+分子動力学シミュレーションの結果を読み込み書き込み分析ができるライブラリです。
 
 # Install & Update
 インストール方法
 ```sh
 git clone git@github.com:kudoryutaro/kudocop.git
+cd ./package/KudoCop
+python3 setup.py build_ext --inplace
 ```
-更新方法
-```sh
-git push origin main
-```
+# 更新方法
+mainにpushしないでください。
+各自ブランチを作りpull requestをしてください。
 
 # How to use KudoCop
 ```sh
