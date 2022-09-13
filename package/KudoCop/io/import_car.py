@@ -15,4 +15,5 @@ class ImportCar():
         df.drop('symbol', axis=1, inplace=True)
         df.dropna(inplace=True)
         df = df[['type', 'x', 'y', 'z']]
+        df['type'] = df['type'].astype(int)
         self.atoms = df
