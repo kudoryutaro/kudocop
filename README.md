@@ -11,7 +11,7 @@ cd ./package/KudoCop
 python3 setup.py build_ext --inplace
 ```
 
-#Add Path
+# Add Path
 ```sh
 #bashの場合 -> $HOME/.bashrcに下記を追記
 export PYTHONPATH="$PYTHONPATH:$HOME/kudocop/package"
