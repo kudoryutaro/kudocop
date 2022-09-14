@@ -1,19 +1,17 @@
 # KudoCop
 Kudo's COworking python Package
+
 分子動力学シミュレーションの結果を読み込み書き込み分析ができるライブラリです。
 
-# Install & Update
+# Install
 インストール方法
 ```sh
 git clone git@github.com:kudoryutaro/kudocop.git
 cd ./package/KudoCop
 python3 setup.py build_ext --inplace
 ```
-# 更新方法
-mainにpushしないでください。
-各自ブランチを作りpull requestをしてください。
 
-# How to use KudoCop
+#Add Path
 ```sh
 #bashの場合 -> $HOME/.bashrcに下記を追記
 export PYTHONPATH="$PYTHONPATH:$HOME/kudocop/package"
@@ -23,6 +21,10 @@ setenv PYTHONPATH ${PYTHONPATH}:$HOME/kudocop/package
 # PYTHONPATHが無い場合
 setenv PYTHONPATH $HOME/kudocop/package
 ```
+# 更新方法
+mainにpushしないでください。
+各自ブランチを作りpull requestをしてください。
+Docstringを必ず書いてください。
 
 # Setting of VSCode
 補完が出るようになります
