@@ -81,11 +81,24 @@ class AnalyzeAtom():
             count_triplets_renamed[triplets_renamed] = count
         return count_triplets_renamed
 
-    def count_atom_types(self, res_type='series'):
+    def count_atom_types(self, res_type='series', condition=None):
+        """原子のタイプごとに原子の個数をカウントする関数
+        Parameters
+        ----------
+        res_type : str
+            res_type='series'のときは結果をpd.Seriesで返す
+            res_type='dict'のときは結果をdictで返す
+        condition : function
+            condition関数
+        """
+        if condition is None:
+            target_atoms = np.array([True] * self.get_total_atoms())
+        else:
+            target_atoms = condition(self)
         if res_type == 'series':
-            return self.atoms['type'].value_counts().rename(index=self.atom_type_to_symbol)
+            return self.atoms.loc[target_atoms,'type'].value_counts().rename(index=self.atom_type_to_symbol)
         elif res_type == 'dict':
-            return self.atoms['type'].value_counts().rename(index=self.atom_type_to_symbol).to_dict()
+            return self.atoms.loc[target_atoms,'type'].value_counts().rename(index=self.atom_type_to_symbol).to_dict()
         else:
             raise ValueError(
                 f'res_type: {res_type} is not supported. supported res_type : [series, dict]')

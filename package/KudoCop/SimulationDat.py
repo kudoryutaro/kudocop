@@ -286,3 +286,54 @@ class SimulationDat(
             self.atoms = self.atoms[~condition]
         if reindex:
             self.atoms.reset_index(drop=True, inplace=True)
+
+    def density(self, x_max=None, x_min=None, y_max=None, y_min=None,z_max=None,z_min=None):
+        """セル内の密度を計算する関数
+        Parameters
+        ----------
+        x_max: float
+            xの上限
+        x_min: float
+            xの下限
+        y_max: float
+            yの上限
+        y_min: float
+            yの下限
+        z_max: float
+            zの上限
+        z_min: float
+            zの下限
+        Returns
+        -------
+        density : float
+            セル内の密度(g/cm^3)
+        """
+        x_mx = x_max if x_max is not None else self.cell[0]
+        x_mn = x_min if x_min is not None else 0
+        assert x_mx >= x_mn, 'set correct x_max and x_min'
+
+        y_mx = y_max if y_max is not None else self.cell[1]
+        y_mn = y_min if y_min is not None else 0
+        assert y_mx >= y_mn, 'set correct y_max and y_min'
+
+        z_mx = z_max if z_max is not None else self.cell[2]
+        z_mn = z_min if z_min is not None else 0
+        assert z_mx >= z_mn, 'set correct z_max and z_min'
+
+        # 体積(cm^3)
+        volume = (x_mx - x_mn) * (y_mx - y_mn) * (z_mx - z_mn) * (10 ** - 24)
+        all_weight = 0
+        def condition(sdat):
+            target_atoms = (x_mn <= sdat.atoms['x'])&(sdat.atoms['x'] <= x_mx)
+            target_atoms &= (y_mn <= sdat.atoms['y'])&(sdat.atoms['y'] <= y_mx)
+            target_atoms &= (z_mn <= sdat.atoms['z'])&(sdat.atoms['z'] <= z_mx)
+            return target_atoms
+        atom_type_counter = self.count_atom_types(res_type='dict', condition=condition)
+        NA = 6.02214076 * (10 ** 23) #avogadro constant
+        for atom_symbol, atom_type_count in atom_type_counter.items():
+            atom_type = self.atom_symbol_to_type[atom_symbol]
+            atom_mass = self.atom_type_to_mass[atom_type]
+            all_weight += atom_type_count * atom_mass / NA
+        # セル内の密度(g/cm^3)
+        density = all_weight / volume
+        return density

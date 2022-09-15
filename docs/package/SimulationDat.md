@@ -304,7 +304,7 @@ target_mol=(0, 0, 2, 1, 0, 0)
 {'H-H-H': 0, 'H-H-O': 0, 'H-H-N': 0, 'H-H-Si': 0, 'H-O-H': 2784, 'H-O-O': 0, 'H-O-N': 251, 'H-O-Si': 321, 'H-N-H': 19, 'H-N-O': 84, 'H-N-N': 1, 'H-N-Si': 579, 'H-Si-H': 0, 'H-Si-O': 0, 'H-Si-N': 0, 'H-Si-Si': 0, 'O-H-H': 0, 'O-H-O': 0, 'O-H-N': 0, 'O-H-Si': 0, 'O-O-H': 0, 'O-O-O': 0, 'O-O-N': 0, 'O-O-Si': 0, 'O-N-H': 84, 'O-N-O': 14, 'O-N-N': 0, 'O-N-Si': 226, 'O-Si-H': 0, 'O-Si-O': 57, 'O-Si-N': 922, 'O-Si-Si': 67, 'N-H-H': 0, 'N-H-O': 0, 'N-H-N': 0, 'N-H-Si': 0, 'N-O-H': 251, 'N-O-O': 0, 'N-O-N': 13, 'N-O-Si': 3, 'N-N-H': 1, 'N-N-O': 0, 'N-N-N': 0, 'N-N-Si': 19, 'N-Si-H': 0, 'N-Si-O': 922, 'N-Si-N': 62049, 'N-Si-Si': 5811, 'Si-H-H': 0, 'Si-H-O': 0, 'Si-H-N': 0, 'Si-H-Si': 0, 'Si-O-H': 321, 'Si-O-O': 0, 'Si-O-N': 3, 'Si-O-Si': 34, 'Si-N-H': 579, 'Si-N-O': 226, 'Si-N-N': 19, 'Si-N-Si': 41681, 'Si-Si-H': 0, 'Si-Si-O': 67, 'Si-Si-N': 5811, 'Si-Si-Si': 62}
 ```
 
-## count_atom_types(res_type)
+## count_atom_types(res_type, condition)
 原子のtype別に原子の数をカウントする関数
 restype='series'の場合はseriesを返す
 restype='dict'の場合はdictを返す
@@ -318,7 +318,13 @@ Name: type, dtype: int64
 >>> sdat.count_atom_types(res_type='dict')
 {'N': 16211, 'Si': 12148, 'H': 6000, 'O': 3000}
 ```
-
+## density(x_max, x_min, y_max, y_min, z_max, x_min)
+セル内の密度を計算する関数
+x_max, x_min, y_max, y_min, z_max, x_minを指定しなければセル全体についての密度を計算する
+```python
+>>>sdat.density()
+2.79432 
+```
 ## get_coordination_number(cut_off=0.5,　bond_type='dumpbond', condition=None)
 ある原子からみて平均して何個の原子が結合しているかを調べる
 ```python
