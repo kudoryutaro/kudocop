@@ -7,7 +7,7 @@ Kudo's COworking python Package
 インストール方法
 ```sh
 git clone git@github.com:kudoryutaro/kudocop.git
-cd ./package/KudoCop
+cd ./KudoCop/package/KudoCop
 python3 setup.py build_ext --inplace
 ```
 
