@@ -20,6 +20,35 @@ class SimulationDats(
     ExportDumpposes,
     AnalyzeForSDats
 ):
+    """シミュレーションしたデータを読み込み、書き込み、分析するためのクラス
+    一度に複数のdump.posとdump.bondを読み込む
+
+    Attributes
+    ----------
+    atoms : list
+        atoms[step_idx] : pd.DataFrame
+        原子の座標, type, 電荷などを含むpandasのDataFrame
+    cell : list
+        cellの大きさが入ったlist
+        cell[0]:x方向, cell[1]:y方向, cell[2]:z方向
+    bondorder_lists : list
+        dump.bondを読み込んだbond orderのリスト
+    bondorder_connect_lists : list
+        dump.bondを読み込んだconnect_listのリスト
+    connect_list_cut_off_from_dumpbonds : float
+        一度connect_listを作成した時のcut_off
+        同じcut_offで何度も同じconnect_listを作らないように保持する
+    connect_list_cut_off_from_dumpposes : float
+        一度connect_listを作成した時のcut_off
+        同じcut_offで何度も同じconnect_listを作らないように保持する
+    atom_symbol_to_type : dict
+        原子のシンボルをkey, 原子のtypeをvalueとするdict
+    atom_type_to_symbol : dict
+        原子のtypeをkey, 原子のシンボルをvalueとするdict
+    atom_type_to_mass : dict
+        原子のtypeをkey, 原子の質量(g/mol)をvalueとするdict
+    
+    """
     def __init__(self, para_file_name='para.rd', dir_name=None, import_dumpposes_flag=True, import_dumpbonds_flag=True, step_nums=None, skip_num=None,bond_type='dumpbond',max_coordination_num=6):
 
         self.cell = [None] * 3

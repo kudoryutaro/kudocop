@@ -80,6 +80,33 @@ class AnalyzeBond():
         return bond_counter_renamed
 
     def count_terminal(self, cut_off=0.5, bond_type='dumpbond', condition=None):
+        """
+        H終端の数とOH終端の数をカウントする関数
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        condition : function
+            カウントしたい結合の条件を指定する関数
+
+        Returns
+        -------
+        count_terminal : dict
+            keyが終端の種類、valueがその終端の個数となるdict
+        """
         count_bond = self.count_bonds(
             cut_off=cut_off, bond_type=bond_type, condition=condition)
 
@@ -206,6 +233,33 @@ class AnalyzeBond():
         return bond_angle_renamed
 
     def get_coordination_number(self, cut_off=0.5, bond_type='dumpbond', condition=None):
+        """
+        ある原子から見て平均して何の原子と何個結合しているのかを調べる関数
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        condition : function
+            カウントしたい三体間の角度の条件を指定する関数
+
+        Returns
+        -------
+        coordination_counter : dict
+            keyが原子の種類、valueが平均してしたその種類の数となるdict
+        """
         connect_list = self.get_connect_list(
             cut_off=cut_off, bond_type=bond_type)
         if condition is None:
@@ -357,6 +411,33 @@ class AnalyzeBondForSDats():
         return df_bond_count
 
     def count_terminal(self, cut_off=0.5, bond_type='dumpbond', condition=None):
+        """
+        H終端の数とOH終端の数をカウントする関数
+
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        condition : function
+            カウントしたい結合の条件を指定する関数
+
+        Returns
+        -------
+        df_count_terminal : pd.DataFrame
+            DataFrameのindexがstep_num, dataが終端の数となるデータフレーム
+        """
         df_count_bond = self.count_bonds(
             cut_off=cut_off, bond_type=bond_type, condition=condition)
 

@@ -12,6 +12,33 @@ class SimulationDat(
     ExportFile,
     Analyze
 ):
+    """シミュレーションしたデータを読み込み、書き込み、分析するためのクラス
+
+    Attributes
+    ----------
+    atoms : pd.DataFrame
+        原子の座標, type, 電荷などを含むpandasのDataFrame
+    cell : list
+        cellの大きさが入ったlist
+        cell[0]:x方向, cell[1]:y方向, cell[2]:z方向
+    bondorder_list : list
+        dump.bondを読み込んだbond orderのリスト
+    bondorder_connect_list : list
+        dump.bondを読み込んだconnect_listのリスト
+    connect_list_cut_off_from_dumpbond : float
+        一度connect_listを作成した時のcut_off
+        同じcut_offで何度も同じconnect_listを作らないように保持する
+    connect_list_cut_off_from_dumppos : float
+        一度connect_listを作成した時のcut_off
+        同じcut_offで何度も同じconnect_listを作らないように保持する
+    atom_symbol_to_type : dict
+        原子のシンボルをkey, 原子のtypeをvalueとするdict
+    atom_type_to_symbol : dict
+        原子のtypeをkey, 原子のシンボルをvalueとするdict
+    atom_type_to_mass : dict
+        原子のtypeをkey, 原子の質量(g/mol)をvalueとするdict
+    
+    """
     def __init__(self):
         self.atoms = None
         self.cell = [None] * 3
