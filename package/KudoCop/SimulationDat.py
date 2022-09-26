@@ -364,3 +364,19 @@ class SimulationDat(
         # セル内の密度(g/cm^3)
         density = all_weight / volume
         return density
+    
+    def reshape_bondorder_list_cutoff(self, cut_off):
+        if cut_off is None:
+            print('cut_off is not defined')
+            sys.exit(-1)
+        if self.bondorder_list is None:
+            print('bondorder_list is not defined')
+            print('Import dumppos first')
+            sys.exit(-1)
+        for id in range(len(self.atoms)):
+            judge_cutoff = []
+            for connect_id in range(len(self.bondorder_list[id])):
+                if self.bondorder_list[id][connect_id][-1] < cut_off:
+                    judge_cutoff.append(connect_id)
+            self.bondorder_list[id] = np.delete(self.bondorder_list[id], judge_cutoff, 0)
+        return self.bondorder_list
