@@ -191,8 +191,6 @@ class SimulationDats(
                 self.atoms[step_idx].reset_index(drop=True, inplace=True)
 
     def reshape_bondorder_lists_cutoff(self, cut_off):
-<<<<<<< Updated upstream
-=======
         """
         dumpbondsから作成したbondorder_lists内の、bond orderの和がcut_off未満の行を削除する関数
         
@@ -206,7 +204,6 @@ class SimulationDats(
             bond orderの和がcut_off未満である結合の、bondorder_lists[atom_idx]内での順番を保存する配列。
 
         """
->>>>>>> Stashed changes
         if cut_off is None:
             print('cut_off is not defined')
             sys.exit(-1)
@@ -215,19 +212,10 @@ class SimulationDats(
             print('Import dumppos first')
             sys.exit(-1)
         for step_idx in range(len(self.step_nums)):
-<<<<<<< Updated upstream
-            for id in range(len(self.atoms)):
-                judge_cutoff = []
-                for connect_id in range(len(self.bondorder_lists[step_idx][id])):
-                    if self.bondorder_lists[step_idx][id][connect_id][-1] < cut_off:
-                        judge_cutoff.append(connect_id)
-                self.bondorder_lists[step_idx][id] = np.delete(self.bondorder_lists[step_idx][id], judge_cutoff, 0)
-=======
             for atom_idx in range(len(self.atoms[0])):
                 judge_cutoff = []
                 for connected_atom_row in range(len(self.bondorder_lists[step_idx][atom_idx])):
                     if self.bondorder_lists[step_idx][atom_idx][connected_atom_row][-1] < cut_off:
                         judge_cutoff.append(connected_atom_row)
                 self.bondorder_lists[step_idx][atom_idx] = np.delete(self.bondorder_lists[step_idx][atom_idx], judge_cutoff, 0)
->>>>>>> Stashed changes
         return self.bondorder_lists
