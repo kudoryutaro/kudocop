@@ -1,13 +1,13 @@
 # KudoCop
 Kudo's COworking python Package
 
-分子動力学シミュレーションの結果を読み込み書き込み分析ができるライブラリです。
+分子動力学シミュレーションの結果を読み込み, 書き込み, 分析などができるライブラリです。
 
 # Install
 インストール方法
 ```sh
 git clone git@github.com:kudoryutaro/kudocop.git
-cd ./package/KudoCop
+cd ./kudocop/package/KudoCop
 python3 setup.py build_ext --inplace
 ```
 
