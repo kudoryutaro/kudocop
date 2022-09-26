@@ -190,4 +190,19 @@ class SimulationDats(
             if reindex:
                 self.atoms[step_idx].reset_index(drop=True, inplace=True)
 
-    
+    def reshape_bondorder_lists_cutoff(self, cut_off):
+        if cut_off is None:
+            print('cut_off is not defined')
+            sys.exit(-1)
+        if self.bondorder_lists is None:
+            print('bondorder_list is not defined')
+            print('Import dumppos first')
+            sys.exit(-1)
+        for step_idx in range(len(self.step_nums)):
+            for id in range(len(self.atoms)):
+                judge_cutoff = []
+                for connect_id in range(len(self.bondorder_lists[step_idx][id])):
+                    if self.bondorder_lists[step_idx][id][connect_id][-1] < cut_off:
+                        judge_cutoff.append(connect_id)
+                self.bondorder_lists[step_idx][id] = np.delete(self.bondorder_lists[step_idx][id], judge_cutoff, 0)
+        return self.bondorder_lists
