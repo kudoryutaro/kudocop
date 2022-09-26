@@ -393,3 +393,4 @@ class SimulationDat(
                     judge_cutoff.append(connected_atom_row)
             self.bondorder_list[atom_idx] = np.delete(self.bondorder_list[atom_idx], judge_cutoff, 0)
         return self.bondorder_list
+

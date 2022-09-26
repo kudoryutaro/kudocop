@@ -190,6 +190,7 @@ class SimulationDats(
             if reindex:
                 self.atoms[step_idx].reset_index(drop=True, inplace=True)
 
+
     def reshape_bondorder_lists_cutoff(self, cut_off):
         """
         dumpbondsから作成したbondorder_lists内の、bond orderの和がcut_off未満の行を削除する関数
@@ -219,3 +220,4 @@ class SimulationDats(
                         judge_cutoff.append(connected_atom_row)
                 self.bondorder_lists[step_idx][atom_idx] = np.delete(self.bondorder_lists[step_idx][atom_idx], judge_cutoff, 0)
         return self.bondorder_lists
+
