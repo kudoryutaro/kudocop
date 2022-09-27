@@ -3,6 +3,13 @@ Kudo's COworking python Package
 
 分子動力学シミュレーションの結果を読み込み, 書き込み, 分析などができるライブラリです。
 
+# Requirements
+```
+numpy>=1.20.3
+pandas>=1.3.4
+tqdm>=4.62.3
+cython=0.29.24
+```
 # Install
 インストール方法
 ```sh
