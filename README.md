@@ -28,7 +28,7 @@ setenv PYTHONPATH ${PYTHONPATH}:$HOME/kudocop/package
 # PYTHONPATHが無い場合
 setenv PYTHONPATH $HOME/kudocop/package
 ```
-# 更新方法
+# How to update
 mainにpushしないでください。
 各自ブランチを作りpull requestをしてください。
 Docstringを必ず書いてください。
