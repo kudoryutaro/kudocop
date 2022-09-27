@@ -280,7 +280,7 @@ class AnalyzeAtomForSDats():
             else:
                 target_atoms = condition(self, step_idx)
 
-            coordination_counter = {i: 0 for i in range(9)}
+            coordination_counter = {i: 0 for i in range(13)}
             atom_types = self.atoms[step_idx]['type'].values
             for atom_idx in range(self.get_total_atoms()):
                 if not target_atoms[atom_idx]:

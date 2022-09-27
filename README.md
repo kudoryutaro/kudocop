@@ -36,7 +36,8 @@ Docstringを必ず書いてください。
 
 ```
 
-# Data structure of KudoCop
+# Documents of KudoCop
+- [Tutorial of sdat](./docs/tutorial/tutorial_sdat.ipynb)
 - [SimulationDat(sdat)](./docs/package/SimulationDat.md)
 - [SimulationDats(sdats)](./docs/package/SimulationDats.md)
-
+- [Structure of KudoCop](./docs/package/kudocop_structure.md)
