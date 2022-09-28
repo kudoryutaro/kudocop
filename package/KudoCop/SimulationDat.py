@@ -202,7 +202,7 @@ class SimulationDat(
             sys.exit(-1)
         if self.bondorder_list is None:
             print('bondorder_list is not defined')
-            print('Import dumppos first')
+            print('Import dumpbond first')
             sys.exit(-1)
         self.connect_list = [[] for _ in range(self.get_total_atoms())]
         for atom_idx, (neibour_idxs, bondorder_list) in enumerate(zip(self.bondorder_connect_list, self.bondorder_list)):
@@ -384,7 +384,7 @@ class SimulationDat(
             sys.exit(-1)
         if self.bondorder_list is None:
             print('bondorder_list is not defined')
-            print('Import dumppos first')
+            print('Import dumpbond first')
             sys.exit(-1)
         for atom_idx in range(len(self.atoms)):
             judge_cutoff = []
