@@ -231,13 +231,17 @@ class AnalyzeAtomForSDats():
 
         return df_count_triplets
 
-    def count_atom_types(self):
+    def count_atom_types(self, condition=None):
         count_atom_types_list = []
         for step_idx in range(len(self.step_nums)):
-            count_dict = self.atoms[step_idx]['type'].value_counts().to_dict()
+            if condition is None:
+                target_atoms = np.array([True] * self.get_total_atoms())
+            else:
+                target_atoms = condition(self, step_idx)
+            count_dict = self.atoms[step_idx].loc[target_atoms, 'type'].value_counts().to_dict()
             count_atom_types_list.append(count_dict)
         df_count_atom_types = pd.DataFrame(
-            data=count_atom_types_list, index=self.step_nums)
+            data=count_atom_types_list, index=self.step_nums).fillna(0).astype(int)
         df_count_atom_types.rename(
             columns=self.atom_type_to_symbol, inplace=True)
         return df_count_atom_types

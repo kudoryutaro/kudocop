@@ -167,7 +167,7 @@ class SimulationDats(
             sys.exit(-1)
         if self.bondorder_lists is None:
             print('bondorder_list is not defined')
-            print('Import dumppos first')
+            print('Import dumpbond first')
             sys.exit(-1)
         self.connect_lists_from_dumpbonds = [[[] for _ in range(
             self.get_total_atoms())] for _ in range(len(self.step_nums))]
@@ -210,7 +210,7 @@ class SimulationDats(
             sys.exit(-1)
         if self.bondorder_lists is None:
             print('bondorder_list is not defined')
-            print('Import dumppos first')
+            print('Import dumpbond first')
             sys.exit(-1)
         for step_idx in range(len(self.step_nums)):
             for atom_idx in range(len(self.atoms[0])):

@@ -47,4 +47,5 @@ Docstringを必ず書いてください。
 - [Tutorial of sdat](./docs/tutorial/tutorial_sdat.ipynb)
 - [SimulationDat(sdat)](./docs/package/SimulationDat.md)
 - [SimulationDats(sdats)](./docs/package/SimulationDats.md)
+- [KudoCop Scripts](./docs/package/kudocop_scripts.md)
 - [Structure of KudoCop](./docs/package/kudocop_structure.md)
