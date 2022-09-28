@@ -339,6 +339,52 @@ condition: None <= z <= None
 12000000  5652    19     255     23
 ```
 
+## coor
+対象となる原子の配位数をカウントする
+```sh
+usage: coor.py [-h] [-s SKIP_NUM] [-f FILE_NAME] [-t TARGET_ATOM_TYPE] [-c CUT_OFF]
+               [-b {dumppos,dumpbond}] [-p PARA_FILE_NAME] [--x_min X_MIN] [--y_min Y_MIN] [--z_min Z_MIN]
+               [--x_max X_MAX] [--y_max Y_MAX] [--z_max Z_MAX]
+
+target_atom_typeで指定した原子の配位数をカウントする.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s SKIP_NUM, --skip_num SKIP_NUM
+                        何個おきにファイルを読み込むか
+  -f FILE_NAME, --file_name FILE_NAME
+                        読み込むファイル名.指定しない場合はdump.pos.0から全て読み込む
+  -t TARGET_ATOM_TYPE, --target_atom_type TARGET_ATOM_TYPE
+                        対象となる原子のtype
+  -c CUT_OFF, --cut_off CUT_OFF
+                        カットオフ
+  -b {dumppos,dumpbond}, --bond_type {dumppos,dumpbond}
+                        結合の種類, dumppos:原子間の距離から結合を作る, dumpbond:bond orderから結合を作る
+  -p PARA_FILE_NAME, --para_file_name PARA_FILE_NAME
+                        para.rdのファイル名
+  --x_min X_MIN         min x
+  --y_min Y_MIN         min y
+  --z_min Z_MIN         min z
+  --x_max X_MAX         max x
+  --y_max Y_MAX         max y
+  --z_max Z_MAX         max z
+```
+```sh
+coor.py -s 3000 -t 6
+```
+target_atom_typeが6の原子はSiで、4配位となっているSiが多い
+```sh
+bond_type: dumpbond, cut_off: 0.5
+condition: None <= x <= None
+condition: None <= y <= None
+condition: None <= z <= None
+          0   1    2     3     4    5   6   7   8   9   10  11  12
+0          0  10  149  1959  9342  686   2   0   0   0   0   0   0
+4000000    0  10  151  1650  9615  720   2   0   0   0   0   0   0
+8000000    0  10  148  1587  9698  702   3   0   0   0   0   0   0
+12000000   0  10  148  1578  9679  729   4   0   0   0   0   0   0
+```
+
 ## density
 密度を計算する
 ```sh
