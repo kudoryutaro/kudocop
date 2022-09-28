@@ -11,11 +11,11 @@ pd.set_option('display.max_rows', None)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Count the number of coordinations')
+        description='target_atom_typeで指定した原子の配位数をカウントする.')
     parser.add_argument('-s', '--skip_num', default=1, type=int,
                         help='何個おきにファイルを読み込むか')
     parser.add_argument('-f', '--file_name', default=None, type=str,
-                        help='読み込むファイル名')
+                        help='読み込むファイル名.指定しない場合はdump.pos.0から全て読み込む')
     parser.add_argument('-t', '--target_atom_type', default=None, type=int,
                         help='対象となる原子のtype')
     parser.add_argument('-c', '--cut_off', default=0.5, type=float,
