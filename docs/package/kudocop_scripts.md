@@ -124,6 +124,24 @@ O      2997
 Name: type, dtype: int64
 ```
 
+## convert_file_type.py
+input.rd, xyz, car file, dumpposファイルを相互に変換することが出来る
+ファイルの種類はファイルの名前から自動で推測される。
+```sh
+usage: convert_file_type.py [-h] [-f FILE_NAME] [-o OUTPUT_FILE_NAME] [-p PARA_FILE_NAME]
+
+ファイルを変換する
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILE_NAME, --file_name FILE_NAME
+                        変換前のファイル名
+  -o OUTPUT_FILE_NAME, --output_file_name OUTPUT_FILE_NAME
+                        変換後のファイル名
+  -p PARA_FILE_NAME, --para_file_name PARA_FILE_NAME
+                        para.rdのファイル名
+```
+
 ## count_mols
 分子数をカウントする
 
