@@ -15,8 +15,8 @@ ase>=3.22.1
 インストール方法
 ```sh
 git clone git@github.com:kudoryutaro/kudocop.git
-cd ./kudocop/package/KudoCop
-python3 setup.py build_ext --inplace
+cd ./kudocop/package
+python3 ./KudoCop/setup.py build_ext --inplace
 ```
 
 # Add Path
