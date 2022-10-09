@@ -12,10 +12,10 @@ class Packmol():
         """packmolで原子を詰める関数
         Parameters
         ----------
-            sdat_list : SimulationDat
+            sdat_list : list of SimulationDat
                 詰めるsdatのlist
             pack_numbers_list : list
-                詰めるsdatの個数
+                詰めるsdatの個数のリスト
             tolerance : float
                 最小の原子間距離, 原子を詰める時に原子間がtolerance以上になるように詰める
             xyz_condition : list

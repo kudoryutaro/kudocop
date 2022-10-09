@@ -270,7 +270,7 @@ bond_type:'dumppos' or 'dumpbond'
 >>> sdat.count_bonds(0.5, bond_type='dumpbond')
 {'H-H': 0, 'H-O': 5649, 'H-N': 350, 'H-Si': 0, 'O-O': 0, 'O-N': 169, 'O-Si': 385, 'N-N': 7, 'N-Si': 44848, 'Si-Si': 881}
 ```
-## count_mols(self, cut_off, lower_mol_limit=1, upper_mol_limit=10)
+## count_mols(cut_off, lower_mol_limit=1, upper_mol_limit=10)
 分子数を数える関数。
 結合数をカウントする関数。
 cut_off:カットオフ
@@ -405,3 +405,29 @@ array([False, False, False, ..., False, False, False])
 
 [37359 rows x 10 columns]
 ```
+
+## packmol(sdat_list:list, pack_numbers_list:list, tolerance=2.0, packmol_tmp_dir='./packmol_tmp',xyz_condition=None)
+packmolを用いて分子を充填する関数
+
+周期境界条件の場合は端まで詰めると計算が回らなくなるので注意.
+境界には間を開けることを推奨
+この関数を使うには、$ packmol のみでコマンドが使えるようにパスを通しておく必要がある
+
+sdat_list : 詰めるsdatのlist
+pack_numbers_list : 詰めるsdatの個数のリスト
+tolerance : 最小の原子間距離, 原子を詰める時に原子間がtolerance以上になるように詰める
+xyz_condition : 詰める原子の座標の条件
+packmol_tmp_dir : packmolを動かすときの一時的なディレクトリ
+
+例
+```python
+xyz_condition = [
+# [xmin, ymin, zmin, xmax, ymax, zmax] で指定する
+[2, 2, 2, 8, 18, 28],  # sdat2の条件
+[2, 2, 2, 8, 10, 10]   # sdat3の条件
+]
+sdat1.packmol(sdat_list=[sdat2, sdat3], pack_numbers_list=[5, 8], xyz_condition=xyz_condition)
+```
+とすると, sdat1にsdat2が5個, sdat3が8個詰められる
+sdat2は2 <= x <= 8 かつ 2 <= y <= 18 かつ 2 <= z <= 28 の位置のみに詰められる
+sdat3は2 <= x <= 8 かつ 2 <= y <= 10 かつ 2 <= z <= 10 の位置のみに詰められる
