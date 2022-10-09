@@ -1,9 +1,13 @@
-from ase.build import molecule
-from ase import Atoms
-from ase.calculators.dmol import DMol3
 import numpy as np
 from pathlib import Path
 from tqdm import trange, tqdm
+
+try:
+    from ase.build import molecule
+    from ase import Atoms
+    from ase.calculators.dmol import DMol3
+except:
+    pass
 
 class DMol3KudoCop():
     """DMol3を用いて第一原理計算するクラス
