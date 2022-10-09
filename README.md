@@ -9,6 +9,7 @@ numpy>=1.20.3
 pandas>=1.3.4
 tqdm>=4.62.3
 cython=0.29.24
+ase>=3.22.1
 ```
 # Install
 インストール方法
