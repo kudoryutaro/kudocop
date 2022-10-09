@@ -4,7 +4,7 @@ import numpy as np
 from pathlib import Path
 import os
 
-class ExportDPSystem():
+class ExportDPSystemMultiFrames():
     def __init__(self):
         pass
 
@@ -20,7 +20,7 @@ class ExportDPSystem():
             type.rawは0から始まる, sdat内の原子のtypeは1から始まる.
         """
         dp_system_dir = Path(dp_system_dir)
-        atom_type = self.atoms['type'].astype('str').to_list()
+        atom_type = self.atoms[0]['type'].astype('str').to_list()
         atom_type = map(lambda s: s + '\n', atom_type)
         with open(dp_system_dir / 'type.raw', 'w') as f:
             f.writelines(atom_type)
@@ -54,7 +54,10 @@ class ExportDPSystem():
             coord.npyを作成するディレクトリのパス
         """
         dp_system_set_dir = Path(dp_system_set_dir)
-        coord = self.atoms[['x', 'y', 'z']].values.reshape(1, -1)
+        coord = []
+        for step_idx in range(len(self.step_nums)):
+            coord.append(self.atoms[step_idx][['x', 'y', 'z']].values.ravel())
+        coord = np.array(coord)
         np.save(dp_system_set_dir / 'coord', coord)
 
 
@@ -70,10 +73,11 @@ class ExportDPSystem():
                 [[XX XY XZ YX YY YZ ZX ZY ZZ]]
         """
         dp_system_set_dir = Path(dp_system_set_dir)
-        box = np.array([[0. for _ in range(9)]])
-        box[0][0] = self.cell[0]
-        box[0][4] = self.cell[1]
-        box[0][8] = self.cell[2]
+        box = np.array([[0. for _ in range(9)] for _ in range(len(self.step_nums))])
+        for step_idx in range(len(self.step_nums)):
+            box[step_idx][0] = self.cell[0]
+            box[step_idx][4] = self.cell[1]
+            box[step_idx][8] = self.cell[2]
         np.save(dp_system_set_dir / 'box', box)
 
     def export_dp_system_set_energy(self, dp_system_set_dir:Path):
@@ -85,9 +89,9 @@ class ExportDPSystem():
         """
         assert hasattr(self, 'atoms_calc'), 'dmol3_calcで先に第一原理計算してください'
         dp_system_set_dir = Path(dp_system_set_dir)
-        dp_system_set_dir = Path(dp_system_set_dir)
-        energy = self.atoms_calc.get_total_energy()
-        np.save(dp_system_set_dir / 'energy', np.array([energy]))
+        energy = self.get_dmol3_total_energies()
+        energy = np.array(energy)
+        np.save(dp_system_set_dir / 'energy', energy)
 
     def export_dp_system_set_force(self, dp_system_set_dir:Path):
         """DeePMDのbox.npyを作成する
@@ -104,8 +108,9 @@ class ExportDPSystem():
         """
         assert hasattr(self, 'atoms_calc'), 'dmol3_calcで先に第一原理計算してください'
         dp_system_set_dir = Path(dp_system_set_dir)
-        force = self.atoms_calc.get_forces()
-        force = force.reshape(1, -1)
+        force = self.get_dmol3_forces()
+        force = np.array(force)
+        force = force.reshape(len(self.step_nums), -1)
         np.save(dp_system_set_dir / 'force', np.array(force))
 
     def export_dp_system(self, dp_system_dir:Path, set_dir_name:str,
