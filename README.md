@@ -1,7 +1,12 @@
 # KudoCop
 Kudo's COworking python Package
 
-分子動力学シミュレーションの結果を読み込み, 書き込み, 分析などができるライブラリです。
+# What you can do with KudoCop
+- 分子動力学シミュレーションの結果を読み込み, 書き込み (対応ファイル : [Data Formats](./docs/package/data_formats.md))
+- 分子動力学シミュレーションの結果を分析
+- DMol3を用いた第一原理計算のラッパー
+- Deep Learning Potentialを学習させるためのデータセットを作成
+
 
 # Requirements
 ```
@@ -46,6 +51,7 @@ Docstringを必ず書いてください。
 
 # Documents of KudoCop
 - [Tutorial of sdat](./docs/tutorial/tutorial_sdat.ipynb)
+- [Data Formats](./docs/package/data_formats.md)
 - [SimulationDat(sdat)](./docs/package/SimulationDat.md)
 - [SimulationDats(sdats)](./docs/package/SimulationDats.md)
 - [KudoCop Scripts](./docs/package/kudocop_scripts.md)
