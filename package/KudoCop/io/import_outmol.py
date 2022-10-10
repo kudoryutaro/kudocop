@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import sys
-
+from pathlib import Path
 
 class ImportOutmol():
     def __init__(self):
@@ -53,4 +53,63 @@ class ImportOutmolForSDats():
     def __init__():
         pass
 
-    def import_outmol(ifn):
+    def import_outmol_md(self, ifn: Path):
+        """dmol3で第一原理分子動力学をした結果のoutmolファイルを読み込む
+        Parameters
+        ----------
+            ifn : str or Path
+                outmolファイルのパス
+        """
+        with open(ifn, 'r') as f:
+            lines = f.readlines()
+            splines = list(map(lambda l:l.split(), lines))
+        
+        # read cell size , total_atoms, number_of_steps
+        for spline_idx, spline in enumerate(splines):
+            if len(spline) == 0:
+                continue
+            if spline[0] == '$cell':
+                self.cell = [None, None, None]
+                for i in range(3):
+                    self.cell[i] = float(splines[spline_idx + 1 + i][i])
+            if spline[0] == 'N_atoms':
+                total_atoms = int(spline[2])
+            if spline[0] == 'Step':
+                number_of_steps = int(splines[spline_idx + 1][1])
+        
+        self.step_nums = list(range(number_of_steps))
+        self.step_num_to_step_idx = {
+            step_num: step_idx for step_idx, step_num in enumerate(self.step_nums)
+        }
+
+        self.atoms = [None] * len(self.step_nums)
+        self.force = [None] * len(self.step_nums)
+        self.potential_energy = [None] * len(self.step_nums) # Unit : eV
+
+        # read atoms
+        current_step_idx = 0
+        for spline_idx, spline in enumerate(splines):
+            if current_step_idx >= len(self.step_nums):
+                break
+            if len(spline) >= 3 and spline[0] == 'df' and spline[1] == 'ATOMIC' and spline[2] == 'COORDINATES':
+                atoms_line = []
+                for i in range(2, total_atoms + 2):
+                    spline_atom_idx = spline_idx + i
+                    atoms_line.append(splines[spline_atom_idx][1:5])
+                df_atoms = pd.DataFrame(data=atoms_line, columns=['type', 'x', 'y', 'z'])
+                df_atoms['type'] = df_atoms['type'].map(self.atom_symbol_to_type)
+                self.atoms[current_step_idx] = df_atoms
+                current_step_idx += 1
+
+        # read force
+        current_step_idx = 0
+        for spline_idx, spline in enumerate(splines):
+            if current_step_idx >= len(self.step_nums):
+                break
+            if len(spline) >= 5 and spline[0] == 'Step' and spline[1] == 'Kin.+Pot.' and spline[2] == 'Energy' and spline[3] == 'Pot.' and spline[4] == 'Energy':
+                self.potential_energy[current_step_idx] = float(splines[spline_idx + 1][4]) * 27.2114
+                current_step_idx += 1
+            if len(spline) >= 5 and spline[0] == 'Step' and spline[1] == 'System' and spline[2] == 'Energy' and \
+                spline[3] == 'Pot.' and spline[4] == 'Energy':
+                self.potential_energy[current_step_idx] = float(splines[spline_idx + 1][4]) * 27.2114
+                current_step_idx += 1
