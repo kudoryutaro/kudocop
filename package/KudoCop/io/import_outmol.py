@@ -7,7 +7,7 @@ class ImportOutmol():
     def __init__(self):
         pass
 
-    def import_outmol(self, ifn: str):
+    def import_outmol_opt(self, ifn: str):
         '''
         構造最適化によって最適化された最後の構造を読み込む
         '''
