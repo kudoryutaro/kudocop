@@ -56,7 +56,28 @@ class DMol3KudoCop():
     def dmol3_md(self, calc_label='dmol3_md', calc_directory='dmol3_md', np=1,
                 ensemble='NVE', temperature=300.0, time_step=1.0, number_of_steps=1000, exist_ok=False
                 ):
-        """DMol3を用いて第一原理分子動力学を行う
+        """DMol3を用いて第一原理分子動力学を行う.
+
+        Parameters
+        ----------
+        calc_label : str
+            計算する名前 計算結果は calc_directory/calc_label.outmol になる
+        calc_directory : str or Path
+            計算するディレクトリ
+        np : int
+            並列計算数
+        ensemble : str ['NVE', 'NVT']
+            アンサンブルの種類
+        temperature : float
+            温度, 単位は[K]
+        time_step : float
+            タイムステップ, 単位は[fs]
+        number_of_steps : int
+            ステップ数
+        exist_ok : bool
+            exist_ok = Trueとすると、フォルダがあっても上書きする
+            exist_ok = Falseとすると、フォルダが有るときは上書きしない
+            デフォルトはFalse
         """    
 
         assert ensemble in ['NVE', 'NVT'], f"ensemble : {ensemble}には対応していません. ['NVE', 'NVT']のみ対応"

@@ -47,3 +47,10 @@ class ImportOutmol():
         df_outmol['type'] = df_outmol['type'].replace(self.atom_symbol_to_type)
 
         self.atoms = df_outmol.copy()
+
+
+class ImportOutmolForSDats():
+    def __init__():
+        pass
+
+    def import_outmol(ifn):
