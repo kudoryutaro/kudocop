@@ -4,6 +4,7 @@ from tqdm import trange, tqdm
 import subprocess
 from pathlib import Path
 import os
+import time
 
 try:
     from ase.build import molecule
@@ -54,8 +55,8 @@ class DMol3KudoCop():
         self.atoms_calc.calc = calc
 
     def dmol3_md(self, calc_label='dmol3_md', calc_directory='dmol3_md', np=1,
-                ensemble='NVE', temperature=300.0, time_step=1.0, number_of_steps=1000, exist_ok=False
-                ):
+                ensemble='NVE', temperature=300.0, time_step=1.0, number_of_steps=1000, exist_ok=False,
+                max_memory=2048, print_outmol=True):
         """DMol3を用いて第一原理分子動力学を行う.
 
         Parameters
@@ -78,6 +79,10 @@ class DMol3KudoCop():
             exist_ok = Trueとすると、フォルダがあっても上書きする
             exist_ok = Falseとすると、フォルダが有るときは上書きしない
             デフォルトはFalse
+        max_memory : int
+            使用する最大のメモリ
+        print_outmol : bool
+            実行中にoutmolファイルを標準出力するかどうか
         """    
 
         assert ensemble in ['NVE', 'NVT'], f"ensemble : {ensemble}には対応していません. ['NVE', 'NVT']のみ対応"
@@ -97,7 +102,7 @@ MD_Simann_panel
 {int(number_of_steps)}      MD_{ensemble}     {temperature:.4f}
 # 
 Symmetry                      off
-Max_memory                    2048
+Max_memory                    {int(max_memory)}
 File_usage                    smart
 Scf_density_convergence       1.000000e-06
 Scf_charge_mixing             2.000000e-01
@@ -124,8 +129,13 @@ Cutoff_Global                 3.4000 angstrom
             f.write(dmol3_input_lines)
         self.export_car(calc_directory / f'{calc_label}.car')
         cmd = f'RunDMol3.sh {calc_label} -np {np}'
-        p = subprocess.Popen(cmd, cwd=calc_directory, shell=True)
-        p.wait()
+        dmol_md_process = subprocess.Popen(cmd, cwd=calc_directory, shell=True)
+        if print_outmol:
+            tail_process = subprocess.Popen(f'tail -F {calc_label}.outmol', cwd=calc_directory, shell=True)
+            while dmol_md_process.poll() is None:
+                time.sleep(1)
+            tail_process.kill()
+
 
 class DMol3KudoCopForSDats():
     """DMol3を用いて第一原理計算するクラス
