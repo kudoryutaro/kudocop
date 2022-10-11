@@ -8,7 +8,7 @@ class Packmol():
         pass
 
     def packmol(self, sdat_list:list, pack_numbers_list:list, tolerance=2.0, 
-                    packmol_tmp_dir='./packmol_tmp',xyz_condition=None, seed=-1):
+                    packmol_tmp_dir='./packmol_tmp',xyz_condition=None, seed=-1, print_packmol=False):
         """packmolで原子を詰める関数
         Parameters
         ----------
@@ -25,7 +25,8 @@ class Packmol():
             seed : int
                 シード値
                 seed = -1のときはseedは時間で決定される
-                
+            print_packmol : bool
+                packmolの標準出力を表示するか
         Example
         -------
         xyz_condition = [
@@ -86,8 +87,11 @@ class Packmol():
 
         # excecute packmol
         cmd = f"packmol < {'packmol_mixture_comment.inp'}"
-        print(cmd)
-        p = subprocess.Popen(cmd, cwd=packmol_tmp_dir, shell=True)
+        if print_packmol:
+            p = subprocess.Popen(cmd, cwd=packmol_tmp_dir, shell=True, )
+        else:
+            p = subprocess.Popen(cmd, cwd=packmol_tmp_dir, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
         p.wait()
 
         # import result of packmol
