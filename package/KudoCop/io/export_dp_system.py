@@ -34,13 +34,10 @@ class ExportDPSystem():
         Note
         ----
             type.rawは0から始まる, sdat内の原子のtypeは1から始まる.
-            self.atoms内にある原子のタイプのみ出力される
         """
         dp_system_dir = Path(dp_system_dir)
         atom_type_map = []
         for atom_type in range(1, len(self.atom_type_to_symbol) + 1):
-            if atom_type not in self.get_atom_type_set():
-                continue
             atom_type_map.append(self.atom_type_to_symbol[atom_type] + '\n')
         with open(dp_system_dir / 'type_map.raw', 'w') as f:
             f.writelines(atom_type_map)
