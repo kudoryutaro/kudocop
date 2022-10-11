@@ -227,3 +227,30 @@ class SimulationDats(
                 self.bondorder_lists[step_idx][atom_idx] = np.delete(self.bondorder_lists[step_idx][atom_idx], judge_cutoff, 0)
         return self.bondorder_lists
 
+    def add_mass_to_atoms(self):
+        """原子の質量の列をatomsに追加する
+        単位はg/mol
+
+        Parameters
+        ----------
+            None
+        """
+        for step_idx in range(len(self.step_nums)):
+            self.atoms[step_idx]['mass'] = self.atoms[step_idx]['type'].map(self.atom_type_to_mass)
+
+    def add_force_to_atoms(self):
+        """それぞれの原子の加速度からそれぞれの原子に働く力を求めてatomsに追加する
+        単位はeV/Å
+        Parameters
+        ----------
+            None
+        """
+        self.add_mass_to_atoms()
+
+        for step_idx in range(len(self.step_nums)):
+            assert 'ax' in self.atoms[step_idx] and 'ay' in self.atoms[step_idx] and 'az' in self.atoms[step_idx], \
+                'atomsに加速度がありません'
+            self.atoms[step_idx][['fx', 'fy', 'fz']] = self.atoms[step_idx][['ax', 'ay', 'az']] * (10**10) * (6.242*(10**18)) / (6.02214076*(10**23))
+        
+
+            

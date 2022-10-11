@@ -76,7 +76,7 @@ class ImportOutmolForSDats():
             if spline[0] == '$cell':
                 self.cell = [None, None, None]
                 for i in range(3):
-                    self.cell[i] = float(splines[spline_idx + 1 + i][i])
+                    self.cell[i] = float(splines[spline_idx + 1 + i][i]) * 0.529177 # bohr/a.u. -> Å/fsec
             if spline[0] == 'N_atoms':
                 total_atoms = int(spline[2])
             if spline[0] == 'Step':
@@ -105,7 +105,12 @@ class ImportOutmolForSDats():
                 for i in range(2, total_atoms + 2):
                     spline_atom_idx = spline_idx + i
                     atoms_line.append(splines[spline_atom_idx][1:5])
-                df_atoms = pd.DataFrame(data=atoms_line, columns=['type', 'x', 'y', 'z'])
+                df_atoms = pd.DataFrame(data=atoms_line, columns=['type', 'x', 'y', 'z']) 
+                df_atoms[['x', 'y', 'z']] = df_atoms[['x', 'y', 'z']].astype(float)
+                df_atoms[['x', 'y', 'z']] *= 0.529177 # a.u. -> Å
+                df_atoms['x'] %= self.cell[0]
+                df_atoms['y'] %= self.cell[1]
+                df_atoms['z'] %= self.cell[2]
                 df_atoms['type'] = df_atoms['type'].map(self.atom_symbol_to_type)
                 self.atoms[current_step_idx] = df_atoms
                 current_step_idx += 1
@@ -126,6 +131,11 @@ class ImportOutmolForSDats():
                     spline_atom_idx = spline_idx + i
                     atoms_line.append(splines[spline_atom_idx][2:8])
                 self.atoms[current_step_idx][['vx', 'vy', 'vz', 'ax', 'ay', 'az']] = atoms_line
+                self.atoms[current_step_idx][['vx', 'vy', 'vz', 'ax', 'ay', 'az']] = \
+                            self.atoms[current_step_idx][['vx', 'vy', 'vz', 'ax', 'ay', 'az']].astype(float)
+                self.atoms[current_step_idx][['vx', 'vy', 'vz']] *= 0.529177 / 0.0241888 # bohr/a.u. -> Å/fsec
+                self.atoms[current_step_idx][['ax', 'ay', 'az']] *= 0.529177 / (0.0241888**2) # bohr/(a.u.**2) -> Å/(fsec**2)
+
                 current_step_idx += 1
                 current_step_num += 1
 
