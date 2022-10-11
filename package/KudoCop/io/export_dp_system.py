@@ -77,11 +77,11 @@ class ExportDPSystem():
         np.save(dp_system_set_dir / 'box', box)
 
     def export_dp_system_set_energy(self, dp_system_set_dir:Path):
-        """DeePMDのforce.npyを作成する
+        """DeePMDのenergy.npyを作成する
         Parameter
         ---------
         dp_system_set_dir : Path
-            force.npyを作成するディレクトリのパス
+            energy.npyを作成するディレクトリのパス
         """
         assert hasattr(self, 'atoms_calc'), 'dmol3_calcで先に第一原理計算してください'
         dp_system_set_dir = Path(dp_system_set_dir)
@@ -90,11 +90,11 @@ class ExportDPSystem():
         np.save(dp_system_set_dir / 'energy', np.array([energy]))
 
     def export_dp_system_set_force(self, dp_system_set_dir:Path):
-        """DeePMDのbox.npyを作成する
+        """DeePMDのforce.npyを作成する
         Parameter
         ---------
         dp_system_set_dir : Path
-            box.npyを作成するディレクトリのパス
+            force.npyを作成するディレクトリのパス
         
         Note
         ----

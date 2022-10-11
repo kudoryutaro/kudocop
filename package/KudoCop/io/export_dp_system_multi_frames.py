@@ -34,13 +34,10 @@ class ExportDPSystemMultiFrames():
         Note
         ----
             type.rawは0から始まる, sdat内の原子のtypeは1から始まる.
-            self.atoms内にある原子のタイプのみ出力される
         """
         dp_system_dir = Path(dp_system_dir)
         atom_type_map = []
         for atom_type in range(1, len(self.atom_type_to_symbol) + 1):
-            if atom_type not in self.get_atom_type_set():
-                continue
             atom_type_map.append(self.atom_type_to_symbol[atom_type] + '\n')
         with open(dp_system_dir / 'type_map.raw', 'w') as f:
             f.writelines(atom_type_map)
@@ -52,6 +49,9 @@ class ExportDPSystemMultiFrames():
         ---------
         dp_system_set_dir : Path
             coord.npyを作成するディレクトリのパス
+        Note
+        ----
+            coord.npyのshape : (Nframes, Natoms*3)
         """
         dp_system_set_dir = Path(dp_system_set_dir)
         coord = []
@@ -68,8 +68,9 @@ class ExportDPSystemMultiFrames():
         dp_system_set_dir : Path
             box.npyを作成するディレクトリのパス
 
-        Note:
-            boxのshape : (1, 9)
+        Note
+        ----
+            boxのshape : (Nframes, 9)
                 [[XX XY XZ YX YY YZ ZX ZY ZZ]]
         """
         dp_system_set_dir = Path(dp_system_set_dir)
@@ -81,36 +82,39 @@ class ExportDPSystemMultiFrames():
         np.save(dp_system_set_dir / 'box', box)
 
     def export_dp_system_set_energy(self, dp_system_set_dir:Path):
+        """DeePMDのenergy.npyを作成する
+        Parameter
+        ---------
+        dp_system_set_dir : Path
+            energy.npyを作成するディレクトリのパス
+        Note
+        ----
+            energy.npyのshape : (Nframes, )
+        """
+        dp_system_set_dir = Path(dp_system_set_dir)
+        energy = self.potential_energy
+        energy = np.array(energy)
+        np.save(dp_system_set_dir / 'energy', energy)
+
+    def export_dp_system_set_force(self, dp_system_set_dir:Path):
         """DeePMDのforce.npyを作成する
         Parameter
         ---------
         dp_system_set_dir : Path
             force.npyを作成するディレクトリのパス
-        """
-        assert hasattr(self, 'atoms_calc'), 'dmol3_calcで先に第一原理計算してください'
-        dp_system_set_dir = Path(dp_system_set_dir)
-        energy = self.get_dmol3_total_energies()
-        energy = np.array(energy)
-        np.save(dp_system_set_dir / 'energy', energy)
-
-    def export_dp_system_set_force(self, dp_system_set_dir:Path):
-        """DeePMDのbox.npyを作成する
-        Parameter
-        ---------
-        dp_system_set_dir : Path
-            box.npyを作成するディレクトリのパス
         
         Note
         ----
         force : DFTの結果のforce
-                shape : (Natoms, 3)
+                shape : (Nframes, Natoms*3)
 
         """
-        assert hasattr(self, 'atoms_calc'), 'dmol3_calcで先に第一原理計算してください'
         dp_system_set_dir = Path(dp_system_set_dir)
-        force = self.get_dmol3_forces()
-        force = np.array(force)
-        force = force.reshape(len(self.step_nums), -1)
+        if 'fx' not in self.atoms[0].columns:
+            self.add_force_to_atoms()
+        force = []
+        for step_idx in range(len(self.step_nums)):
+            force.append(self.atoms[step_idx][['fx', 'fy', 'fz']].values.ravel())
         np.save(dp_system_set_dir / 'force', np.array(force))
 
     def export_dp_system(self, dp_system_dir:Path, set_dir_name:str,
@@ -122,9 +126,18 @@ class ExportDPSystemMultiFrames():
                 systemのディレクトリのパス
             set_dir_name : str
                 system内のsetの名前
-        
+        Note
+        ----
+            作成されるデータセットの形式
+                dp_system_dir
+                    ├── dp_set_name
+                    │   ├── coord.npy        # 原子の座標
+                    │   ├── force.npy        # それぞれの原子にかかる力
+                    │   ├── energy.npy       # それぞれのフレームのpotential energy
+                    │   └── box.npy          # それぞれのフレームのセルの大きさ
+                    ├── type_map.raw         # 原子のsymbolとtypeの対応関係
+                    └── type.raw             # 原子のtype
         """
-        assert hasattr(self, 'atoms_calc'), 'dmol3_calcで先に第一原理計算してください'
         dp_system_dir = Path(dp_system_dir)
 
         os.makedirs(dp_system_dir, exist_ok=True)
