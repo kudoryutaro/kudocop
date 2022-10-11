@@ -1,6 +1,9 @@
 import numpy as np
 from pathlib import Path
 from tqdm import trange, tqdm
+import subprocess
+from pathlib import Path
+import os
 
 try:
     from ase.build import molecule
@@ -49,7 +52,80 @@ class DMol3KudoCop():
         calc = DMol3(**kwargs)
         calc.directory = calc_directory
         self.atoms_calc.calc = calc
-    
+
+    def dmol3_md(self, calc_label='dmol3_md', calc_directory='dmol3_md', np=1,
+                ensemble='NVE', temperature=300.0, time_step=1.0, number_of_steps=1000, exist_ok=False
+                ):
+        """DMol3を用いて第一原理分子動力学を行う.
+
+        Parameters
+        ----------
+        calc_label : str
+            計算する名前 計算結果は calc_directory/calc_label.outmol になる
+        calc_directory : str or Path
+            計算するディレクトリ
+        np : int
+            並列計算数
+        ensemble : str ['NVE', 'NVT']
+            アンサンブルの種類
+        temperature : float
+            温度, 単位は[K]
+        time_step : float
+            タイムステップ, 単位は[fs]
+        number_of_steps : int
+            ステップ数
+        exist_ok : bool
+            exist_ok = Trueとすると、フォルダがあっても上書きする
+            exist_ok = Falseとすると、フォルダが有るときは上書きしない
+            デフォルトはFalse
+        """    
+
+        assert ensemble in ['NVE', 'NVT'], f"ensemble : {ensemble}には対応していません. ['NVE', 'NVT']のみ対応"
+        
+        calc_directory = Path(calc_directory)
+        os.makedirs(calc_directory, exist_ok=exist_ok)
+        dmol3_input_path = calc_directory / f'{calc_label}.input'
+        dmol3_input_lines = f"""
+
+# Task parameters
+Calculate                     molecular_dynamics
+Write_HIS_File                on
+Write_ARC_File                on
+MD_Velocity                   random
+MD_Time_Step                  {time_step:.4f}
+MD_Simann_panel 
+{int(number_of_steps)}      MD_{ensemble}     {temperature:.4f}
+# 
+Symmetry                      off
+Max_memory                    2048
+File_usage                    smart
+Scf_density_convergence       1.000000e-06
+Scf_charge_mixing             2.000000e-01
+Scf_diis                      6 pulay
+Scf_iterations                50
+
+# Electronic parameters
+Spin_polarization             restricted
+Charge                        0
+Forces                        on
+Basis                         dnp
+Pseudopotential               none
+Functional                    pwc
+Harris                        off
+Aux_density                   hexadecapole
+Integration_grid              fine
+Occupation                    fermi
+Cutoff_Global                 3.4000 angstrom
+
+# Calculated properties
+
+        """
+        with open(dmol3_input_path, 'w') as f:
+            f.write(dmol3_input_lines)
+        self.export_car(calc_directory / f'{calc_label}.car')
+        cmd = f'RunDMol3.sh {calc_label} -np {np}'
+        p = subprocess.Popen(cmd, cwd=calc_directory, shell=True)
+        p.wait()
 
 class DMol3KudoCopForSDats():
     """DMol3を用いて第一原理計算するクラス

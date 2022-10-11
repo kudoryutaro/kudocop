@@ -10,6 +10,7 @@ from .import_dumpbond_cg import ImportDumpbondCG
 from .import_out_cg import ImportOutCg
 from .import_car import ImportCar
 from .import_sumforce import ImportSumforce
+from .import_mol import ImportMol
 
 class ImportFile(
     ImportPara,
@@ -23,7 +24,8 @@ class ImportFile(
     ImportDumpbondCG,
     ImportOutCg,
     ImportCar,
-    ImportSumforce
+    ImportSumforce,
+    ImportMol,
 ):
     def __init__():
         super().__init__()
