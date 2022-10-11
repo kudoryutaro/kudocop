@@ -130,6 +130,7 @@ Cutoff_Global                 3.4000 angstrom
         self.export_car(calc_directory / f'{calc_label}.car')
         cmd = f'RunDMol3.sh {calc_label} -np {np}'
         dmol_md_process = subprocess.Popen(cmd, cwd=calc_directory, shell=True)
+        time.sleep(3)
         if print_outmol:
             tail_process = subprocess.Popen(f'tail -F {calc_label}.outmol', cwd=calc_directory, shell=True)
             while dmol_md_process.poll() is None:
