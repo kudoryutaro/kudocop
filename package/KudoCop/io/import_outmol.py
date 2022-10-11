@@ -59,6 +59,11 @@ class ImportOutmolForSDats():
         ----------
             ifn : str or Path
                 outmolファイルのパス
+        Note
+        ----
+            step 0 は読み込まない
+            step (0, number_of_step]を読み込む
+            (stepの数をnumber_of_step個にしたいため)
         """
         with open(ifn, 'r') as f:
             lines = f.readlines()
@@ -77,7 +82,7 @@ class ImportOutmolForSDats():
             if spline[0] == 'Step':
                 number_of_steps = int(splines[spline_idx + 1][1])
         
-        self.step_nums = list(range(number_of_steps))
+        self.step_nums = list(range(1, number_of_steps + 1))
         self.step_num_to_step_idx = {
             step_num: step_idx for step_idx, step_num in enumerate(self.step_nums)
         }
@@ -88,10 +93,14 @@ class ImportOutmolForSDats():
 
         # read atoms
         current_step_idx = 0
+        current_step_num = 0
         for spline_idx, spline in enumerate(splines):
-            if current_step_idx >= len(self.step_nums):
+            if current_step_idx > len(self.step_nums):
                 break
             if len(spline) >= 3 and spline[0] == 'df' and spline[1] == 'ATOMIC' and spline[2] == 'COORDINATES':
+                if current_step_num == 0:
+                    current_step_num += 1
+                    continue
                 atoms_line = []
                 for i in range(2, total_atoms + 2):
                     spline_atom_idx = spline_idx + i
@@ -100,16 +109,36 @@ class ImportOutmolForSDats():
                 df_atoms['type'] = df_atoms['type'].map(self.atom_symbol_to_type)
                 self.atoms[current_step_idx] = df_atoms
                 current_step_idx += 1
+                current_step_num += 1
+        
+        # read velocity and acceleration
+        current_step_idx = 0
+        current_step_num = 0
+        for spline_idx, spline in enumerate(splines):
+            if current_step_idx > len(self.step_nums):
+                break
+            if len(spline) >= 3 and spline[0] == 'dq' and spline[1] == 'ATOMIC' and spline[2] == 'VELOCITIES':
+                if current_step_num == 0:
+                    current_step_num += 1
+                    continue
+                atoms_line = []
+                for i in range(2, total_atoms + 2):
+                    spline_atom_idx = spline_idx + i
+                    atoms_line.append(splines[spline_atom_idx][2:8])
+                self.atoms[current_step_idx][['vx', 'vy', 'vz', 'ax', 'ay', 'az']] = atoms_line
+                current_step_idx += 1
+                current_step_num += 1
 
-        # read force
+        # read potential energy
         current_step_idx = 0
         for spline_idx, spline in enumerate(splines):
             if current_step_idx >= len(self.step_nums):
                 break
-            if len(spline) >= 5 and spline[0] == 'Step' and spline[1] == 'Kin.+Pot.' and spline[2] == 'Energy' and spline[3] == 'Pot.' and spline[4] == 'Energy':
-                self.potential_energy[current_step_idx] = float(splines[spline_idx + 1][4]) * 27.2114
-                current_step_idx += 1
+            # if len(spline) >= 5 and spline[0] == 'Step' and spline[1] == 'Kin.+Pot.' and spline[2] == 'Energy' and spline[3] == 'Pot.' and spline[4] == 'Energy':
+            #     self.potential_energy[current_step_idx] = float(splines[spline_idx + 1][4]) * 27.2114
+            #     current_step_idx += 1
             if len(spline) >= 5 and spline[0] == 'Step' and spline[1] == 'System' and spline[2] == 'Energy' and \
                 spline[3] == 'Pot.' and spline[4] == 'Energy':
                 self.potential_energy[current_step_idx] = float(splines[spline_idx + 1][4]) * 27.2114
                 current_step_idx += 1
+

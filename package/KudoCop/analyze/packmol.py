@@ -8,7 +8,7 @@ class Packmol():
         pass
 
     def packmol(self, sdat_list:list, pack_numbers_list:list, tolerance=2.0, 
-                    packmol_tmp_dir='./packmol_tmp',xyz_condition=None):
+                    packmol_tmp_dir='./packmol_tmp',xyz_condition=None, seed=-1):
         """packmolで原子を詰める関数
         Parameters
         ----------
@@ -22,7 +22,10 @@ class Packmol():
                 詰める原子の座標の条件
             packmol_tmp_dir : Path or str
                 packmolを動かすときの一時的なディレクトリ
-        
+            seed : int
+                シード値
+                seed = -1のときはseedは時間で決定される
+                
         Example
         -------
         xyz_condition = [
@@ -52,6 +55,7 @@ class Packmol():
         with open(packmol_tmp_dir / 'packmol_mixture_comment.inp', 'w') as f:
             f.write(f'tolerance {tolerance}\n')
             f.write(f'filetype xyz\n')
+            f.write(f'seed {seed}\n')
             f.write(f'output packmol_mixture_result.xyz\n')
             f.write(f'\n')
 
