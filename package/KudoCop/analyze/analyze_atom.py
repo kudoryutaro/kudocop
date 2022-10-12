@@ -149,6 +149,25 @@ class AnalyzeAtom():
         return coordination_counter
 
 
+    def count_structure_target_group(self, cut_off=0.5, target_atom_type=-1, bond_type='dumpbond', condition=None) -> dict:
+        count_structure = {}
+        connect_list = self.get_connect_list(bond_type=bond_type, cut_off=cut_off)
+        type_max_num = max(self.get_atom_type_set())
+        atom_types = self.atoms['type'].values
+        for atom_idx in trange(self.get_total_atoms()):
+            if atom_types[atom_idx] != target_atom_type:
+                continue
+            current_neighbor_atom_type_count = [0] * (type_max_num + 1)
+            for neighbor_atom_idx in connect_list[atom_idx]:
+                neighbor_atom_type = atom_types[neighbor_atom_idx]
+                current_neighbor_atom_type_count[neighbor_atom_type] += 1
+            current_neighbor_atom_type_count = tuple(current_neighbor_atom_type_count)
+            if current_neighbor_atom_type_count not in count_structure:
+                count_structure[current_neighbor_atom_type_count] = 0
+            count_structure[current_neighbor_atom_type_count] += 1
+        return count_structure
+
+
 class AnalyzeAtomForSDats():
     def __init__():
         pass
