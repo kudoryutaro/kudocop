@@ -67,6 +67,7 @@ class SimulationDats(
         self.connect_lists_from_dumpposes = None
         self.connect_list_cut_off_from_dumpposes = None
 
+        self.potential_energy = []
 
         # variables for para.rd
         self.atom_symbol_to_type = None
@@ -226,6 +227,33 @@ class SimulationDats(
                         judge_cutoff.append(connected_atom_row)
                 self.bondorder_lists[step_idx][atom_idx] = np.delete(self.bondorder_lists[step_idx][atom_idx], judge_cutoff, 0)
         return self.bondorder_lists
+
+    def concat_sdats(self, sdats_list:list):
+        """sdatsを結合する
+        Parameters
+        ----------
+            sdats_list : list of sdats
+                結合するsdatsのリスト, 
+        Note
+        ----
+            concat_sdatsメソッドを使用するsdatsは空のを使う
+        """
+
+        for outer_sdats in sdats_list:
+            if self.cell[0] is None and self.cell[1] is None and self.cell[2] is None:
+                if outer_sdats.cell[0] is not None and outer_sdats.cell[1] is not None and outer_sdats.cell[2] is not None:
+                    self.cell[0] = outer_sdats.cell[0]
+                    self.cell[1] = outer_sdats.cell[1]
+                    self.cell[2] = outer_sdats.cell[2]
+
+            for step_idx in range(len(outer_sdats.step_nums)):
+                self.atoms.append(outer_sdats.atoms[step_idx])
+                self.potential_energy.append(outer_sdats.potential_energy[step_idx])
+        
+        self.step_nums = list(range(len(self.atoms)))
+        self.step_num_to_step_idx = {
+           step_num:step_idx for step_idx, step_num in enumerate(range(len(self.step_nums)))
+        }
 
     def add_mass_to_atoms(self):
         """原子の質量の列をatomsに追加する

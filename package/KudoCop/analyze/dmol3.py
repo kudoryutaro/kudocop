@@ -55,7 +55,8 @@ class DMol3KudoCop():
         self.atoms_calc.calc = calc
 
     def dmol3_md(self, calc_label='dmol3_md', calc_directory='dmol3_md', np=1,
-                ensemble='NVE', temperature=300.0, time_step=1.0, number_of_steps=1000, quality='medium', exist_ok=False, max_memory=2048, print_outmol=True):
+                ensemble='NVE', temperature=300.0, time_step=1.0, number_of_steps=1000, exist_ok=False, max_memory=2048, print_outmol=True, scf_density_convergence=1.000000e-05, 
+                integration_grid='medium', basis='dnp', cutoff_Global=3.2000, scf_iterations=50):
         """DMol3を用いて第一原理分子動力学を行う.
 
         Parameters
@@ -74,8 +75,6 @@ class DMol3KudoCop():
             タイムステップ, 単位は[fs]
         number_of_steps : int
             ステップ数
-        quality : str ['coarse', 'medium', 'fine']
-            計算の正確さ
         exist_ok : bool
             exist_ok = Trueとすると、フォルダがあっても上書きする
             exist_ok = Falseとすると、フォルダが有るときは上書きしない
@@ -84,31 +83,20 @@ class DMol3KudoCop():
             使用する最大のメモリ
         print_outmol : bool
             実行中にoutmolファイルを標準出力するかどうか
+        scf_density_convergence : float
+        integration_grid : str ['coarse', 'medium', 'fine']
+        basis : str  ['dn', 'dnd', 'dnp']
+        cutoff_Global : float
+        scf_iterations : int
+            DMol3のマニュアルを参照してください
         """    
 
         assert ensemble in ['NVE', 'NVT'], f"ensemble : {ensemble}には対応していません. ['NVE', 'NVT']のみ対応"
-        assert quality in ['coarse', 'medium', 'fine'], f"quality : {quality}には対応していません['coarse', 'medium', 'fine']のみ対応"
 
         calc_directory = Path(calc_directory)
         os.makedirs(calc_directory, exist_ok=exist_ok)
         dmol3_input_path = calc_directory / f'{calc_label}.input'
 
-        # quality
-        if quality == 'coarse':
-            Scf_density_convergence =  1.000000e-04
-            Integration_grid = 'coarse'
-            Basis = 'dn'
-            Cutoff_Global = 3.0000
-        elif quality == 'medium':
-            Scf_density_convergence =  1.000000e-05
-            Integration_grid = 'medium'
-            Basis = 'dnd'
-            Cutoff_Global = 3.2000
-        elif quality == 'fine':
-            Scf_density_convergence =  1.000000e-06
-            Integration_grid = 'fine'
-            Basis = 'dnp'
-            Cutoff_Global = 3.4000
         
         dmol3_input_lines = f"""
 
@@ -124,23 +112,23 @@ MD_Simann_panel
 Symmetry                      off
 Max_memory                    {int(max_memory)}
 File_usage                    smart
-Scf_density_convergence       {Scf_density_convergence:.6e}
+Scf_density_convergence       {scf_density_convergence:.6e}
 Scf_charge_mixing             2.000000e-01
 Scf_diis                      6 pulay
-Scf_iterations                50
+Scf_iterations                {int(scf_iterations)}
 
 # Electronic parameters
 Spin_polarization             restricted
 Charge                        0
 Forces                        on
-Basis                         {Basis}
+Basis                         {basis}
 Pseudopotential               none
 Functional                    pwc
 Harris                        off
 Aux_density                   hexadecapole
-Integration_grid              {Integration_grid}
+Integration_grid              {integration_grid}
 Occupation                    fermi
-Cutoff_Global                 {Cutoff_Global:.4f} angstrom
+Cutoff_Global                 {cutoff_Global:.4f} angstrom
 
 # Calculated properties
 
