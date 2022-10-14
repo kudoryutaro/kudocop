@@ -149,6 +149,52 @@ class AnalyzeAtom():
         return coordination_counter
 
 
+    def count_structure_target_group(self, cut_off=0.5, target_atom_type=-1, bond_type='dumpbond', condition=None) -> dict:
+        """
+        ある原子種をtargetとして、targetに結合している原子の種類と数のタプルを返す
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+        target_atom_type : int
+            対象となる原子のtype
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        condition : function
+            配位数を調べたい原子を指定する関数
+
+        Returns
+        -------
+            count_structure_target_group: dict
+                targetに結合している原子種と数
+        """
+        count_structure_target_group = {}
+        connect_list = self.get_connect_list(bond_type=bond_type, cut_off=cut_off)
+        type_max_num = max(self.get_atom_type_set())
+        atom_types = self.atoms['type'].values
+        for atom_idx in trange(self.get_total_atoms()):
+            if atom_types[atom_idx] != target_atom_type:
+                continue
+            current_neighbor_atom_type_count = [0] * (type_max_num + 1)
+            for neighbor_atom_idx in connect_list[atom_idx]:
+                neighbor_atom_type = atom_types[neighbor_atom_idx]
+                current_neighbor_atom_type_count[neighbor_atom_type] += 1
+            current_neighbor_atom_type_count = tuple(current_neighbor_atom_type_count)
+            if current_neighbor_atom_type_count not in count_structure_target_group:
+                count_structure_target_group[current_neighbor_atom_type_count] = 0
+            count_structure_target_group[current_neighbor_atom_type_count] += 1
+        return count_structure_target_group
+
+
 class AnalyzeAtomForSDats():
     def __init__():
         pass
