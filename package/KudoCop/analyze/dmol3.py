@@ -97,6 +97,13 @@ class DMol3KudoCop():
         os.makedirs(calc_directory, exist_ok=exist_ok)
         dmol3_input_path = calc_directory / f'{calc_label}.input'
 
+        if ensemble == 'NVE':
+            MD_Simann_panel = f'{int(number_of_steps)}      MD_NVE     {temperature:.4f}'
+        elif ensemble == 'NVT':
+            relaxation_time = 10.0
+            chain_length = 2
+            MD_Simann_panel = f'   {int(number_of_steps)}      NVT_MGGMT     {temperature:.4f}   {relaxation_time}   {chain_length}'
+
         
         dmol3_input_lines = f"""
 
@@ -107,7 +114,7 @@ Write_ARC_File                on
 MD_Velocity                   random
 MD_Time_Step                  {time_step:.4f}
 MD_Simann_panel 
-{int(number_of_steps)}      MD_{ensemble}     {temperature:.4f}
+{MD_Simann_panel}
 # 
 Symmetry                      off
 Max_memory                    {int(max_memory)}

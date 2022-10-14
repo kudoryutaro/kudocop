@@ -342,3 +342,122 @@ class AnalyzeAtomForSDats():
         
         df_coordination_number = pd.DataFrame(data=coordination_list, index=self.step_nums)
         return df_coordination_number
+
+    
+    def get_time_variation_of_coordinated_atoms(self, cut_off=0.5, bond_type='dumpbond', 
+                                target_atom_type=-1, condition=None, rename=True):
+        """ある種類の原子に注目して、その原子に何が配位しているかを調べる。そして、その原子が次のステップでどのような
+        配位に変わったのかをカウントする。
+        Parameters
+        ----------
+        cut_off : float
+            bond_type == 'dumppos' の時はcut_offの単位はÅ
+            ある原子からcut_off以下の距離にある原子は結合しているとみなす
+
+            bond_type == 'dumpbond' の時はcut_offの単位はbond order
+            ある原子とある原子のbond orderの和がcut_off以上のときに結合しているとみなす
+
+            bond_type == 'dumpbond_cg' の時はcut_offは不必要
+        target_atom_type : int
+            対象となる原子のtype
+        bond_type : str
+            bond_type == 'dumppos' の時はconnect_listはdumpposから生成される
+            bond_type == 'dumpbond' の時connect_listはdumpbondから生成される
+            bond_type == 'dumpbond_cg' の時connect_listはdumpbond_cgから生成される
+
+        condition : function
+            配位数を調べたい原子を指定する関数
+        rename : bool
+            rename=Trueにすると読みやすい形式で返す
+        Returns
+        -------
+            time_variation_of_coordinated_atoms: dict
+                配位数の時間変化
+        Explanation
+        -----------
+            time_variation_of_coordinated_atomsの形式
+                time_variation_of_coordinated_atoms[今のステップの構造][次のステップの構造] = その構造のカウント数
+        Example
+        -------
+            0, 1000, 2000ステップ読み込んでいるとし、target_atom_type=4 (N, 窒素)とする
+            この時、0->1000ステップ、1000->2000ステップのNの配位数の変化がカウントされる
+            >>>sdats.atom_type_to_symbol
+            {1: 'C', 2: 'H', 3: 'O', 4: 'N', 5: 'S', 6: 'Si', 7: 'Na', 8: 'F', 9: 'P'}
+            >>>time_variation_of_coordinated_atoms = sdats.get_time_variation_of_coordinated_atoms(target_atom_type=4)
+            この例では、H2つとSi1つと結合しているNは次のステップで、H1つ, O1つ, Si1つと結合するようになるNは62個あった。
+            つまり、'N-H2Si1' -> 'N-H1O1Si1' という変化をしたNの個数は62個あった。
+            >>>pprint(time_variation_of_coordinated_atoms['N-H2Si1'])
+            {'N-H1O1Si1': 62,
+            'N-H1Si1': 67,
+            'N-H1Si2': 177,
+            'N-H2O1Si1': 70,
+            'N-H2Si1': 1663,
+            'N-H2Si2': 145,
+            'N-H3': 184,
+            'N-H3Si1': 277}
+        """
+        assert target_atom_type in self.get_atom_type_set(), 'invalid target_atom_type.'
+        assert len(self.step_nums) >= 2, 'ステップ数が少なすぎます'
+        connect_lists = self.get_connect_lists(
+            cut_off=cut_off, bond_type=bond_type)
+        atom_types = self.atoms[0]['type'].values
+        atom_type_max_num = max(atom_types)
+        # time_variation_of_coordinated_atoms[coordination count of current_step][coordination count of next_step] = count 
+        time_variation_of_coordinated_atoms = dict()
+
+        for current_step_idx in trange(len(self.step_nums) - 1, desc='[counting time var of coord atoms]'):
+            if condition is None:
+                target_atoms = np.array([True] * self.get_total_atoms())
+            else:
+                target_atoms = condition(self, current_step_idx)
+            next_step_idx = current_step_idx + 1
+            for atom_idx in range(self.get_total_atoms()):
+                if not target_atoms[atom_idx]:
+                    continue
+                if atom_types[atom_idx] != target_atom_type:
+                    continue
+                current_coord_counter = [0] * (atom_type_max_num + 1)
+                for neighbor_atom_idx in connect_lists[current_step_idx][atom_idx]:
+                    neighbor_atom_type = atom_types[neighbor_atom_idx]
+                    current_coord_counter[neighbor_atom_type] += 1
+                current_coord_counter = tuple(current_coord_counter)
+
+                next_coord_counter = [0] * (atom_type_max_num + 1)
+                for neighbor_atom_idx in connect_lists[next_step_idx][atom_idx]:
+                    neighbor_atom_type = atom_types[neighbor_atom_idx]
+                    next_coord_counter[neighbor_atom_type] += 1
+                next_coord_counter = tuple(next_coord_counter)
+
+                if not current_coord_counter in time_variation_of_coordinated_atoms:
+                    time_variation_of_coordinated_atoms[current_coord_counter] = {}
+                if not next_coord_counter in time_variation_of_coordinated_atoms[current_coord_counter]:
+                    time_variation_of_coordinated_atoms[current_coord_counter][next_coord_counter] = 0
+                time_variation_of_coordinated_atoms[current_coord_counter][next_coord_counter] += 1
+        if not rename:
+            return time_variation_of_coordinated_atoms        
+
+        time_variation_of_coordinated_atoms_renamed = dict()
+        for current_coord_counter, current_coord_counter_counter in time_variation_of_coordinated_atoms.items():
+            current_coord_counter_renamed_list = []
+            current_coord_counter_renamed_list.append(f'{self.atom_type_to_symbol[target_atom_type]}-')
+            for atom_type in range(1, atom_type_max_num + 1):
+                if current_coord_counter[atom_type] == 0:
+                    continue
+                current_coord_counter_renamed_list.append(f'{self.atom_type_to_symbol[atom_type]}{current_coord_counter[atom_type]}')
+            current_coord_counter_renamed = ''.join(current_coord_counter_renamed_list)
+            if current_coord_counter_renamed not in time_variation_of_coordinated_atoms_renamed:
+                time_variation_of_coordinated_atoms_renamed[current_coord_counter_renamed] = {}
+
+            for next_coord_counter, count_num in current_coord_counter_counter.items():
+                next_coord_counter_renamed_list = []
+                next_coord_counter_renamed_list.append(f'{self.atom_type_to_symbol[target_atom_type]}-')
+                for atom_type in range(1, atom_type_max_num + 1):
+                    if next_coord_counter[atom_type] == 0:
+                        continue
+                    next_coord_counter_renamed_list.append(f'{self.atom_type_to_symbol[atom_type]}{next_coord_counter[atom_type]}')
+                next_coord_counter_renamed = ''.join(next_coord_counter_renamed_list)
+                time_variation_of_coordinated_atoms_renamed[current_coord_counter_renamed]
+
+                time_variation_of_coordinated_atoms_renamed[current_coord_counter_renamed][next_coord_counter_renamed] = count_num
+
+        return time_variation_of_coordinated_atoms_renamed
