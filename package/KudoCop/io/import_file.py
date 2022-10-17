@@ -11,6 +11,7 @@ from .import_out_cg import ImportOutCg
 from .import_car import ImportCar
 from .import_sumforce import ImportSumforce
 from .import_mol import ImportMol
+from .import_lammps_input import ImportLammpsInput
 
 class ImportFile(
     ImportPara,
@@ -26,6 +27,7 @@ class ImportFile(
     ImportCar,
     ImportSumforce,
     ImportMol,
+    ImportLammpsInput,
 ):
     def __init__():
         super().__init__()
