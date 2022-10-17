@@ -274,14 +274,13 @@ class SimulationDats(
             None
         """
         self.add_mass_to_atoms()
-
+        hartree = 27.211386024367243
+        bohr = 0.5291772105638411
         for step_idx in range(len(self.step_nums)):
             assert 'ax' in self.atoms[step_idx] and 'ay' in self.atoms[step_idx] and 'az' in self.atoms[step_idx], \
                 'atomsに加速度がありません'
             
             # 単位換算 要検討
-            # 大きい数でかけたり割ったりしないようにする
-            self.atoms[step_idx][['fx', 'fy', 'fz']] = self.atoms[step_idx][['ax', 'ay', 'az']] * (10**10) * (6.242*(10**18)) / (6.02214076*(10**23))
-        
-
-            
+            for direction in ['x', 'y', 'z']:
+                self.atoms[step_idx]['f' + direction] = \
+                    self.atoms[step_idx]['a' + direction] * self.atoms[step_idx]['mass'] * hartree / bohr

@@ -134,7 +134,7 @@ class ImportOutmolForSDats():
                 self.atoms[current_step_idx][['vx', 'vy', 'vz', 'ax', 'ay', 'az']] = \
                             self.atoms[current_step_idx][['vx', 'vy', 'vz', 'ax', 'ay', 'az']].astype(float)
                 self.atoms[current_step_idx][['vx', 'vy', 'vz']] *= 0.529177 / 0.0241888 # bohr/a.u. -> Å/fsec
-                self.atoms[current_step_idx][['ax', 'ay', 'az']] *= 0.529177 / (0.0241888**2) # bohr/(a.u.**2) -> Å/(fsec**2)
+                # self.atoms[current_step_idx][['ax', 'ay', 'az']] *= 0.529177 / (0.0241888**2) # bohr/(a.u.**2) -> Å/(fsec**2)
 
                 current_step_idx += 1
                 current_step_num += 1
