@@ -14,6 +14,7 @@ from .analyze import neighbor
 from .io.export_dp_system_multi_frames import ExportDPSystemMultiFrames
 from .analyze.dmol3 import DMol3KudoCopForSDats
 from .io.import_outmol import ImportOutmolForSDats
+from .io.import_lammps_dumppos import ImportLammpsDumppos
 
 class SimulationDats(
     ImportPara,
@@ -25,6 +26,7 @@ class SimulationDats(
     AnalyzeForSDats,
     DMol3KudoCopForSDats,
     ExportDPSystemMultiFrames,
+    ImportLammpsDumppos,
 ):
     """シミュレーションしたデータを読み込み、書き込み、分析するためのクラス
     一度に複数のdump.posとdump.bondを読み込む

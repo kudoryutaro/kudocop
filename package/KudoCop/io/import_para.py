@@ -122,3 +122,32 @@ class ImportPara():
         self.atom_type_to_mass = {}
         for atom_symbol, atom_type in self.atom_symbol_to_type.items():
             self.atom_type_to_mass[atom_type] = atom_symbol_to_mass[atom_symbol]
+
+    def import_para_from_list(self, para_atom_symbol_list):
+        """原子のリストからatom_symbol_to_type, atom_type_to_symbol, atom_type_to_massを作成する
+        Parameters
+        ----------
+            para_atom_symbol_list : list
+                原子のリスト
+        
+        Example
+        -------
+            para_atom_symbol_list = ['C', 'H', 'O', 'N']
+            の場合、Cの原子のタイプが1, Hの原子のタイプが2, Oの原子のタイプが3, Nの原子のタイプが4となる
+
+        """
+        atom_symbol_to_type = {}
+        atom_type = 1
+        for atom_symbol in para_atom_symbol_list:
+            atom_symbol_to_type[atom_symbol] = atom_type
+            atom_type += 1
+
+        # type -> symbol
+        # symbol -> type
+        # type -> mass
+        self.atom_symbol_to_type = atom_symbol_to_type
+        self.atom_type_to_symbol = {
+            atom_type: atom_symbol for atom_symbol, atom_type in atom_symbol_to_type.items()}
+        self.atom_type_to_mass = {}
+        for atom_symbol, atom_type in self.atom_symbol_to_type.items():
+            self.atom_type_to_mass[atom_type] = atom_symbol_to_mass[atom_symbol]

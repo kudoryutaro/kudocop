@@ -70,6 +70,7 @@ class ImportOutmolForSDats():
             splines = list(map(lambda l:l.split(), lines))
         
         # read cell size , total_atoms, number_of_steps
+        number_of_steps = None
         for spline_idx, spline in enumerate(splines):
             if len(spline) == 0:
                 continue
@@ -81,7 +82,11 @@ class ImportOutmolForSDats():
                 total_atoms = int(spline[2])
             if spline[0] == 'Step':
                 number_of_steps = int(splines[spline_idx + 1][1])
-        
+
+        if number_of_steps is None:
+            print(f'number_of_steps is None, input_file_name:{ifn}')
+            return
+
         self.step_nums = list(range(1, number_of_steps + 1))
         self.step_num_to_step_idx = {
             step_num: step_idx for step_idx, step_num in enumerate(self.step_nums)
