@@ -3,13 +3,15 @@ from .analyze_bond import AnalyzeBond, AnalyzeBondForSDats
 from .analyze_molecule import AnalyzeMolecule, AnalyzeMoleculeForSDats
 from .dmol3 import DMol3KudoCop
 from .packmol import Packmol
+from .laich import Laich
 
 class Analyze(
     AnalyzeAtom,
     AnalyzeBond,
     AnalyzeMolecule,
     DMol3KudoCop,
-    Packmol
+    Packmol,
+    Laich,
 ):
     def __init__():
         pass

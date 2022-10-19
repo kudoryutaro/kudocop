@@ -20,7 +20,7 @@ class ExportLammpsInput():
         header_line = []
         header_line.append(f"# LAMMPS data\n")
         header_line.append(f"{self.get_total_atoms()} atoms\n")
-        header_line.append(f"{max(self.get_atom_type_set())} atom types\n")
+        header_line.append(f"{max([atom_type for atom_type in self.atom_type_to_mass.keys()])} atom types\n")
         header_line.append(f"{0.0} {self.cell[0]} xlo xhi\n")
         header_line.append(f"{0.0} {self.cell[1]} ylo yhi\n")
         header_line.append(f"{0.0} {self.cell[2]} zlo zhi\n")

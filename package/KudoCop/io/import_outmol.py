@@ -100,7 +100,7 @@ class ImportOutmolForSDats():
         current_step_idx = 0
         current_step_num = 0
         for spline_idx, spline in enumerate(splines):
-            if current_step_idx > len(self.step_nums):
+            if current_step_idx >= len(self.step_nums):
                 break
             if len(spline) >= 3 and spline[0] == 'df' and spline[1] == 'ATOMIC' and spline[2] == 'COORDINATES':
                 if current_step_num == 0:
