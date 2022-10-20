@@ -17,6 +17,33 @@ class Laich():
                 ghost_factor=20.0, show_mask=1, read_velocity=0, thremo='Langevin',aim_temp=300.0, 
                 init_temp=300.0, final_temp=300.0, thermo_freq=0.005, exist_ok=False):
         """laichで分子動力学を実行する関数
+            calc_directory : str or Path
+                laichで構造最適化をする時に使用するディレクトリ
+            para_file_path : str or Path
+                laichで構造最適化する時に使用するReaxFFのパラメータ
+            laich_cmd : str
+                laichを実行するコマンド
+            exist_ok : bool
+                exist_ok = Trueのとき、calc_directoryが存在していてもエラーは出ずに上書きする
+                exist_ok = Falseのとき、calc_directoryが存在しているときはエラーが出る
+            time_step : float
+            total_step : int
+            file_step : int
+            save_restart_step : int
+            mpi_grid_x : int
+            mpi_grid_y : int
+            mpi_grid_z : int
+            cut_off : float
+            margin : float
+            ghpst_factor : float
+            show_mask : float
+            read_velocity : int
+            thremo : str
+            aim_temp : float
+            init_temp : float
+            final_tmep : float
+            thermo_freq : float
+                Laichのドキュメントを参照してください
         """
         calc_directory = Path(calc_directory) 
         para_file_path = Path(para_file_path)
@@ -82,6 +109,24 @@ GhostFactor {ghost_factor}
                 laichで構造最適化をする時に使用するディレクトリ
             para_file_path : str or Path
                 laichで構造最適化する時に使用するReaxFFのパラメータ
+            laich_cmd : str
+                laichを実行するコマンド
+            exist_ok : bool
+                exist_ok = Trueのとき、calc_directoryが存在していてもエラーは出ずに上書きする
+                exist_ok = Falseのとき、calc_directoryが存在しているときはエラーが出る
+            time_step : float
+            total_step : int
+            file_step : int
+            save_restart_step : int
+            mpi_grid_x : int
+            mpi_grid_y : int
+            mpi_grid_z : int
+            cut_off : float
+            margin : float
+            ghpst_factor : float
+            del_r : float
+            max_r float
+                Laichのドキュメントを参照してください
         """
         calc_directory = Path(calc_directory) 
         para_file_path = Path(para_file_path)
