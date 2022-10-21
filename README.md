@@ -6,6 +6,7 @@ Kudo's COworking python Package
 - 分子動力学シミュレーションの結果を分析
 - Packmolを用いて分子を充填
 - DMol3を用いた第一原理計算
+- Laichを用いた分子動力学計算、構造最適化計算
 - Deep Learning Potentialを学習させるためのデータセットを作成
 
 
