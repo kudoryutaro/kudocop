@@ -150,7 +150,7 @@ Cutoff_Global                 {cutoff_Global:.4f} angstrom
             f.write(RunDMol3_sh)
         
         with open(calc_directory / 'qsub_script.sh', 'w') as f:
-            qsub_script = get_qsub_script(dmol3_input_path.stem)
+            qsub_script = get_qsub_script(calc_label)
             f.write(qsub_script)
 
         if not run:

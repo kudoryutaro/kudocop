@@ -138,6 +138,7 @@ class ExportDPSystemMultiFrames():
                     ├── type_map.raw         # 原子のsymbolとtypeの対応関係
                     └── type.raw             # 原子のtype
         """
+        assert len(self.atoms) != 0, 'len(sdats.atoms)が0です'
         dp_system_dir = Path(dp_system_dir)
 
         os.makedirs(dp_system_dir, exist_ok=True)
