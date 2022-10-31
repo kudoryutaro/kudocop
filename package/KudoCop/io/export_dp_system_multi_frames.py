@@ -20,7 +20,7 @@ class ExportDPSystemMultiFrames():
             type.rawは0から始まる, sdat内の原子のtypeは1から始まる.
         """
         dp_system_dir = Path(dp_system_dir)
-        atom_type = self.atoms[0]['type'].astype('str').to_list()
+        atom_type = (self.atoms[0]['type'] - 1).astype('str').to_list()
         atom_type = map(lambda s: s + '\n', atom_type)
         with open(dp_system_dir / 'type.raw', 'w') as f:
             f.writelines(atom_type)

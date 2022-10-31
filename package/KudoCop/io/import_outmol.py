@@ -70,6 +70,7 @@ class ImportOutmolForSDats():
             splines = list(map(lambda l:l.split(), lines))
         
         # read cell size , total_atoms, number_of_steps
+        number_of_steps = None
         for spline_idx, spline in enumerate(splines):
             if len(spline) == 0:
                 continue
@@ -81,7 +82,11 @@ class ImportOutmolForSDats():
                 total_atoms = int(spline[2])
             if spline[0] == 'Step':
                 number_of_steps = int(splines[spline_idx + 1][1])
-        
+
+        if number_of_steps is None:
+            print(f'number_of_steps is None, input_file_name:{ifn}')
+            return
+
         self.step_nums = list(range(1, number_of_steps + 1))
         self.step_num_to_step_idx = {
             step_num: step_idx for step_idx, step_num in enumerate(self.step_nums)
@@ -95,7 +100,7 @@ class ImportOutmolForSDats():
         current_step_idx = 0
         current_step_num = 0
         for spline_idx, spline in enumerate(splines):
-            if current_step_idx > len(self.step_nums):
+            if current_step_idx >= len(self.step_nums):
                 break
             if len(spline) >= 3 and spline[0] == 'df' and spline[1] == 'ATOMIC' and spline[2] == 'COORDINATES':
                 if current_step_num == 0:
@@ -134,7 +139,7 @@ class ImportOutmolForSDats():
                 self.atoms[current_step_idx][['vx', 'vy', 'vz', 'ax', 'ay', 'az']] = \
                             self.atoms[current_step_idx][['vx', 'vy', 'vz', 'ax', 'ay', 'az']].astype(float)
                 self.atoms[current_step_idx][['vx', 'vy', 'vz']] *= 0.529177 / 0.0241888 # bohr/a.u. -> Å/fsec
-                self.atoms[current_step_idx][['ax', 'ay', 'az']] *= 0.529177 / (0.0241888**2) # bohr/(a.u.**2) -> Å/(fsec**2)
+                # self.atoms[current_step_idx][['ax', 'ay', 'az']] *= 0.529177 / (0.0241888**2) # bohr/(a.u.**2) -> Å/(fsec**2)
 
                 current_step_idx += 1
                 current_step_num += 1

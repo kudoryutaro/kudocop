@@ -58,8 +58,12 @@ if __name__ == '__main__':
                 target_atoms &= (sdats.atoms[step_idx]['z'] <= args.z_max)
             return target_atoms
 
-        sdats = SimulationDats(skip_num=args.skip_num,
-                               para_file_name=args.para_file_name)
+        if args.bond_type == 'dumpbond':
+            sdats = SimulationDats(skip_num=args.skip_num,
+                                para_file_name=args.para_file_name)
+        elif args.bond_type == 'dumppos':
+            sdats = SimulationDats(skip_num=args.skip_num, import_dumpbonds_flag=False,
+                                para_file_name=args.para_file_name)
         df_count_mols = sdats.count_mols(bond_type=args.bond_type,   cut_off=args.cut_off,
                                          condition=condition)
         print(f'bond_type: {args.bond_type}, cut_off: {args.cut_off}')

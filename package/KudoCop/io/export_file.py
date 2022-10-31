@@ -3,13 +3,15 @@ from .export_dumppos import ExportDumppos
 from .export_xyz import ExportXyz
 from .export_car import ExportCar
 from .export_dp_system import ExportDPSystem
+from .export_lammps_input import ExportLammpsInput
 
 class ExportFile(
     ExportDumppos,
     ExportInput,
     ExportXyz,
     ExportCar,
-    ExportDPSystem
+    ExportDPSystem,
+    ExportLammpsInput,
 ):
     def __init__():
         super().__init__()
