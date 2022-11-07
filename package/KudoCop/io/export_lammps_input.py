@@ -6,7 +6,7 @@ class ExportLammpsInput():
     def __init__(self):
         pass
 
-    def export_lammps_input(self, ofn: str) -> None:
+    def export_lammps_input(self, ofn: str, out_columns=None) -> None:
         for dim in range(3):
             if self.cell[dim] == 0:
                 print(f'warning : cell[{dim}] is 0')
@@ -33,7 +33,8 @@ class ExportLammpsInput():
         with open(ofn, 'w') as ofs:
             ofs.writelines(header_line)
 
-        out_columns = ['type', 'x', 'y', 'z']
+        if out_columns is None:
+            out_columns = ['type', 'x', 'y', 'z']
 
         # if 'mask' not in self.atoms:
         #     print('warning : mask is not defined.')
