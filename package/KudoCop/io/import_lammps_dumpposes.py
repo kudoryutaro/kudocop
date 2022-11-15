@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import sys
 from pathlib import Path
+from typing import Union
+from tqdm import tqdm
 
 class ImportLammpsDumpposes():
     def __init__(self):
@@ -9,7 +11,7 @@ class ImportLammpsDumpposes():
 
     def import_lammps_dumppos(self, ifn: str):
         '''
-        LAMMPSで作成されたdumpposファイルを読み込む
+        LAMMPSで作成されたdumpposファイルを読み込む(1つのdumppos)
         '''
 
         with open(ifn, 'r') as ifp:
@@ -53,3 +55,53 @@ class ImportLammpsDumpposes():
             # 0-index
             self.atoms[step_idx].index = self.atoms[step_idx]['id'] - 1
             self.atoms[step_idx].drop('id', axis=1, inplace=True)
+
+    def import_lammps_dumpposes(self, input_file_dir: Union[str, Path]='./', skip_num=1):
+        '''
+        LAMMPSで作成されたdumpposファイルを読み込む(複数のdumppos)
+        '''
+        input_file_dir = Path(input_file_dir)
+        dumppos_file_paths = list(input_file_dir.glob(f'./dump.pos.*'))
+        step_nums = []
+        for dumppos_file_path in dumppos_file_paths:
+            step_nums.append(int(dumppos_file_path.name[9:]))
+        step_nums.sort()
+        step_nums = step_nums[::skip_num]
+        self.step_nums = step_nums
+        self.step_num_to_step_idx = dict()
+        self.atoms = [None] * len(step_nums)
+        
+        for step_idx, step_num in enumerate(tqdm(step_nums, desc='[importing lammps dumpposes]')):
+            dumppos_file_path = f'dump.pos.{step_num}'
+            with open(dumppos_file_path, 'r') as ifp:
+                # "ITEM: TIMESTEP"
+                spline = ifp.readline().split()
+                step_num = int(ifp.readline())
+                self.step_nums[step_idx] = step_num
+                self.step_num_to_step_idx[step_num] = step_idx
+                # ITEM: NUMBER OF ATOMS
+                spline = ifp.readline().split()
+                total_atoms = int(ifp.readline())
+
+                # ITEM: BOX BOUNDS xy xz yz pp pp pp
+                spline = ifp.readline().split()
+                for dim in range(3):
+                    spline = ifp.readline().split()
+                    self.cell[dim] = float(spline[1])
+                
+                # ITEM: ATOMS id type x y z
+                spline = ifp.readline().split()
+                columns = spline[2:]
+
+            df = pd.read_csv(dumppos_file_path, sep='\s+', names=columns, skiprows=9)
+            df[['x', 'y', 'z']] = df[['x', 'y', 'z']].astype(float)
+            df['type'] = df['type'].astype(int)
+            df['id'] = df['id'].astype(int)
+            df.sort_values('id', inplace=True)
+            df.index = df['id'] - 1
+            df.drop('id', axis=1, inplace=True)
+
+            if 'vx' in df.columns and 'vy' in df.columns and 'vz' in df.columns:
+                df[['vx', 'vy', 'vz']] = df[['vx', 'vy', 'vz']].astype(float)
+            
+            self.atoms[step_idx] = df
