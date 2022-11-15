@@ -259,16 +259,17 @@ class SimulationDat(
             self.connect_list_from_dumppos = neighbor.make_neighbor(self, cut_off)
         elif type(cut_off) is list:
             max_cut_off = 0
-            cut_off2 = deepcopy(cut_off)
+            cut_off2 = [None] * ((len(self.atom_type_to_symbol) + 1) ** 2)
             for atom_type in range(1, len(self.atom_type_to_symbol) + 1):
                 for nex_atom_type in range(1, len(self.atom_type_to_symbol) + 1):
                     try:
                         max_cut_off = max(max_cut_off, cut_off[atom_type][nex_atom_type])
-                        cut_off2[atom_type][nex_atom_type] = cut_off[atom_type][nex_atom_type]**2
+                        cut_off2[atom_type*len(self.atom_type_to_symbol)+nex_atom_type] = cut_off[atom_type][nex_atom_type]**2
                     except:
                         pass
             atom_types = self.atoms['type'].to_list()
-            connect_list_from_dumppos = neighbor.make_neighbor_pairwise_cutoff(self, max_cut_off, atom_types, cut_off2)
+
+            connect_list_from_dumppos = neighbor.make_neighbor_pairwise_cutoff(self, max_cut_off, atom_types, cut_off2, len(self.atom_type_to_symbol))
             self.connect_list_from_dumppos = connect_list_from_dumppos
             
         return self.connect_list_from_dumppos

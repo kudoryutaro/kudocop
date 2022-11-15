@@ -1455,7 +1455,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_make_cbodies(PyObject *, struct 
 static void __pyx_f_7KudoCop_7analyze_8neighbor_min_length(double *, double *); /*proto*/
 static void __pyx_f_7KudoCop_7analyze_8neighbor_NeigborList(int *, std::vector<std::vector<int> >  &, int *, std::vector<int>  &); /*proto*/
 static void __pyx_f_7KudoCop_7analyze_8neighbor_search(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *, double *, int, std::vector<std::vector<int> >  &, PyObject *, int *, double); /*proto*/
-static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *, double *, int, std::vector<std::vector<int> >  &, PyObject *, int *, PyObject *, PyObject *); /*proto*/
+static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *, double *, int, std::vector<std::vector<int> >  &, PyObject *, int *, PyObject *, PyObject *, int); /*proto*/
 static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *, double *, int, std::vector<std::vector<int> >  &, PyObject *, PyObject *, int *, double); /*proto*/
 static std::vector<int>  __pyx_convert_vector_from_py_int(PyObject *); /*proto*/
 static PyObject *__pyx_convert_vector_to_py_int(const std::vector<int>  &); /*proto*/
@@ -1505,6 +1505,7 @@ static const char __pyx_k_particles[] = "particles";
 static const char __pyx_k_atom_types[] = "atom_types";
 static const char __pyx_k_append_mesh[] = "append_mesh";
 static const char __pyx_k_make_neighbor[] = "make_neighbor";
+static const char __pyx_k_max_atom_type[] = "max_atom_type";
 static const char __pyx_k_neighbor_list[] = "neighbor_list";
 static const char __pyx_k_pair_cut_off2[] = "pair_cut_off2";
 static const char __pyx_k_total_particle[] = "total_particle";
@@ -1544,6 +1545,7 @@ static PyObject *__pyx_n_s_make_brute_neighbor;
 static PyObject *__pyx_n_s_make_neighbor;
 static PyObject *__pyx_n_s_make_neighbor_pairwise_cutoff;
 static PyObject *__pyx_n_s_make_relative_coordinates;
+static PyObject *__pyx_n_s_max_atom_type;
 static PyObject *__pyx_n_s_msx;
 static PyObject *__pyx_n_s_mx;
 static PyObject *__pyx_n_s_name;
@@ -1563,7 +1565,7 @@ static PyObject *__pyx_n_s_tolist;
 static PyObject *__pyx_n_s_total;
 static PyObject *__pyx_n_s_total_particle;
 static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_make_neighbor(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_); /* proto */
-static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cutoff(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_, PyObject *__pyx_v_atom_types, PyObject *__pyx_v_pair_cut_off2); /* proto */
+static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cutoff(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_, PyObject *__pyx_v_atom_types, PyObject *__pyx_v_pair_cut_off2, int __pyx_v_max_atom_type); /* proto */
 static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_brute_neighbor(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL); /* proto */
 static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_6make_relative_coordinates(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_); /* proto */
 static PyObject *__pyx_int_0;
@@ -3149,7 +3151,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_make_neighbor(CYTHON_UNUSE
  * 
  *     return neighbor_list             # <<<<<<<<<<<<<<
  * 
- * cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, int mx[3], list atom_types, list pair_cut_off2):
+ * cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, int mx[3], list atom_types, list pair_cut_off2, int max_atom_type):
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_neighbor_list);
@@ -3182,12 +3184,12 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_make_neighbor(CYTHON_UNUSE
 /* "KudoCop/analyze/neighbor.pyx":139
  *     return neighbor_list
  * 
- * cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, int mx[3], list atom_types, list pair_cut_off2):             # <<<<<<<<<<<<<<
+ * cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, int mx[3], list atom_types, list pair_cut_off2, int max_atom_type):             # <<<<<<<<<<<<<<
  *     cdef:
  *         int dim, i, iid, jid, atom_i_type, atom_j_type
  */
 
-static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *__pyx_v_catoms, double *__pyx_v_cell, int __pyx_v_mesh_id, std::vector<std::vector<int> >  &__pyx_v_append_mesh, PyObject *__pyx_v_neighbor_list, int *__pyx_v_mx, PyObject *__pyx_v_atom_types, PyObject *__pyx_v_pair_cut_off2) {
+static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *__pyx_v_catoms, double *__pyx_v_cell, int __pyx_v_mesh_id, std::vector<std::vector<int> >  &__pyx_v_append_mesh, PyObject *__pyx_v_neighbor_list, int *__pyx_v_mx, PyObject *__pyx_v_atom_types, PyObject *__pyx_v_pair_cut_off2, int __pyx_v_max_atom_type) {
   int __pyx_v_dim;
   int __pyx_v_i;
   int __pyx_v_iid;
@@ -3827,7 +3829,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __
  *             for dim in range(3):
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]             # <<<<<<<<<<<<<<
  *             min_length(dx, cell)
- *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type*max_atom_type+ atom_j_type]:
  */
         (__pyx_v_dx[__pyx_v_dim]) = (((__pyx_v_catoms[__pyx_v_jid]).x[__pyx_v_dim]) - ((__pyx_v_catoms[__pyx_v_iid]).x[__pyx_v_dim]));
       }
@@ -3836,7 +3838,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __
  *             for dim in range(3):
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
  *             min_length(dx, cell)             # <<<<<<<<<<<<<<
- *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type*max_atom_type+ atom_j_type]:
  *                 neighbor_list[iid].append(jid)
  */
       __pyx_f_7KudoCop_7analyze_8neighbor_min_length(__pyx_v_dx, __pyx_v_cell);
@@ -3844,7 +3846,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __
       /* "KudoCop/analyze/neighbor.pyx":187
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
  *             min_length(dx, cell)
- *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:             # <<<<<<<<<<<<<<
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type*max_atom_type+ atom_j_type]:             # <<<<<<<<<<<<<<
  *                 neighbor_list[iid].append(jid)
  *                 neighbor_list[jid].append(iid)
  */
@@ -3854,21 +3856,19 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
         __PYX_ERR(0, 187, __pyx_L1_error)
       }
-      __pyx_t_15 = __Pyx_GetItemInt_List(__pyx_v_pair_cut_off2, __pyx_v_atom_i_type, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 187, __pyx_L1_error)
+      __pyx_t_24 = ((__pyx_v_atom_i_type * __pyx_v_max_atom_type) + __pyx_v_atom_j_type);
+      __pyx_t_15 = __Pyx_GetItemInt_List(__pyx_v_pair_cut_off2, __pyx_t_24, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 187, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_15);
-      __pyx_t_16 = __Pyx_GetItemInt(__pyx_t_15, __pyx_v_atom_j_type, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 187, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_16);
-      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-      __pyx_t_15 = PyObject_RichCompare(__pyx_t_18, __pyx_t_16, Py_LE); __Pyx_XGOTREF(__pyx_t_15); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 187, __pyx_L1_error)
+      __pyx_t_16 = PyObject_RichCompare(__pyx_t_18, __pyx_t_15, Py_LE); __Pyx_XGOTREF(__pyx_t_16); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 187, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
-      __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-      __pyx_t_25 = __Pyx_PyObject_IsTrue(__pyx_t_15); if (unlikely(__pyx_t_25 < 0)) __PYX_ERR(0, 187, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      __pyx_t_25 = __Pyx_PyObject_IsTrue(__pyx_t_16); if (unlikely(__pyx_t_25 < 0)) __PYX_ERR(0, 187, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       if (__pyx_t_25) {
 
         /* "KudoCop/analyze/neighbor.pyx":188
  *             min_length(dx, cell)
- *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type*max_atom_type+ atom_j_type]:
  *                 neighbor_list[iid].append(jid)             # <<<<<<<<<<<<<<
  *                 neighbor_list[jid].append(iid)
  * 
@@ -3877,37 +3877,37 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
           __PYX_ERR(0, 188, __pyx_L1_error)
         }
-        __pyx_t_15 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_iid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 188, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_15);
-        __pyx_t_16 = __Pyx_PyInt_From_int(__pyx_v_jid); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 188, __pyx_L1_error)
+        __pyx_t_16 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_iid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 188, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_16);
-        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_15, __pyx_t_16); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 188, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+        __pyx_t_15 = __Pyx_PyInt_From_int(__pyx_v_jid); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 188, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_15);
+        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_16, __pyx_t_15); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 188, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+        __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
         /* "KudoCop/analyze/neighbor.pyx":189
- *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type*max_atom_type+ atom_j_type]:
  *                 neighbor_list[iid].append(jid)
  *                 neighbor_list[jid].append(iid)             # <<<<<<<<<<<<<<
  * 
- * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2):
+ * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2, int max_atom_type):
  */
         if (unlikely(__pyx_v_neighbor_list == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
           __PYX_ERR(0, 189, __pyx_L1_error)
         }
-        __pyx_t_16 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_jid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 189, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_16);
-        __pyx_t_15 = __Pyx_PyInt_From_int(__pyx_v_iid); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 189, __pyx_L1_error)
+        __pyx_t_15 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_jid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 189, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_15);
-        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_16, __pyx_t_15); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 189, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+        __pyx_t_16 = __Pyx_PyInt_From_int(__pyx_v_iid); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 189, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_16);
+        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_15, __pyx_t_16); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 189, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+        __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
         /* "KudoCop/analyze/neighbor.pyx":187
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
  *             min_length(dx, cell)
- *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:             # <<<<<<<<<<<<<<
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type*max_atom_type+ atom_j_type]:             # <<<<<<<<<<<<<<
  *                 neighbor_list[iid].append(jid)
  *                 neighbor_list[jid].append(iid)
  */
@@ -3918,7 +3918,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __
   /* "KudoCop/analyze/neighbor.pyx":139
  *     return neighbor_list
  * 
- * cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, int mx[3], list atom_types, list pair_cut_off2):             # <<<<<<<<<<<<<<
+ * cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, int mx[3], list atom_types, list pair_cut_off2, int max_atom_type):             # <<<<<<<<<<<<<<
  *     cdef:
  *         int dim, i, iid, jid, atom_i_type, atom_j_type
  */
@@ -3951,7 +3951,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __
 /* "KudoCop/analyze/neighbor.pyx":191
  *                 neighbor_list[jid].append(iid)
  * 
- * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2):             # <<<<<<<<<<<<<<
+ * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2, int max_atom_type):             # <<<<<<<<<<<<<<
  *     cdef:
  *         double cell[3]
  */
@@ -3964,6 +3964,7 @@ static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_3make_neighbor_pairwise_cu
   PyObject *__pyx_v_CL_ = 0;
   PyObject *__pyx_v_atom_types = 0;
   PyObject *__pyx_v_pair_cut_off2 = 0;
+  int __pyx_v_max_atom_type;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -3971,12 +3972,14 @@ static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_3make_neighbor_pairwise_cu
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("make_neighbor_pairwise_cutoff (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_data,&__pyx_n_s_CL,&__pyx_n_s_atom_types,&__pyx_n_s_pair_cut_off2,0};
-    PyObject* values[4] = {0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_data,&__pyx_n_s_CL,&__pyx_n_s_atom_types,&__pyx_n_s_pair_cut_off2,&__pyx_n_s_max_atom_type,0};
+    PyObject* values[5] = {0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+        CYTHON_FALLTHROUGH;
         case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
         CYTHON_FALLTHROUGH;
         case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
@@ -3997,40 +4000,48 @@ static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_3make_neighbor_pairwise_cu
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_CL)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 4, 4, 1); __PYX_ERR(0, 191, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 5, 5, 1); __PYX_ERR(0, 191, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_atom_types)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 4, 4, 2); __PYX_ERR(0, 191, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 5, 5, 2); __PYX_ERR(0, 191, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_pair_cut_off2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 4, 4, 3); __PYX_ERR(0, 191, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 5, 5, 3); __PYX_ERR(0, 191, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  4:
+        if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_max_atom_type)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 5, 5, 4); __PYX_ERR(0, 191, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "make_neighbor_pairwise_cutoff") < 0)) __PYX_ERR(0, 191, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 5) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
       values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
       values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+      values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
     }
     __pyx_v_data = values[0];
     __pyx_v_CL_ = values[1];
     __pyx_v_atom_types = ((PyObject*)values[2]);
     __pyx_v_pair_cut_off2 = ((PyObject*)values[3]);
+    __pyx_v_max_atom_type = __Pyx_PyInt_As_int(values[4]); if (unlikely((__pyx_v_max_atom_type == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 191, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 191, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 5, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 191, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("KudoCop.analyze.neighbor.make_neighbor_pairwise_cutoff", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -4038,7 +4049,7 @@ static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_3make_neighbor_pairwise_cu
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_atom_types), (&PyList_Type), 1, "atom_types", 1))) __PYX_ERR(0, 191, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_pair_cut_off2), (&PyList_Type), 1, "pair_cut_off2", 1))) __PYX_ERR(0, 191, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cutoff(__pyx_self, __pyx_v_data, __pyx_v_CL_, __pyx_v_atom_types, __pyx_v_pair_cut_off2);
+  __pyx_r = __pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cutoff(__pyx_self, __pyx_v_data, __pyx_v_CL_, __pyx_v_atom_types, __pyx_v_pair_cut_off2, __pyx_v_max_atom_type);
 
   /* function exit code */
   goto __pyx_L0;
@@ -4049,7 +4060,7 @@ static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_3make_neighbor_pairwise_cu
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cutoff(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_, PyObject *__pyx_v_atom_types, PyObject *__pyx_v_pair_cut_off2) {
+static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cutoff(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_, PyObject *__pyx_v_atom_types, PyObject *__pyx_v_pair_cut_off2, int __pyx_v_max_atom_type) {
   double __pyx_v_cell[3];
   double __pyx_v_msx[3];
   double __pyx_v_imx[3];
@@ -4395,7 +4406,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cu
  *     neighbor_list = [[] for _ in range(total)]
  * 
  *     for i in range(nm):             # <<<<<<<<<<<<<<
- *         search_pairwise_cutoff(catoms, cell, i, append_mesh, neighbor_list, mx, atom_types, pair_cut_off2)
+ *         search_pairwise_cutoff(catoms, cell, i, append_mesh, neighbor_list, mx, atom_types, pair_cut_off2, max_atom_type)
  * 
  */
   __pyx_t_3 = __pyx_v_nm;
@@ -4406,11 +4417,11 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cu
     /* "KudoCop/analyze/neighbor.pyx":232
  * 
  *     for i in range(nm):
- *         search_pairwise_cutoff(catoms, cell, i, append_mesh, neighbor_list, mx, atom_types, pair_cut_off2)             # <<<<<<<<<<<<<<
+ *         search_pairwise_cutoff(catoms, cell, i, append_mesh, neighbor_list, mx, atom_types, pair_cut_off2, max_atom_type)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-    __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(__pyx_v_catoms, __pyx_v_cell, __pyx_v_i, __pyx_v_append_mesh, __pyx_v_neighbor_list, __pyx_v_mx, __pyx_v_atom_types, __pyx_v_pair_cut_off2);
+    __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(__pyx_v_catoms, __pyx_v_cell, __pyx_v_i, __pyx_v_append_mesh, __pyx_v_neighbor_list, __pyx_v_mx, __pyx_v_atom_types, __pyx_v_pair_cut_off2, __pyx_v_max_atom_type);
   }
 
   /* "KudoCop/analyze/neighbor.pyx":235
@@ -4428,7 +4439,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cu
   /* "KudoCop/analyze/neighbor.pyx":191
  *                 neighbor_list[jid].append(iid)
  * 
- * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2):             # <<<<<<<<<<<<<<
+ * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2, int max_atom_type):             # <<<<<<<<<<<<<<
  *     cdef:
  *         double cell[3]
  */
@@ -6564,6 +6575,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_make_neighbor, __pyx_k_make_neighbor, sizeof(__pyx_k_make_neighbor), 0, 0, 1, 1},
   {&__pyx_n_s_make_neighbor_pairwise_cutoff, __pyx_k_make_neighbor_pairwise_cutoff, sizeof(__pyx_k_make_neighbor_pairwise_cutoff), 0, 0, 1, 1},
   {&__pyx_n_s_make_relative_coordinates, __pyx_k_make_relative_coordinates, sizeof(__pyx_k_make_relative_coordinates), 0, 0, 1, 1},
+  {&__pyx_n_s_max_atom_type, __pyx_k_max_atom_type, sizeof(__pyx_k_max_atom_type), 0, 0, 1, 1},
   {&__pyx_n_s_msx, __pyx_k_msx, sizeof(__pyx_k_msx), 0, 0, 1, 1},
   {&__pyx_n_s_mx, __pyx_k_mx, sizeof(__pyx_k_mx), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
@@ -6611,14 +6623,14 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   /* "KudoCop/analyze/neighbor.pyx":191
  *                 neighbor_list[jid].append(iid)
  * 
- * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2):             # <<<<<<<<<<<<<<
+ * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2, int max_atom_type):             # <<<<<<<<<<<<<<
  *     cdef:
  *         double cell[3]
  */
-  __pyx_tuple__4 = PyTuple_Pack(23, __pyx_n_s_data, __pyx_n_s_CL, __pyx_n_s_atom_types, __pyx_n_s_pair_cut_off2, __pyx_n_s_cell, __pyx_n_s_msx, __pyx_n_s_imx, __pyx_n_s_CL_2, __pyx_n_s_mx, __pyx_n_s_ix, __pyx_n_s_nm, __pyx_n_s_total, __pyx_n_s_i, __pyx_n_s_j, __pyx_n_s_dim, __pyx_n_s_index, __pyx_n_s_summ, __pyx_n_s_ind_pos, __pyx_n_s_catoms, __pyx_n_s_append_mesh, __pyx_n_s_pos, __pyx_n_s_neighbor_list, __pyx_n_s_); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(24, __pyx_n_s_data, __pyx_n_s_CL, __pyx_n_s_atom_types, __pyx_n_s_pair_cut_off2, __pyx_n_s_max_atom_type, __pyx_n_s_cell, __pyx_n_s_msx, __pyx_n_s_imx, __pyx_n_s_CL_2, __pyx_n_s_mx, __pyx_n_s_ix, __pyx_n_s_nm, __pyx_n_s_total, __pyx_n_s_i, __pyx_n_s_j, __pyx_n_s_dim, __pyx_n_s_index, __pyx_n_s_summ, __pyx_n_s_ind_pos, __pyx_n_s_catoms, __pyx_n_s_append_mesh, __pyx_n_s_pos, __pyx_n_s_neighbor_list, __pyx_n_s_); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 191, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
-  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(4, 0, 23, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_KudoCop_analyze_neighbor_pyx, __pyx_n_s_make_neighbor_pairwise_cutoff, 191, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(5, 0, 24, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_KudoCop_analyze_neighbor_pyx, __pyx_n_s_make_neighbor_pairwise_cutoff, 191, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 191, __pyx_L1_error)
 
   /* "KudoCop/analyze/neighbor.pyx":238
  * 
@@ -6951,7 +6963,7 @@ if (!__Pyx_RefNanny) {
   /* "KudoCop/analyze/neighbor.pyx":191
  *                 neighbor_list[jid].append(iid)
  * 
- * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2):             # <<<<<<<<<<<<<<
+ * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2, int max_atom_type):             # <<<<<<<<<<<<<<
  *     cdef:
  *         double cell[3]
  */

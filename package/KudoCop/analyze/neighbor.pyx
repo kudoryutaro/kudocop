@@ -136,7 +136,7 @@ def make_neighbor(data , CL_):
 
     return neighbor_list
 
-cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, int mx[3], list atom_types, list pair_cut_off2):
+cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, int mx[3], list atom_types, list pair_cut_off2, int max_atom_type):
     cdef:
         int dim, i, iid, jid, atom_i_type, atom_j_type
         int my_len, search_len
@@ -184,11 +184,11 @@ cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, ve
             for dim in range(3):
                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
             min_length(dx, cell)
-            if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:
+            if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type*max_atom_type+ atom_j_type]:
                 neighbor_list[iid].append(jid)
                 neighbor_list[jid].append(iid)
 
-def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2):
+def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2, int max_atom_type):
     cdef:
         double cell[3]
         double msx[3]
@@ -229,7 +229,7 @@ def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off
     neighbor_list = [[] for _ in range(total)]
 
     for i in range(nm):
-        search_pairwise_cutoff(catoms, cell, i, append_mesh, neighbor_list, mx, atom_types, pair_cut_off2)
+        search_pairwise_cutoff(catoms, cell, i, append_mesh, neighbor_list, mx, atom_types, pair_cut_off2, max_atom_type)
 
 
     return neighbor_list
