@@ -269,17 +269,6 @@ class SimulationDat(
                         pass
             atom_types = self.atoms['type'].to_list()
             connect_list_from_dumppos = neighbor.make_neighbor_pairwise_cutoff(self, max_cut_off, atom_types, cut_off2)
-            # connect_list_from_dumppos_uncorrected = neighbor.make_neighbor(self, max_cut_off)
-            # connect_list_from_dumppos = [[] for _ in range(self.get_total_atoms())]
-            # atom_types = self.atoms['type'].values
-            # atom_xyz = self.atoms[['x', 'y', 'z']].values
-            # for atom_idx in range(self.get_total_atoms()):
-            #     atom_type = atom_types[atom_idx]
-            #     for nex_atom_idx in connect_list_from_dumppos_uncorrected[atom_idx]:
-            #         nex_atom_type = atom_types[nex_atom_idx]
-            #         if sum((atom_xyz[atom_idx] - atom_xyz[nex_atom_idx])**2) <= \
-            #             cut_off[atom_type][nex_atom_type] ** 2:
-            #             connect_list_from_dumppos[atom_idx].append(nex_atom_idx)
             self.connect_list_from_dumppos = connect_list_from_dumppos
             
         return self.connect_list_from_dumppos
