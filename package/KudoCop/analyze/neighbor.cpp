@@ -1301,6 +1301,12 @@ static CYTHON_INLINE int __Pyx_ListComp_Append(PyObject* list, PyObject* x) {
 #define __Pyx_ListComp_Append(L,x) PyList_Append(L,x)
 #endif
 
+/* ArgTypeTest.proto */
+#define __Pyx_ArgTypeTest(obj, type, none_allowed, name, exact)\
+    ((likely((Py_TYPE(obj) == type) | (none_allowed && (obj == Py_None)))) ? 1 :\
+        __Pyx__ArgTypeTest(obj, type, name, exact))
+static int __Pyx__ArgTypeTest(PyObject *obj, PyTypeObject *type, const char *name, int exact);
+
 /* Import.proto */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
 
@@ -1449,6 +1455,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_make_cbodies(PyObject *, struct 
 static void __pyx_f_7KudoCop_7analyze_8neighbor_min_length(double *, double *); /*proto*/
 static void __pyx_f_7KudoCop_7analyze_8neighbor_NeigborList(int *, std::vector<std::vector<int> >  &, int *, std::vector<int>  &); /*proto*/
 static void __pyx_f_7KudoCop_7analyze_8neighbor_search(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *, double *, int, std::vector<std::vector<int> >  &, PyObject *, int *, double); /*proto*/
+static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *, double *, int, std::vector<std::vector<int> >  &, PyObject *, int *, PyObject *, PyObject *); /*proto*/
 static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *, double *, int, std::vector<std::vector<int> >  &, PyObject *, PyObject *, int *, double); /*proto*/
 static std::vector<int>  __pyx_convert_vector_from_py_int(PyObject *); /*proto*/
 static PyObject *__pyx_convert_vector_to_py_int(const std::vector<int>  &); /*proto*/
@@ -1495,9 +1502,11 @@ static const char __pyx_k_ind_pos[] = "ind_pos";
 static const char __pyx_k_newcell[] = "newcell";
 static const char __pyx_k_enumerate[] = "enumerate";
 static const char __pyx_k_particles[] = "particles";
+static const char __pyx_k_atom_types[] = "atom_types";
 static const char __pyx_k_append_mesh[] = "append_mesh";
 static const char __pyx_k_make_neighbor[] = "make_neighbor";
 static const char __pyx_k_neighbor_list[] = "neighbor_list";
+static const char __pyx_k_pair_cut_off2[] = "pair_cut_off2";
 static const char __pyx_k_total_particle[] = "total_particle";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_make_brute_neighbor[] = "make_brute_neighbor";
@@ -1505,6 +1514,7 @@ static const char __pyx_k_KudoCop_analyze_neighbor[] = "KudoCop.analyze.neighbor
 static const char __pyx_k_make_relative_coordinates[] = "make_relative_coordinates";
 static const char __pyx_k_relative_coordinates_list[] = "relative_coordinates_list";
 static const char __pyx_k_KudoCop_analyze_neighbor_pyx[] = "KudoCop/analyze/neighbor.pyx";
+static const char __pyx_k_make_neighbor_pairwise_cutoff[] = "make_neighbor_pairwise_cutoff";
 static PyObject *__pyx_n_s_;
 static PyObject *__pyx_n_s_CL;
 static PyObject *__pyx_n_s_CL_2;
@@ -1512,6 +1522,7 @@ static PyObject *__pyx_n_s_KudoCop_analyze_neighbor;
 static PyObject *__pyx_kp_s_KudoCop_analyze_neighbor_pyx;
 static PyObject *__pyx_n_s_append;
 static PyObject *__pyx_n_s_append_mesh;
+static PyObject *__pyx_n_s_atom_types;
 static PyObject *__pyx_n_s_catoms;
 static PyObject *__pyx_n_s_cell;
 static PyObject *__pyx_n_s_cline_in_traceback;
@@ -1531,6 +1542,7 @@ static PyObject *__pyx_n_s_jid;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_make_brute_neighbor;
 static PyObject *__pyx_n_s_make_neighbor;
+static PyObject *__pyx_n_s_make_neighbor_pairwise_cutoff;
 static PyObject *__pyx_n_s_make_relative_coordinates;
 static PyObject *__pyx_n_s_msx;
 static PyObject *__pyx_n_s_mx;
@@ -1540,6 +1552,7 @@ static PyObject *__pyx_n_s_newcell;
 static PyObject *__pyx_n_s_nm;
 static PyObject *__pyx_n_s_np;
 static PyObject *__pyx_n_s_numpy;
+static PyObject *__pyx_n_s_pair_cut_off2;
 static PyObject *__pyx_n_s_particles;
 static PyObject *__pyx_n_s_pos;
 static PyObject *__pyx_n_s_range;
@@ -1550,17 +1563,20 @@ static PyObject *__pyx_n_s_tolist;
 static PyObject *__pyx_n_s_total;
 static PyObject *__pyx_n_s_total_particle;
 static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_make_neighbor(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_); /* proto */
-static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL); /* proto */
-static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_); /* proto */
+static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cutoff(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_, PyObject *__pyx_v_atom_types, PyObject *__pyx_v_pair_cut_off2); /* proto */
+static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_brute_neighbor(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL); /* proto */
+static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_6make_relative_coordinates(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_); /* proto */
 static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_1;
 static PyObject *__pyx_int_neg_1;
 static PyObject *__pyx_tuple__2;
 static PyObject *__pyx_tuple__4;
 static PyObject *__pyx_tuple__6;
+static PyObject *__pyx_tuple__8;
 static PyObject *__pyx_codeobj__3;
 static PyObject *__pyx_codeobj__5;
 static PyObject *__pyx_codeobj__7;
+static PyObject *__pyx_codeobj__9;
 /* Late includes */
 
 /* "KudoCop/analyze/neighbor.pyx":14
@@ -3133,7 +3149,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_make_neighbor(CYTHON_UNUSE
  * 
  *     return neighbor_list             # <<<<<<<<<<<<<<
  * 
- * #####for debug
+ * cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, int mx[3], list atom_types, list pair_cut_off2):
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_neighbor_list);
@@ -3163,7 +3179,1276 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_make_neighbor(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "KudoCop/analyze/neighbor.pyx":140
+/* "KudoCop/analyze/neighbor.pyx":139
+ *     return neighbor_list
+ * 
+ * cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, int mx[3], list atom_types, list pair_cut_off2):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         int dim, i, iid, jid, atom_i_type, atom_j_type
+ */
+
+static void __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *__pyx_v_catoms, double *__pyx_v_cell, int __pyx_v_mesh_id, std::vector<std::vector<int> >  &__pyx_v_append_mesh, PyObject *__pyx_v_neighbor_list, int *__pyx_v_mx, PyObject *__pyx_v_atom_types, PyObject *__pyx_v_pair_cut_off2) {
+  int __pyx_v_dim;
+  int __pyx_v_i;
+  int __pyx_v_iid;
+  int __pyx_v_jid;
+  int __pyx_v_atom_i_type;
+  int __pyx_v_atom_j_type;
+  int __pyx_v_my_len;
+  int __pyx_v_search_len;
+  int __pyx_v_ix[3];
+  int __pyx_v_add_ix[3];
+  double __pyx_v_dx[3];
+  std::vector<int>  __pyx_v_search_list;
+  PyObject *__pyx_v_add_index = NULL;
+  PyObject *__pyx_v_add = NULL;
+  long __pyx_v_j;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  std::vector<int>  __pyx_t_2;
+  int __pyx_t_3;
+  Py_ssize_t __pyx_t_4;
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
+  PyObject *__pyx_t_7 = NULL;
+  PyObject *__pyx_t_8 = NULL;
+  PyObject *__pyx_t_9 = NULL;
+  PyObject *__pyx_t_10 = NULL;
+  PyObject *__pyx_t_11 = NULL;
+  PyObject *__pyx_t_12 = NULL;
+  PyObject *__pyx_t_13 = NULL;
+  PyObject *__pyx_t_14 = NULL;
+  PyObject *__pyx_t_15 = NULL;
+  PyObject *__pyx_t_16 = NULL;
+  PyObject *__pyx_t_17 = NULL;
+  PyObject *__pyx_t_18 = NULL;
+  int __pyx_t_19;
+  int __pyx_t_20;
+  int __pyx_t_21;
+  int __pyx_t_22;
+  long __pyx_t_23;
+  int __pyx_t_24;
+  int __pyx_t_25;
+  int __pyx_t_26;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("search_pairwise_cutoff", 0);
+
+  /* "KudoCop/analyze/neighbor.pyx":146
+ *         int add_ix[3]
+ *         double dx[3]
+ *         vector[int] search_list = []             # <<<<<<<<<<<<<<
+ * 
+ *     ix[0] = mesh_id % mx[0]
+ */
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 146, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __pyx_convert_vector_from_py_int(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 146, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_search_list = __pyx_t_2;
+
+  /* "KudoCop/analyze/neighbor.pyx":148
+ *         vector[int] search_list = []
+ * 
+ *     ix[0] = mesh_id % mx[0]             # <<<<<<<<<<<<<<
+ *     ix[1] = (mesh_id / mx[0]) % mx[1]
+ *     ix[2] = (mesh_id / mx[0] / mx[1])
+ */
+  if (unlikely((__pyx_v_mx[0]) == 0)) {
+    PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+    __PYX_ERR(0, 148, __pyx_L1_error)
+  }
+  (__pyx_v_ix[0]) = __Pyx_mod_int(__pyx_v_mesh_id, (__pyx_v_mx[0]));
+
+  /* "KudoCop/analyze/neighbor.pyx":149
+ * 
+ *     ix[0] = mesh_id % mx[0]
+ *     ix[1] = (mesh_id / mx[0]) % mx[1]             # <<<<<<<<<<<<<<
+ *     ix[2] = (mesh_id / mx[0] / mx[1])
+ * 
+ */
+  if (unlikely((__pyx_v_mx[0]) == 0)) {
+    PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+    __PYX_ERR(0, 149, __pyx_L1_error)
+  }
+  else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely((__pyx_v_mx[0]) == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_mesh_id))) {
+    PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+    __PYX_ERR(0, 149, __pyx_L1_error)
+  }
+  __pyx_t_3 = __Pyx_div_int(__pyx_v_mesh_id, (__pyx_v_mx[0]));
+  if (unlikely((__pyx_v_mx[1]) == 0)) {
+    PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+    __PYX_ERR(0, 149, __pyx_L1_error)
+  }
+  (__pyx_v_ix[1]) = __Pyx_mod_int(__pyx_t_3, (__pyx_v_mx[1]));
+
+  /* "KudoCop/analyze/neighbor.pyx":150
+ *     ix[0] = mesh_id % mx[0]
+ *     ix[1] = (mesh_id / mx[0]) % mx[1]
+ *     ix[2] = (mesh_id / mx[0] / mx[1])             # <<<<<<<<<<<<<<
+ * 
+ *     search_list.clear()
+ */
+  if (unlikely((__pyx_v_mx[0]) == 0)) {
+    PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+    __PYX_ERR(0, 150, __pyx_L1_error)
+  }
+  else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely((__pyx_v_mx[0]) == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_mesh_id))) {
+    PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+    __PYX_ERR(0, 150, __pyx_L1_error)
+  }
+  __pyx_t_3 = __Pyx_div_int(__pyx_v_mesh_id, (__pyx_v_mx[0]));
+  if (unlikely((__pyx_v_mx[1]) == 0)) {
+    PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+    __PYX_ERR(0, 150, __pyx_L1_error)
+  }
+  else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely((__pyx_v_mx[1]) == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_3))) {
+    PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+    __PYX_ERR(0, 150, __pyx_L1_error)
+  }
+  (__pyx_v_ix[2]) = __Pyx_div_int(__pyx_t_3, (__pyx_v_mx[1]));
+
+  /* "KudoCop/analyze/neighbor.pyx":152
+ *     ix[2] = (mesh_id / mx[0] / mx[1])
+ * 
+ *     search_list.clear()             # <<<<<<<<<<<<<<
+ *     my_len = len(append_mesh[mesh_id])
+ * 
+ */
+  __pyx_v_search_list.clear();
+
+  /* "KudoCop/analyze/neighbor.pyx":153
+ * 
+ *     search_list.clear()
+ *     my_len = len(append_mesh[mesh_id])             # <<<<<<<<<<<<<<
+ * 
+ *     add_index = (
+ */
+  __pyx_t_1 = __pyx_convert_vector_to_py_int((__pyx_v_append_mesh[__pyx_v_mesh_id])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 153, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_4 == ((Py_ssize_t)-1))) __PYX_ERR(0, 153, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_my_len = __pyx_t_4;
+
+  /* "KudoCop/analyze/neighbor.pyx":156
+ * 
+ *     add_index = (
+ *         [0,0,0],             # <<<<<<<<<<<<<<
+ *         [1,0,0],
+ *         [-1,1,0],
+ */
+  __pyx_t_1 = PyList_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 156, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_int_0);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_1, 1, __pyx_int_0);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_1, 2, __pyx_int_0);
+
+  /* "KudoCop/analyze/neighbor.pyx":157
+ *     add_index = (
+ *         [0,0,0],
+ *         [1,0,0],             # <<<<<<<<<<<<<<
+ *         [-1,1,0],
+ *         [0,1,0],
+ */
+  __pyx_t_5 = PyList_New(3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 157, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_5, 0, __pyx_int_1);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_5, 1, __pyx_int_0);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_5, 2, __pyx_int_0);
+
+  /* "KudoCop/analyze/neighbor.pyx":158
+ *         [0,0,0],
+ *         [1,0,0],
+ *         [-1,1,0],             # <<<<<<<<<<<<<<
+ *         [0,1,0],
+ *         [1,1,0],
+ */
+  __pyx_t_6 = PyList_New(3); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 158, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_INCREF(__pyx_int_neg_1);
+  __Pyx_GIVEREF(__pyx_int_neg_1);
+  PyList_SET_ITEM(__pyx_t_6, 0, __pyx_int_neg_1);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_6, 1, __pyx_int_1);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_6, 2, __pyx_int_0);
+
+  /* "KudoCop/analyze/neighbor.pyx":159
+ *         [1,0,0],
+ *         [-1,1,0],
+ *         [0,1,0],             # <<<<<<<<<<<<<<
+ *         [1,1,0],
+ *         [-1,0,1],
+ */
+  __pyx_t_7 = PyList_New(3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 159, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_7, 0, __pyx_int_0);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_7, 1, __pyx_int_1);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_7, 2, __pyx_int_0);
+
+  /* "KudoCop/analyze/neighbor.pyx":160
+ *         [-1,1,0],
+ *         [0,1,0],
+ *         [1,1,0],             # <<<<<<<<<<<<<<
+ *         [-1,0,1],
+ *         [0,0,1],
+ */
+  __pyx_t_8 = PyList_New(3); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 160, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_8);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_8, 0, __pyx_int_1);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_8, 1, __pyx_int_1);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_8, 2, __pyx_int_0);
+
+  /* "KudoCop/analyze/neighbor.pyx":161
+ *         [0,1,0],
+ *         [1,1,0],
+ *         [-1,0,1],             # <<<<<<<<<<<<<<
+ *         [0,0,1],
+ *         [1,0,1],
+ */
+  __pyx_t_9 = PyList_New(3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 161, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_9);
+  __Pyx_INCREF(__pyx_int_neg_1);
+  __Pyx_GIVEREF(__pyx_int_neg_1);
+  PyList_SET_ITEM(__pyx_t_9, 0, __pyx_int_neg_1);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_9, 1, __pyx_int_0);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_9, 2, __pyx_int_1);
+
+  /* "KudoCop/analyze/neighbor.pyx":162
+ *         [1,1,0],
+ *         [-1,0,1],
+ *         [0,0,1],             # <<<<<<<<<<<<<<
+ *         [1,0,1],
+ *         [-1,-1,1],
+ */
+  __pyx_t_10 = PyList_New(3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 162, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_10, 0, __pyx_int_0);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_10, 1, __pyx_int_0);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_10, 2, __pyx_int_1);
+
+  /* "KudoCop/analyze/neighbor.pyx":163
+ *         [-1,0,1],
+ *         [0,0,1],
+ *         [1,0,1],             # <<<<<<<<<<<<<<
+ *         [-1,-1,1],
+ *         [0,-1,1],
+ */
+  __pyx_t_11 = PyList_New(3); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_11);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_11, 0, __pyx_int_1);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_11, 1, __pyx_int_0);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_11, 2, __pyx_int_1);
+
+  /* "KudoCop/analyze/neighbor.pyx":164
+ *         [0,0,1],
+ *         [1,0,1],
+ *         [-1,-1,1],             # <<<<<<<<<<<<<<
+ *         [0,-1,1],
+ *         [1,-1,1],
+ */
+  __pyx_t_12 = PyList_New(3); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 164, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_12);
+  __Pyx_INCREF(__pyx_int_neg_1);
+  __Pyx_GIVEREF(__pyx_int_neg_1);
+  PyList_SET_ITEM(__pyx_t_12, 0, __pyx_int_neg_1);
+  __Pyx_INCREF(__pyx_int_neg_1);
+  __Pyx_GIVEREF(__pyx_int_neg_1);
+  PyList_SET_ITEM(__pyx_t_12, 1, __pyx_int_neg_1);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_12, 2, __pyx_int_1);
+
+  /* "KudoCop/analyze/neighbor.pyx":165
+ *         [1,0,1],
+ *         [-1,-1,1],
+ *         [0,-1,1],             # <<<<<<<<<<<<<<
+ *         [1,-1,1],
+ *         [-1,1,1],
+ */
+  __pyx_t_13 = PyList_New(3); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 165, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_13);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_13, 0, __pyx_int_0);
+  __Pyx_INCREF(__pyx_int_neg_1);
+  __Pyx_GIVEREF(__pyx_int_neg_1);
+  PyList_SET_ITEM(__pyx_t_13, 1, __pyx_int_neg_1);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_13, 2, __pyx_int_1);
+
+  /* "KudoCop/analyze/neighbor.pyx":166
+ *         [-1,-1,1],
+ *         [0,-1,1],
+ *         [1,-1,1],             # <<<<<<<<<<<<<<
+ *         [-1,1,1],
+ *         [0,1,1],
+ */
+  __pyx_t_14 = PyList_New(3); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 166, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_14);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_14, 0, __pyx_int_1);
+  __Pyx_INCREF(__pyx_int_neg_1);
+  __Pyx_GIVEREF(__pyx_int_neg_1);
+  PyList_SET_ITEM(__pyx_t_14, 1, __pyx_int_neg_1);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_14, 2, __pyx_int_1);
+
+  /* "KudoCop/analyze/neighbor.pyx":167
+ *         [0,-1,1],
+ *         [1,-1,1],
+ *         [-1,1,1],             # <<<<<<<<<<<<<<
+ *         [0,1,1],
+ *         [1,1,1],
+ */
+  __pyx_t_15 = PyList_New(3); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 167, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_15);
+  __Pyx_INCREF(__pyx_int_neg_1);
+  __Pyx_GIVEREF(__pyx_int_neg_1);
+  PyList_SET_ITEM(__pyx_t_15, 0, __pyx_int_neg_1);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_15, 1, __pyx_int_1);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_15, 2, __pyx_int_1);
+
+  /* "KudoCop/analyze/neighbor.pyx":168
+ *         [1,-1,1],
+ *         [-1,1,1],
+ *         [0,1,1],             # <<<<<<<<<<<<<<
+ *         [1,1,1],
+ *     )
+ */
+  __pyx_t_16 = PyList_New(3); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 168, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_16);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyList_SET_ITEM(__pyx_t_16, 0, __pyx_int_0);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_16, 1, __pyx_int_1);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_16, 2, __pyx_int_1);
+
+  /* "KudoCop/analyze/neighbor.pyx":169
+ *         [-1,1,1],
+ *         [0,1,1],
+ *         [1,1,1],             # <<<<<<<<<<<<<<
+ *     )
+ * 
+ */
+  __pyx_t_17 = PyList_New(3); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 169, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_17);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_17, 0, __pyx_int_1);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_17, 1, __pyx_int_1);
+  __Pyx_INCREF(__pyx_int_1);
+  __Pyx_GIVEREF(__pyx_int_1);
+  PyList_SET_ITEM(__pyx_t_17, 2, __pyx_int_1);
+
+  /* "KudoCop/analyze/neighbor.pyx":156
+ * 
+ *     add_index = (
+ *         [0,0,0],             # <<<<<<<<<<<<<<
+ *         [1,0,0],
+ *         [-1,1,0],
+ */
+  __pyx_t_18 = PyTuple_New(14); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 156, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_18);
+  __Pyx_GIVEREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_18, 0, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_18, 1, __pyx_t_5);
+  __Pyx_GIVEREF(__pyx_t_6);
+  PyTuple_SET_ITEM(__pyx_t_18, 2, __pyx_t_6);
+  __Pyx_GIVEREF(__pyx_t_7);
+  PyTuple_SET_ITEM(__pyx_t_18, 3, __pyx_t_7);
+  __Pyx_GIVEREF(__pyx_t_8);
+  PyTuple_SET_ITEM(__pyx_t_18, 4, __pyx_t_8);
+  __Pyx_GIVEREF(__pyx_t_9);
+  PyTuple_SET_ITEM(__pyx_t_18, 5, __pyx_t_9);
+  __Pyx_GIVEREF(__pyx_t_10);
+  PyTuple_SET_ITEM(__pyx_t_18, 6, __pyx_t_10);
+  __Pyx_GIVEREF(__pyx_t_11);
+  PyTuple_SET_ITEM(__pyx_t_18, 7, __pyx_t_11);
+  __Pyx_GIVEREF(__pyx_t_12);
+  PyTuple_SET_ITEM(__pyx_t_18, 8, __pyx_t_12);
+  __Pyx_GIVEREF(__pyx_t_13);
+  PyTuple_SET_ITEM(__pyx_t_18, 9, __pyx_t_13);
+  __Pyx_GIVEREF(__pyx_t_14);
+  PyTuple_SET_ITEM(__pyx_t_18, 10, __pyx_t_14);
+  __Pyx_GIVEREF(__pyx_t_15);
+  PyTuple_SET_ITEM(__pyx_t_18, 11, __pyx_t_15);
+  __Pyx_GIVEREF(__pyx_t_16);
+  PyTuple_SET_ITEM(__pyx_t_18, 12, __pyx_t_16);
+  __Pyx_GIVEREF(__pyx_t_17);
+  PyTuple_SET_ITEM(__pyx_t_18, 13, __pyx_t_17);
+  __pyx_t_1 = 0;
+  __pyx_t_5 = 0;
+  __pyx_t_6 = 0;
+  __pyx_t_7 = 0;
+  __pyx_t_8 = 0;
+  __pyx_t_9 = 0;
+  __pyx_t_10 = 0;
+  __pyx_t_11 = 0;
+  __pyx_t_12 = 0;
+  __pyx_t_13 = 0;
+  __pyx_t_14 = 0;
+  __pyx_t_15 = 0;
+  __pyx_t_16 = 0;
+  __pyx_t_17 = 0;
+  __pyx_v_add_index = ((PyObject*)__pyx_t_18);
+  __pyx_t_18 = 0;
+
+  /* "KudoCop/analyze/neighbor.pyx":172
+ *     )
+ * 
+ *     for add in add_index:             # <<<<<<<<<<<<<<
+ *         for dim in range(3):
+ *             add_ix[dim] = ix[dim] + add[dim]
+ */
+  __pyx_t_18 = __pyx_v_add_index; __Pyx_INCREF(__pyx_t_18); __pyx_t_4 = 0;
+  for (;;) {
+    if (__pyx_t_4 >= PyTuple_GET_SIZE(__pyx_t_18)) break;
+    #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+    __pyx_t_17 = PyTuple_GET_ITEM(__pyx_t_18, __pyx_t_4); __Pyx_INCREF(__pyx_t_17); __pyx_t_4++; if (unlikely(0 < 0)) __PYX_ERR(0, 172, __pyx_L1_error)
+    #else
+    __pyx_t_17 = PySequence_ITEM(__pyx_t_18, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_17);
+    #endif
+    __Pyx_XDECREF_SET(__pyx_v_add, ((PyObject*)__pyx_t_17));
+    __pyx_t_17 = 0;
+
+    /* "KudoCop/analyze/neighbor.pyx":173
+ * 
+ *     for add in add_index:
+ *         for dim in range(3):             # <<<<<<<<<<<<<<
+ *             add_ix[dim] = ix[dim] + add[dim]
+ *         NeigborList(add_ix, append_mesh, mx, search_list)
+ */
+    for (__pyx_t_3 = 0; __pyx_t_3 < 3; __pyx_t_3+=1) {
+      __pyx_v_dim = __pyx_t_3;
+
+      /* "KudoCop/analyze/neighbor.pyx":174
+ *     for add in add_index:
+ *         for dim in range(3):
+ *             add_ix[dim] = ix[dim] + add[dim]             # <<<<<<<<<<<<<<
+ *         NeigborList(add_ix, append_mesh, mx, search_list)
+ * 
+ */
+      __pyx_t_17 = __Pyx_PyInt_From_int((__pyx_v_ix[__pyx_v_dim])); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 174, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_17);
+      if (unlikely(__pyx_v_add == Py_None)) {
+        PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+        __PYX_ERR(0, 174, __pyx_L1_error)
+      }
+      __pyx_t_16 = __Pyx_GetItemInt_List(__pyx_v_add, __pyx_v_dim, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 174, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_16);
+      __pyx_t_15 = PyNumber_Add(__pyx_t_17, __pyx_t_16); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 174, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_15);
+      __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
+      __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+      __pyx_t_19 = __Pyx_PyInt_As_int(__pyx_t_15); if (unlikely((__pyx_t_19 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 174, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      (__pyx_v_add_ix[__pyx_v_dim]) = __pyx_t_19;
+    }
+
+    /* "KudoCop/analyze/neighbor.pyx":175
+ *         for dim in range(3):
+ *             add_ix[dim] = ix[dim] + add[dim]
+ *         NeigborList(add_ix, append_mesh, mx, search_list)             # <<<<<<<<<<<<<<
+ * 
+ *     search_len = len(search_list)
+ */
+    __pyx_f_7KudoCop_7analyze_8neighbor_NeigborList(__pyx_v_add_ix, __pyx_v_append_mesh, __pyx_v_mx, __pyx_v_search_list);
+
+    /* "KudoCop/analyze/neighbor.pyx":172
+ *     )
+ * 
+ *     for add in add_index:             # <<<<<<<<<<<<<<
+ *         for dim in range(3):
+ *             add_ix[dim] = ix[dim] + add[dim]
+ */
+  }
+  __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
+
+  /* "KudoCop/analyze/neighbor.pyx":177
+ *         NeigborList(add_ix, append_mesh, mx, search_list)
+ * 
+ *     search_len = len(search_list)             # <<<<<<<<<<<<<<
+ *     for i in range(my_len):
+ *         iid = search_list[i]
+ */
+  __pyx_t_18 = __pyx_convert_vector_to_py_int(__pyx_v_search_list); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 177, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_18);
+  __pyx_t_4 = PyObject_Length(__pyx_t_18); if (unlikely(__pyx_t_4 == ((Py_ssize_t)-1))) __PYX_ERR(0, 177, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
+  __pyx_v_search_len = __pyx_t_4;
+
+  /* "KudoCop/analyze/neighbor.pyx":178
+ * 
+ *     search_len = len(search_list)
+ *     for i in range(my_len):             # <<<<<<<<<<<<<<
+ *         iid = search_list[i]
+ *         atom_i_type = atom_types[iid]
+ */
+  __pyx_t_3 = __pyx_v_my_len;
+  __pyx_t_19 = __pyx_t_3;
+  for (__pyx_t_20 = 0; __pyx_t_20 < __pyx_t_19; __pyx_t_20+=1) {
+    __pyx_v_i = __pyx_t_20;
+
+    /* "KudoCop/analyze/neighbor.pyx":179
+ *     search_len = len(search_list)
+ *     for i in range(my_len):
+ *         iid = search_list[i]             # <<<<<<<<<<<<<<
+ *         atom_i_type = atom_types[iid]
+ *         for j in range(i+1,search_len):
+ */
+    __pyx_v_iid = (__pyx_v_search_list[__pyx_v_i]);
+
+    /* "KudoCop/analyze/neighbor.pyx":180
+ *     for i in range(my_len):
+ *         iid = search_list[i]
+ *         atom_i_type = atom_types[iid]             # <<<<<<<<<<<<<<
+ *         for j in range(i+1,search_len):
+ *             jid = search_list[j]
+ */
+    if (unlikely(__pyx_v_atom_types == Py_None)) {
+      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+      __PYX_ERR(0, 180, __pyx_L1_error)
+    }
+    __pyx_t_18 = __Pyx_GetItemInt_List(__pyx_v_atom_types, __pyx_v_iid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 180, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_18);
+    __pyx_t_21 = __Pyx_PyInt_As_int(__pyx_t_18); if (unlikely((__pyx_t_21 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 180, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
+    __pyx_v_atom_i_type = __pyx_t_21;
+
+    /* "KudoCop/analyze/neighbor.pyx":181
+ *         iid = search_list[i]
+ *         atom_i_type = atom_types[iid]
+ *         for j in range(i+1,search_len):             # <<<<<<<<<<<<<<
+ *             jid = search_list[j]
+ *             atom_j_type = atom_types[jid]
+ */
+    __pyx_t_21 = __pyx_v_search_len;
+    __pyx_t_22 = __pyx_t_21;
+    for (__pyx_t_23 = (__pyx_v_i + 1); __pyx_t_23 < __pyx_t_22; __pyx_t_23+=1) {
+      __pyx_v_j = __pyx_t_23;
+
+      /* "KudoCop/analyze/neighbor.pyx":182
+ *         atom_i_type = atom_types[iid]
+ *         for j in range(i+1,search_len):
+ *             jid = search_list[j]             # <<<<<<<<<<<<<<
+ *             atom_j_type = atom_types[jid]
+ *             for dim in range(3):
+ */
+      __pyx_v_jid = (__pyx_v_search_list[__pyx_v_j]);
+
+      /* "KudoCop/analyze/neighbor.pyx":183
+ *         for j in range(i+1,search_len):
+ *             jid = search_list[j]
+ *             atom_j_type = atom_types[jid]             # <<<<<<<<<<<<<<
+ *             for dim in range(3):
+ *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
+ */
+      if (unlikely(__pyx_v_atom_types == Py_None)) {
+        PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+        __PYX_ERR(0, 183, __pyx_L1_error)
+      }
+      __pyx_t_18 = __Pyx_GetItemInt_List(__pyx_v_atom_types, __pyx_v_jid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 183, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_18);
+      __pyx_t_24 = __Pyx_PyInt_As_int(__pyx_t_18); if (unlikely((__pyx_t_24 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 183, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
+      __pyx_v_atom_j_type = __pyx_t_24;
+
+      /* "KudoCop/analyze/neighbor.pyx":184
+ *             jid = search_list[j]
+ *             atom_j_type = atom_types[jid]
+ *             for dim in range(3):             # <<<<<<<<<<<<<<
+ *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
+ *             min_length(dx, cell)
+ */
+      for (__pyx_t_24 = 0; __pyx_t_24 < 3; __pyx_t_24+=1) {
+        __pyx_v_dim = __pyx_t_24;
+
+        /* "KudoCop/analyze/neighbor.pyx":185
+ *             atom_j_type = atom_types[jid]
+ *             for dim in range(3):
+ *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]             # <<<<<<<<<<<<<<
+ *             min_length(dx, cell)
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:
+ */
+        (__pyx_v_dx[__pyx_v_dim]) = (((__pyx_v_catoms[__pyx_v_jid]).x[__pyx_v_dim]) - ((__pyx_v_catoms[__pyx_v_iid]).x[__pyx_v_dim]));
+      }
+
+      /* "KudoCop/analyze/neighbor.pyx":186
+ *             for dim in range(3):
+ *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
+ *             min_length(dx, cell)             # <<<<<<<<<<<<<<
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:
+ *                 neighbor_list[iid].append(jid)
+ */
+      __pyx_f_7KudoCop_7analyze_8neighbor_min_length(__pyx_v_dx, __pyx_v_cell);
+
+      /* "KudoCop/analyze/neighbor.pyx":187
+ *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
+ *             min_length(dx, cell)
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:             # <<<<<<<<<<<<<<
+ *                 neighbor_list[iid].append(jid)
+ *                 neighbor_list[jid].append(iid)
+ */
+      __pyx_t_18 = PyFloat_FromDouble(((((__pyx_v_dx[0]) * (__pyx_v_dx[0])) + ((__pyx_v_dx[1]) * (__pyx_v_dx[1]))) + ((__pyx_v_dx[2]) * (__pyx_v_dx[2])))); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 187, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_18);
+      if (unlikely(__pyx_v_pair_cut_off2 == Py_None)) {
+        PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+        __PYX_ERR(0, 187, __pyx_L1_error)
+      }
+      __pyx_t_15 = __Pyx_GetItemInt_List(__pyx_v_pair_cut_off2, __pyx_v_atom_i_type, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 187, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_15);
+      __pyx_t_16 = __Pyx_GetItemInt(__pyx_t_15, __pyx_v_atom_j_type, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 187, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_16);
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      __pyx_t_15 = PyObject_RichCompare(__pyx_t_18, __pyx_t_16, Py_LE); __Pyx_XGOTREF(__pyx_t_15); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 187, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
+      __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+      __pyx_t_25 = __Pyx_PyObject_IsTrue(__pyx_t_15); if (unlikely(__pyx_t_25 < 0)) __PYX_ERR(0, 187, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      if (__pyx_t_25) {
+
+        /* "KudoCop/analyze/neighbor.pyx":188
+ *             min_length(dx, cell)
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:
+ *                 neighbor_list[iid].append(jid)             # <<<<<<<<<<<<<<
+ *                 neighbor_list[jid].append(iid)
+ * 
+ */
+        if (unlikely(__pyx_v_neighbor_list == Py_None)) {
+          PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+          __PYX_ERR(0, 188, __pyx_L1_error)
+        }
+        __pyx_t_15 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_iid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 188, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_15);
+        __pyx_t_16 = __Pyx_PyInt_From_int(__pyx_v_jid); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 188, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_16);
+        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_15, __pyx_t_16); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 188, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+        __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+
+        /* "KudoCop/analyze/neighbor.pyx":189
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:
+ *                 neighbor_list[iid].append(jid)
+ *                 neighbor_list[jid].append(iid)             # <<<<<<<<<<<<<<
+ * 
+ * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2):
+ */
+        if (unlikely(__pyx_v_neighbor_list == Py_None)) {
+          PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+          __PYX_ERR(0, 189, __pyx_L1_error)
+        }
+        __pyx_t_16 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_jid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 189, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_16);
+        __pyx_t_15 = __Pyx_PyInt_From_int(__pyx_v_iid); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 189, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_15);
+        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_16, __pyx_t_15); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 189, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+        __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+
+        /* "KudoCop/analyze/neighbor.pyx":187
+ *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
+ *             min_length(dx, cell)
+ *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= pair_cut_off2[atom_i_type][atom_j_type]:             # <<<<<<<<<<<<<<
+ *                 neighbor_list[iid].append(jid)
+ *                 neighbor_list[jid].append(iid)
+ */
+      }
+    }
+  }
+
+  /* "KudoCop/analyze/neighbor.pyx":139
+ *     return neighbor_list
+ * 
+ * cdef void search_pairwise_cutoff(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, int mx[3], list atom_types, list pair_cut_off2):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         int dim, i, iid, jid, atom_i_type, atom_j_type
+ */
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_8);
+  __Pyx_XDECREF(__pyx_t_9);
+  __Pyx_XDECREF(__pyx_t_10);
+  __Pyx_XDECREF(__pyx_t_11);
+  __Pyx_XDECREF(__pyx_t_12);
+  __Pyx_XDECREF(__pyx_t_13);
+  __Pyx_XDECREF(__pyx_t_14);
+  __Pyx_XDECREF(__pyx_t_15);
+  __Pyx_XDECREF(__pyx_t_16);
+  __Pyx_XDECREF(__pyx_t_17);
+  __Pyx_XDECREF(__pyx_t_18);
+  __Pyx_WriteUnraisable("KudoCop.analyze.neighbor.search_pairwise_cutoff", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_add_index);
+  __Pyx_XDECREF(__pyx_v_add);
+  __Pyx_RefNannyFinishContext();
+}
+
+/* "KudoCop/analyze/neighbor.pyx":191
+ *                 neighbor_list[jid].append(iid)
+ * 
+ * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         double cell[3]
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_3make_neighbor_pairwise_cutoff(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_7KudoCop_7analyze_8neighbor_3make_neighbor_pairwise_cutoff = {"make_neighbor_pairwise_cutoff", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7KudoCop_7analyze_8neighbor_3make_neighbor_pairwise_cutoff, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_3make_neighbor_pairwise_cutoff(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_v_data = 0;
+  PyObject *__pyx_v_CL_ = 0;
+  PyObject *__pyx_v_atom_types = 0;
+  PyObject *__pyx_v_pair_cut_off2 = 0;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("make_neighbor_pairwise_cutoff (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_data,&__pyx_n_s_CL,&__pyx_n_s_atom_types,&__pyx_n_s_pair_cut_off2,0};
+    PyObject* values[4] = {0,0,0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+        CYTHON_FALLTHROUGH;
+        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+        CYTHON_FALLTHROUGH;
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_data)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_CL)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 4, 4, 1); __PYX_ERR(0, 191, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  2:
+        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_atom_types)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 4, 4, 2); __PYX_ERR(0, 191, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  3:
+        if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_pair_cut_off2)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 4, 4, 3); __PYX_ERR(0, 191, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "make_neighbor_pairwise_cutoff") < 0)) __PYX_ERR(0, 191, __pyx_L3_error)
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+    }
+    __pyx_v_data = values[0];
+    __pyx_v_CL_ = values[1];
+    __pyx_v_atom_types = ((PyObject*)values[2]);
+    __pyx_v_pair_cut_off2 = ((PyObject*)values[3]);
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("make_neighbor_pairwise_cutoff", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 191, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("KudoCop.analyze.neighbor.make_neighbor_pairwise_cutoff", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_atom_types), (&PyList_Type), 1, "atom_types", 1))) __PYX_ERR(0, 191, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_pair_cut_off2), (&PyList_Type), 1, "pair_cut_off2", 1))) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_r = __pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cutoff(__pyx_self, __pyx_v_data, __pyx_v_CL_, __pyx_v_atom_types, __pyx_v_pair_cut_off2);
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_neighbor_pairwise_cutoff(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_, PyObject *__pyx_v_atom_types, PyObject *__pyx_v_pair_cut_off2) {
+  double __pyx_v_cell[3];
+  double __pyx_v_msx[3];
+  double __pyx_v_imx[3];
+  double __pyx_v_CL;
+  int __pyx_v_mx[3];
+  int __pyx_v_ix[3];
+  int __pyx_v_nm;
+  int __pyx_v_total;
+  int __pyx_v_i;
+  int __pyx_v_dim;
+  int __pyx_v_index;
+  struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *__pyx_v_catoms;
+  std::vector<std::vector<int> >  __pyx_v_append_mesh;
+  PyObject *__pyx_v_pos = NULL;
+  PyObject *__pyx_v_neighbor_list = NULL;
+  CYTHON_UNUSED int __pyx_v__;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  double __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  int __pyx_t_3;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
+  int __pyx_t_7;
+  int __pyx_t_8;
+  int __pyx_t_9;
+  int __pyx_t_10;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("make_neighbor_pairwise_cutoff", 0);
+
+  /* "KudoCop/analyze/neighbor.pyx":196
+ *         double msx[3]
+ *         double imx[3]
+ *         double CL = CL_             # <<<<<<<<<<<<<<
+ *         int mx[3], ix[3]
+ *         int nm, total = data.total_particle
+ */
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_CL_); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 196, __pyx_L1_error)
+  __pyx_v_CL = __pyx_t_1;
+
+  /* "KudoCop/analyze/neighbor.pyx":198
+ *         double CL = CL_
+ *         int mx[3], ix[3]
+ *         int nm, total = data.total_particle             # <<<<<<<<<<<<<<
+ *         int i, j, dim, index, summ, ind_pos
+ *         atom_t *catoms =  <atom_t *>malloc(total * sizeof(atom_t))
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_total_particle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 198, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 198, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_total = __pyx_t_3;
+
+  /* "KudoCop/analyze/neighbor.pyx":200
+ *         int nm, total = data.total_particle
+ *         int i, j, dim, index, summ, ind_pos
+ *         atom_t *catoms =  <atom_t *>malloc(total * sizeof(atom_t))             # <<<<<<<<<<<<<<
+ *         vector[vector[int]] append_mesh
+ * 
+ */
+  __pyx_v_catoms = ((struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *)malloc((__pyx_v_total * (sizeof(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t)))));
+
+  /* "KudoCop/analyze/neighbor.pyx":204
+ * 
+ * 
+ *     pos = data.particles['pos'].tolist()             # <<<<<<<<<<<<<<
+ *     make_cbodies(pos, catoms)
+ * 
+ */
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_particles); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_t_4, __pyx_n_s_pos); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_tolist); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
+    __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_4);
+    if (likely(__pyx_t_5)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
+      __Pyx_INCREF(__pyx_t_5);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_4, function);
+    }
+  }
+  __pyx_t_2 = (__pyx_t_5) ? __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5) : __Pyx_PyObject_CallNoArg(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_v_pos = __pyx_t_2;
+  __pyx_t_2 = 0;
+
+  /* "KudoCop/analyze/neighbor.pyx":205
+ * 
+ *     pos = data.particles['pos'].tolist()
+ *     make_cbodies(pos, catoms)             # <<<<<<<<<<<<<<
+ * 
+ *     nm = 1
+ */
+  if (!(likely(PyList_CheckExact(__pyx_v_pos))||((__pyx_v_pos) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_pos)->tp_name), 0))) __PYX_ERR(0, 205, __pyx_L1_error)
+  __pyx_f_7KudoCop_7analyze_8neighbor_make_cbodies(((PyObject*)__pyx_v_pos), __pyx_v_catoms);
+
+  /* "KudoCop/analyze/neighbor.pyx":207
+ *     make_cbodies(pos, catoms)
+ * 
+ *     nm = 1             # <<<<<<<<<<<<<<
+ *     for dim in range(3):
+ *         cell[dim] = data.newcell[dim]
+ */
+  __pyx_v_nm = 1;
+
+  /* "KudoCop/analyze/neighbor.pyx":208
+ * 
+ *     nm = 1
+ *     for dim in range(3):             # <<<<<<<<<<<<<<
+ *         cell[dim] = data.newcell[dim]
+ *         mx[dim] = int(cell[dim]/CL)
+ */
+  for (__pyx_t_3 = 0; __pyx_t_3 < 3; __pyx_t_3+=1) {
+    __pyx_v_dim = __pyx_t_3;
+
+    /* "KudoCop/analyze/neighbor.pyx":209
+ *     nm = 1
+ *     for dim in range(3):
+ *         cell[dim] = data.newcell[dim]             # <<<<<<<<<<<<<<
+ *         mx[dim] = int(cell[dim]/CL)
+ *         nm *= mx[dim]
+ */
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_newcell); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 209, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = __Pyx_GetItemInt(__pyx_t_2, __pyx_v_dim, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 209, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_t_4); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 209, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    (__pyx_v_cell[__pyx_v_dim]) = __pyx_t_1;
+
+    /* "KudoCop/analyze/neighbor.pyx":210
+ *     for dim in range(3):
+ *         cell[dim] = data.newcell[dim]
+ *         mx[dim] = int(cell[dim]/CL)             # <<<<<<<<<<<<<<
+ *         nm *= mx[dim]
+ * 
+ */
+    if (unlikely(__pyx_v_CL == 0)) {
+      PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+      __PYX_ERR(0, 210, __pyx_L1_error)
+    }
+    (__pyx_v_mx[__pyx_v_dim]) = ((int)((__pyx_v_cell[__pyx_v_dim]) / __pyx_v_CL));
+
+    /* "KudoCop/analyze/neighbor.pyx":211
+ *         cell[dim] = data.newcell[dim]
+ *         mx[dim] = int(cell[dim]/CL)
+ *         nm *= mx[dim]             # <<<<<<<<<<<<<<
+ * 
+ *         msx[dim] = cell[dim] / mx[dim]
+ */
+    __pyx_v_nm = (__pyx_v_nm * (__pyx_v_mx[__pyx_v_dim]));
+
+    /* "KudoCop/analyze/neighbor.pyx":213
+ *         nm *= mx[dim]
+ * 
+ *         msx[dim] = cell[dim] / mx[dim]             # <<<<<<<<<<<<<<
+ *         imx[dim] = 1.0 / msx[dim]
+ * 
+ */
+    if (unlikely((__pyx_v_mx[__pyx_v_dim]) == 0)) {
+      PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+      __PYX_ERR(0, 213, __pyx_L1_error)
+    }
+    (__pyx_v_msx[__pyx_v_dim]) = ((__pyx_v_cell[__pyx_v_dim]) / (__pyx_v_mx[__pyx_v_dim]));
+
+    /* "KudoCop/analyze/neighbor.pyx":214
+ * 
+ *         msx[dim] = cell[dim] / mx[dim]
+ *         imx[dim] = 1.0 / msx[dim]             # <<<<<<<<<<<<<<
+ * 
+ *     append_mesh.resize(nm)
+ */
+    if (unlikely((__pyx_v_msx[__pyx_v_dim]) == 0)) {
+      PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+      __PYX_ERR(0, 214, __pyx_L1_error)
+    }
+    (__pyx_v_imx[__pyx_v_dim]) = (1.0 / (__pyx_v_msx[__pyx_v_dim]));
+  }
+
+  /* "KudoCop/analyze/neighbor.pyx":216
+ *         imx[dim] = 1.0 / msx[dim]
+ * 
+ *     append_mesh.resize(nm)             # <<<<<<<<<<<<<<
+ * 
+ *     for i in range(total):
+ */
+  try {
+    __pyx_v_append_mesh.resize(__pyx_v_nm);
+  } catch(...) {
+    __Pyx_CppExn2PyErr();
+    __PYX_ERR(0, 216, __pyx_L1_error)
+  }
+
+  /* "KudoCop/analyze/neighbor.pyx":218
+ *     append_mesh.resize(nm)
+ * 
+ *     for i in range(total):             # <<<<<<<<<<<<<<
+ *         for dim in range(3):
+ *             ix[dim] = int(catoms[i].x[dim] * imx[dim])
+ */
+  __pyx_t_3 = __pyx_v_total;
+  __pyx_t_6 = __pyx_t_3;
+  for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
+    __pyx_v_i = __pyx_t_7;
+
+    /* "KudoCop/analyze/neighbor.pyx":219
+ * 
+ *     for i in range(total):
+ *         for dim in range(3):             # <<<<<<<<<<<<<<
+ *             ix[dim] = int(catoms[i].x[dim] * imx[dim])
+ *             if ix[dim] < 0:
+ */
+    for (__pyx_t_8 = 0; __pyx_t_8 < 3; __pyx_t_8+=1) {
+      __pyx_v_dim = __pyx_t_8;
+
+      /* "KudoCop/analyze/neighbor.pyx":220
+ *     for i in range(total):
+ *         for dim in range(3):
+ *             ix[dim] = int(catoms[i].x[dim] * imx[dim])             # <<<<<<<<<<<<<<
+ *             if ix[dim] < 0:
+ *                 ix[dim] += mx[dim]
+ */
+      (__pyx_v_ix[__pyx_v_dim]) = ((int)(((__pyx_v_catoms[__pyx_v_i]).x[__pyx_v_dim]) * (__pyx_v_imx[__pyx_v_dim])));
+
+      /* "KudoCop/analyze/neighbor.pyx":221
+ *         for dim in range(3):
+ *             ix[dim] = int(catoms[i].x[dim] * imx[dim])
+ *             if ix[dim] < 0:             # <<<<<<<<<<<<<<
+ *                 ix[dim] += mx[dim]
+ *             if ix[dim] >= mx[dim]:
+ */
+      __pyx_t_9 = (((__pyx_v_ix[__pyx_v_dim]) < 0) != 0);
+      if (__pyx_t_9) {
+
+        /* "KudoCop/analyze/neighbor.pyx":222
+ *             ix[dim] = int(catoms[i].x[dim] * imx[dim])
+ *             if ix[dim] < 0:
+ *                 ix[dim] += mx[dim]             # <<<<<<<<<<<<<<
+ *             if ix[dim] >= mx[dim]:
+ *                 ix[dim] -= mx[dim]
+ */
+        __pyx_t_10 = __pyx_v_dim;
+        (__pyx_v_ix[__pyx_t_10]) = ((__pyx_v_ix[__pyx_t_10]) + (__pyx_v_mx[__pyx_v_dim]));
+
+        /* "KudoCop/analyze/neighbor.pyx":221
+ *         for dim in range(3):
+ *             ix[dim] = int(catoms[i].x[dim] * imx[dim])
+ *             if ix[dim] < 0:             # <<<<<<<<<<<<<<
+ *                 ix[dim] += mx[dim]
+ *             if ix[dim] >= mx[dim]:
+ */
+      }
+
+      /* "KudoCop/analyze/neighbor.pyx":223
+ *             if ix[dim] < 0:
+ *                 ix[dim] += mx[dim]
+ *             if ix[dim] >= mx[dim]:             # <<<<<<<<<<<<<<
+ *                 ix[dim] -= mx[dim]
+ * 
+ */
+      __pyx_t_9 = (((__pyx_v_ix[__pyx_v_dim]) >= (__pyx_v_mx[__pyx_v_dim])) != 0);
+      if (__pyx_t_9) {
+
+        /* "KudoCop/analyze/neighbor.pyx":224
+ *                 ix[dim] += mx[dim]
+ *             if ix[dim] >= mx[dim]:
+ *                 ix[dim] -= mx[dim]             # <<<<<<<<<<<<<<
+ * 
+ *         index = ix[0] + ix[1] * mx[0] + ix[2] * mx[0] * mx[1]
+ */
+        __pyx_t_10 = __pyx_v_dim;
+        (__pyx_v_ix[__pyx_t_10]) = ((__pyx_v_ix[__pyx_t_10]) - (__pyx_v_mx[__pyx_v_dim]));
+
+        /* "KudoCop/analyze/neighbor.pyx":223
+ *             if ix[dim] < 0:
+ *                 ix[dim] += mx[dim]
+ *             if ix[dim] >= mx[dim]:             # <<<<<<<<<<<<<<
+ *                 ix[dim] -= mx[dim]
+ * 
+ */
+      }
+    }
+
+    /* "KudoCop/analyze/neighbor.pyx":226
+ *                 ix[dim] -= mx[dim]
+ * 
+ *         index = ix[0] + ix[1] * mx[0] + ix[2] * mx[0] * mx[1]             # <<<<<<<<<<<<<<
+ *         append_mesh[index].push_back(i)
+ * 
+ */
+    __pyx_v_index = (((__pyx_v_ix[0]) + ((__pyx_v_ix[1]) * (__pyx_v_mx[0]))) + (((__pyx_v_ix[2]) * (__pyx_v_mx[0])) * (__pyx_v_mx[1])));
+
+    /* "KudoCop/analyze/neighbor.pyx":227
+ * 
+ *         index = ix[0] + ix[1] * mx[0] + ix[2] * mx[0] * mx[1]
+ *         append_mesh[index].push_back(i)             # <<<<<<<<<<<<<<
+ * 
+ *     neighbor_list = [[] for _ in range(total)]
+ */
+    try {
+      (__pyx_v_append_mesh[__pyx_v_index]).push_back(__pyx_v_i);
+    } catch(...) {
+      __Pyx_CppExn2PyErr();
+      __PYX_ERR(0, 227, __pyx_L1_error)
+    }
+  }
+
+  /* "KudoCop/analyze/neighbor.pyx":229
+ *         append_mesh[index].push_back(i)
+ * 
+ *     neighbor_list = [[] for _ in range(total)]             # <<<<<<<<<<<<<<
+ * 
+ *     for i in range(nm):
+ */
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 229, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_3 = __pyx_v_total;
+  __pyx_t_6 = __pyx_t_3;
+  for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
+    __pyx_v__ = __pyx_t_7;
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 229, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 229, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  }
+  __pyx_v_neighbor_list = ((PyObject*)__pyx_t_4);
+  __pyx_t_4 = 0;
+
+  /* "KudoCop/analyze/neighbor.pyx":231
+ *     neighbor_list = [[] for _ in range(total)]
+ * 
+ *     for i in range(nm):             # <<<<<<<<<<<<<<
+ *         search_pairwise_cutoff(catoms, cell, i, append_mesh, neighbor_list, mx, atom_types, pair_cut_off2)
+ * 
+ */
+  __pyx_t_3 = __pyx_v_nm;
+  __pyx_t_6 = __pyx_t_3;
+  for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
+    __pyx_v_i = __pyx_t_7;
+
+    /* "KudoCop/analyze/neighbor.pyx":232
+ * 
+ *     for i in range(nm):
+ *         search_pairwise_cutoff(catoms, cell, i, append_mesh, neighbor_list, mx, atom_types, pair_cut_off2)             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+    __pyx_f_7KudoCop_7analyze_8neighbor_search_pairwise_cutoff(__pyx_v_catoms, __pyx_v_cell, __pyx_v_i, __pyx_v_append_mesh, __pyx_v_neighbor_list, __pyx_v_mx, __pyx_v_atom_types, __pyx_v_pair_cut_off2);
+  }
+
+  /* "KudoCop/analyze/neighbor.pyx":235
+ * 
+ * 
+ *     return neighbor_list             # <<<<<<<<<<<<<<
+ * 
+ * #####for debug
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(__pyx_v_neighbor_list);
+  __pyx_r = __pyx_v_neighbor_list;
+  goto __pyx_L0;
+
+  /* "KudoCop/analyze/neighbor.pyx":191
+ *                 neighbor_list[jid].append(iid)
+ * 
+ * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         double cell[3]
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_AddTraceback("KudoCop.analyze.neighbor.make_neighbor_pairwise_cutoff", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_pos);
+  __Pyx_XDECREF(__pyx_v_neighbor_list);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "KudoCop/analyze/neighbor.pyx":238
  * 
  * #####for debug
  * def make_brute_neighbor(data, CL):             # <<<<<<<<<<<<<<
@@ -3172,9 +4457,9 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_make_neighbor(CYTHON_UNUSE
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_3make_brute_neighbor(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_7KudoCop_7analyze_8neighbor_3make_brute_neighbor = {"make_brute_neighbor", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7KudoCop_7analyze_8neighbor_3make_brute_neighbor, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_3make_brute_neighbor(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_5make_brute_neighbor(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_7KudoCop_7analyze_8neighbor_5make_brute_neighbor = {"make_brute_neighbor", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7KudoCop_7analyze_8neighbor_5make_brute_neighbor, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_5make_brute_neighbor(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_data = 0;
   PyObject *__pyx_v_CL = 0;
   int __pyx_lineno = 0;
@@ -3206,11 +4491,11 @@ static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_3make_brute_neighbor(PyObj
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_CL_2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("make_brute_neighbor", 1, 2, 2, 1); __PYX_ERR(0, 140, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("make_brute_neighbor", 1, 2, 2, 1); __PYX_ERR(0, 238, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "make_brute_neighbor") < 0)) __PYX_ERR(0, 140, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "make_brute_neighbor") < 0)) __PYX_ERR(0, 238, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -3223,20 +4508,20 @@ static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_3make_brute_neighbor(PyObj
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("make_brute_neighbor", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 140, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("make_brute_neighbor", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 238, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("KudoCop.analyze.neighbor.make_brute_neighbor", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(__pyx_self, __pyx_v_data, __pyx_v_CL);
+  __pyx_r = __pyx_pf_7KudoCop_7analyze_8neighbor_4make_brute_neighbor(__pyx_self, __pyx_v_data, __pyx_v_CL);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL) {
+static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_brute_neighbor(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL) {
   int __pyx_v_iid;
   int __pyx_v_jid;
   int __pyx_v_dim;
@@ -3267,20 +4552,20 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("make_brute_neighbor", 0);
 
-  /* "KudoCop/analyze/neighbor.pyx":143
+  /* "KudoCop/analyze/neighbor.pyx":241
  * 
  *     cdef:
  *         int iid, jid, dim, total=data.total_particle             # <<<<<<<<<<<<<<
  *         double dx[3]
  *         double cell[3]
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_total_particle); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 143, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_total_particle); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 241, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 143, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 241, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_total = __pyx_t_2;
 
-  /* "KudoCop/analyze/neighbor.pyx":146
+  /* "KudoCop/analyze/neighbor.pyx":244
  *         double dx[3]
  *         double cell[3]
  *         atom_t *catoms =  <atom_t *>malloc(total * sizeof(atom_t))             # <<<<<<<<<<<<<<
@@ -3289,19 +4574,19 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
  */
   __pyx_v_catoms = ((struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *)malloc((__pyx_v_total * (sizeof(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t)))));
 
-  /* "KudoCop/analyze/neighbor.pyx":148
+  /* "KudoCop/analyze/neighbor.pyx":246
  *         atom_t *catoms =  <atom_t *>malloc(total * sizeof(atom_t))
  * 
  *     pos = data.particles['pos'].tolist()             # <<<<<<<<<<<<<<
  *     make_cbodies(pos, catoms)
  * 
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_particles); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_particles); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_t_3, __pyx_n_s_pos); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 148, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_t_3, __pyx_n_s_pos); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_tolist); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_tolist); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -3316,23 +4601,23 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
   }
   __pyx_t_1 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 148, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_pos = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "KudoCop/analyze/neighbor.pyx":149
+  /* "KudoCop/analyze/neighbor.pyx":247
  * 
  *     pos = data.particles['pos'].tolist()
  *     make_cbodies(pos, catoms)             # <<<<<<<<<<<<<<
  * 
  *     for dim in range(3):
  */
-  if (!(likely(PyList_CheckExact(__pyx_v_pos))||((__pyx_v_pos) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_pos)->tp_name), 0))) __PYX_ERR(0, 149, __pyx_L1_error)
+  if (!(likely(PyList_CheckExact(__pyx_v_pos))||((__pyx_v_pos) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_pos)->tp_name), 0))) __PYX_ERR(0, 247, __pyx_L1_error)
   __pyx_f_7KudoCop_7analyze_8neighbor_make_cbodies(((PyObject*)__pyx_v_pos), __pyx_v_catoms);
 
-  /* "KudoCop/analyze/neighbor.pyx":151
+  /* "KudoCop/analyze/neighbor.pyx":249
  *     make_cbodies(pos, catoms)
  * 
  *     for dim in range(3):             # <<<<<<<<<<<<<<
@@ -3342,45 +4627,45 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
   for (__pyx_t_2 = 0; __pyx_t_2 < 3; __pyx_t_2+=1) {
     __pyx_v_dim = __pyx_t_2;
 
-    /* "KudoCop/analyze/neighbor.pyx":152
+    /* "KudoCop/analyze/neighbor.pyx":250
  * 
  *     for dim in range(3):
  *         cell[dim] = data.newcell[dim]             # <<<<<<<<<<<<<<
  * 
  *     neighbor_list = [[] for _ in range(total)]
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_newcell); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 152, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_newcell); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, __pyx_v_dim, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 152, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, __pyx_v_dim, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 250, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 152, __pyx_L1_error)
+    __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 250, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     (__pyx_v_cell[__pyx_v_dim]) = __pyx_t_5;
   }
 
-  /* "KudoCop/analyze/neighbor.pyx":154
+  /* "KudoCop/analyze/neighbor.pyx":252
  *         cell[dim] = data.newcell[dim]
  * 
  *     neighbor_list = [[] for _ in range(total)]             # <<<<<<<<<<<<<<
  * 
  *     for iid in range(total):
  */
-  __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 154, __pyx_L1_error)
+  __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 252, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_2 = __pyx_v_total;
   __pyx_t_6 = __pyx_t_2;
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v__ = __pyx_t_7;
-    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 154, __pyx_L1_error)
+    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_1))) __PYX_ERR(0, 154, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_1))) __PYX_ERR(0, 252, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
   __pyx_v_neighbor_list = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "KudoCop/analyze/neighbor.pyx":156
+  /* "KudoCop/analyze/neighbor.pyx":254
  *     neighbor_list = [[] for _ in range(total)]
  * 
  *     for iid in range(total):             # <<<<<<<<<<<<<<
@@ -3392,7 +4677,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_iid = __pyx_t_7;
 
-    /* "KudoCop/analyze/neighbor.pyx":157
+    /* "KudoCop/analyze/neighbor.pyx":255
  * 
  *     for iid in range(total):
  *         for jid in range(iid+1, total):             # <<<<<<<<<<<<<<
@@ -3404,7 +4689,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
     for (__pyx_t_10 = (__pyx_v_iid + 1); __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
       __pyx_v_jid = __pyx_t_10;
 
-      /* "KudoCop/analyze/neighbor.pyx":158
+      /* "KudoCop/analyze/neighbor.pyx":256
  *     for iid in range(total):
  *         for jid in range(iid+1, total):
  *             for dim in range(3):             # <<<<<<<<<<<<<<
@@ -3414,7 +4699,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
       for (__pyx_t_11 = 0; __pyx_t_11 < 3; __pyx_t_11+=1) {
         __pyx_v_dim = __pyx_t_11;
 
-        /* "KudoCop/analyze/neighbor.pyx":159
+        /* "KudoCop/analyze/neighbor.pyx":257
  *         for jid in range(iid+1, total):
  *             for dim in range(3):
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]             # <<<<<<<<<<<<<<
@@ -3424,7 +4709,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
         (__pyx_v_dx[__pyx_v_dim]) = (((__pyx_v_catoms[__pyx_v_jid]).x[__pyx_v_dim]) - ((__pyx_v_catoms[__pyx_v_iid]).x[__pyx_v_dim]));
       }
 
-      /* "KudoCop/analyze/neighbor.pyx":160
+      /* "KudoCop/analyze/neighbor.pyx":258
  *             for dim in range(3):
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
  *             min_length(dx, cell)             # <<<<<<<<<<<<<<
@@ -3433,55 +4718,55 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
  */
       __pyx_f_7KudoCop_7analyze_8neighbor_min_length(__pyx_v_dx, __pyx_v_cell);
 
-      /* "KudoCop/analyze/neighbor.pyx":161
+      /* "KudoCop/analyze/neighbor.pyx":259
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
  *             min_length(dx, cell)
  *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= CL * CL:             # <<<<<<<<<<<<<<
  *                 neighbor_list[iid].append(jid)
  *                 neighbor_list[jid].append(iid)
  */
-      __pyx_t_3 = PyFloat_FromDouble(((((__pyx_v_dx[0]) * (__pyx_v_dx[0])) + ((__pyx_v_dx[1]) * (__pyx_v_dx[1]))) + ((__pyx_v_dx[2]) * (__pyx_v_dx[2])))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 161, __pyx_L1_error)
+      __pyx_t_3 = PyFloat_FromDouble(((((__pyx_v_dx[0]) * (__pyx_v_dx[0])) + ((__pyx_v_dx[1]) * (__pyx_v_dx[1]))) + ((__pyx_v_dx[2]) * (__pyx_v_dx[2])))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 259, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_1 = PyNumber_Multiply(__pyx_v_CL, __pyx_v_CL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 161, __pyx_L1_error)
+      __pyx_t_1 = PyNumber_Multiply(__pyx_v_CL, __pyx_v_CL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_4 = PyObject_RichCompare(__pyx_t_3, __pyx_t_1, Py_LE); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 161, __pyx_L1_error)
+      __pyx_t_4 = PyObject_RichCompare(__pyx_t_3, __pyx_t_1, Py_LE); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 259, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_12 < 0)) __PYX_ERR(0, 161, __pyx_L1_error)
+      __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_12 < 0)) __PYX_ERR(0, 259, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       if (__pyx_t_12) {
 
-        /* "KudoCop/analyze/neighbor.pyx":162
+        /* "KudoCop/analyze/neighbor.pyx":260
  *             min_length(dx, cell)
  *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= CL * CL:
  *                 neighbor_list[iid].append(jid)             # <<<<<<<<<<<<<<
  *                 neighbor_list[jid].append(iid)
  * 
  */
-        __pyx_t_4 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_iid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 162, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_iid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 260, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
-        __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_jid); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 162, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_jid); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_13 = __Pyx_PyObject_Append(__pyx_t_4, __pyx_t_1); if (unlikely(__pyx_t_13 == ((int)-1))) __PYX_ERR(0, 162, __pyx_L1_error)
+        __pyx_t_13 = __Pyx_PyObject_Append(__pyx_t_4, __pyx_t_1); if (unlikely(__pyx_t_13 == ((int)-1))) __PYX_ERR(0, 260, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "KudoCop/analyze/neighbor.pyx":163
+        /* "KudoCop/analyze/neighbor.pyx":261
  *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= CL * CL:
  *                 neighbor_list[iid].append(jid)
  *                 neighbor_list[jid].append(iid)             # <<<<<<<<<<<<<<
  * 
  *     return neighbor_list
  */
-        __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_jid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 163, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_jid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_iid); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 163, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_iid); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 261, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
-        __pyx_t_13 = __Pyx_PyObject_Append(__pyx_t_1, __pyx_t_4); if (unlikely(__pyx_t_13 == ((int)-1))) __PYX_ERR(0, 163, __pyx_L1_error)
+        __pyx_t_13 = __Pyx_PyObject_Append(__pyx_t_1, __pyx_t_4); if (unlikely(__pyx_t_13 == ((int)-1))) __PYX_ERR(0, 261, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-        /* "KudoCop/analyze/neighbor.pyx":161
+        /* "KudoCop/analyze/neighbor.pyx":259
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
  *             min_length(dx, cell)
  *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= CL * CL:             # <<<<<<<<<<<<<<
@@ -3492,7 +4777,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
     }
   }
 
-  /* "KudoCop/analyze/neighbor.pyx":165
+  /* "KudoCop/analyze/neighbor.pyx":263
  *                 neighbor_list[jid].append(iid)
  * 
  *     return neighbor_list             # <<<<<<<<<<<<<<
@@ -3504,7 +4789,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
   __pyx_r = __pyx_v_neighbor_list;
   goto __pyx_L0;
 
-  /* "KudoCop/analyze/neighbor.pyx":140
+  /* "KudoCop/analyze/neighbor.pyx":238
  * 
  * #####for debug
  * def make_brute_neighbor(data, CL):             # <<<<<<<<<<<<<<
@@ -3527,7 +4812,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_2make_brute_neighbor(CYTHO
   return __pyx_r;
 }
 
-/* "KudoCop/analyze/neighbor.pyx":169
+/* "KudoCop/analyze/neighbor.pyx":267
  * 
  * 
  * cdef void search_relative_coordinates(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, relative_coordinates_list, int mx[3], double CL2):             # <<<<<<<<<<<<<<
@@ -3582,20 +4867,20 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("search_relative_coordinates", 0);
 
-  /* "KudoCop/analyze/neighbor.pyx":176
+  /* "KudoCop/analyze/neighbor.pyx":274
  *         int add_ix[3]
  *         double dx[3]
  *         vector[int] search_list = []             # <<<<<<<<<<<<<<
  * 
  *     ix[0] = mesh_id % mx[0]
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 176, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 274, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_convert_vector_from_py_int(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 176, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_vector_from_py_int(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 274, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_search_list = __pyx_t_2;
 
-  /* "KudoCop/analyze/neighbor.pyx":178
+  /* "KudoCop/analyze/neighbor.pyx":276
  *         vector[int] search_list = []
  * 
  *     ix[0] = mesh_id % mx[0]             # <<<<<<<<<<<<<<
@@ -3604,11 +4889,11 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
  */
   if (unlikely((__pyx_v_mx[0]) == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-    __PYX_ERR(0, 178, __pyx_L1_error)
+    __PYX_ERR(0, 276, __pyx_L1_error)
   }
   (__pyx_v_ix[0]) = __Pyx_mod_int(__pyx_v_mesh_id, (__pyx_v_mx[0]));
 
-  /* "KudoCop/analyze/neighbor.pyx":179
+  /* "KudoCop/analyze/neighbor.pyx":277
  * 
  *     ix[0] = mesh_id % mx[0]
  *     ix[1] = (mesh_id / mx[0]) % mx[1]             # <<<<<<<<<<<<<<
@@ -3617,20 +4902,20 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
  */
   if (unlikely((__pyx_v_mx[0]) == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-    __PYX_ERR(0, 179, __pyx_L1_error)
+    __PYX_ERR(0, 277, __pyx_L1_error)
   }
   else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely((__pyx_v_mx[0]) == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_mesh_id))) {
     PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-    __PYX_ERR(0, 179, __pyx_L1_error)
+    __PYX_ERR(0, 277, __pyx_L1_error)
   }
   __pyx_t_3 = __Pyx_div_int(__pyx_v_mesh_id, (__pyx_v_mx[0]));
   if (unlikely((__pyx_v_mx[1]) == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-    __PYX_ERR(0, 179, __pyx_L1_error)
+    __PYX_ERR(0, 277, __pyx_L1_error)
   }
   (__pyx_v_ix[1]) = __Pyx_mod_int(__pyx_t_3, (__pyx_v_mx[1]));
 
-  /* "KudoCop/analyze/neighbor.pyx":180
+  /* "KudoCop/analyze/neighbor.pyx":278
  *     ix[0] = mesh_id % mx[0]
  *     ix[1] = (mesh_id / mx[0]) % mx[1]
  *     ix[2] = (mesh_id / mx[0] / mx[1])             # <<<<<<<<<<<<<<
@@ -3639,24 +4924,24 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
  */
   if (unlikely((__pyx_v_mx[0]) == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-    __PYX_ERR(0, 180, __pyx_L1_error)
+    __PYX_ERR(0, 278, __pyx_L1_error)
   }
   else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely((__pyx_v_mx[0]) == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_mesh_id))) {
     PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-    __PYX_ERR(0, 180, __pyx_L1_error)
+    __PYX_ERR(0, 278, __pyx_L1_error)
   }
   __pyx_t_3 = __Pyx_div_int(__pyx_v_mesh_id, (__pyx_v_mx[0]));
   if (unlikely((__pyx_v_mx[1]) == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-    __PYX_ERR(0, 180, __pyx_L1_error)
+    __PYX_ERR(0, 278, __pyx_L1_error)
   }
   else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely((__pyx_v_mx[1]) == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_3))) {
     PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-    __PYX_ERR(0, 180, __pyx_L1_error)
+    __PYX_ERR(0, 278, __pyx_L1_error)
   }
   (__pyx_v_ix[2]) = __Pyx_div_int(__pyx_t_3, (__pyx_v_mx[1]));
 
-  /* "KudoCop/analyze/neighbor.pyx":182
+  /* "KudoCop/analyze/neighbor.pyx":280
  *     ix[2] = (mesh_id / mx[0] / mx[1])
  * 
  *     search_list.clear()             # <<<<<<<<<<<<<<
@@ -3665,27 +4950,27 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
  */
   __pyx_v_search_list.clear();
 
-  /* "KudoCop/analyze/neighbor.pyx":183
+  /* "KudoCop/analyze/neighbor.pyx":281
  * 
  *     search_list.clear()
  *     my_len = len(append_mesh[mesh_id])             # <<<<<<<<<<<<<<
  * 
  *     add_index = (
  */
-  __pyx_t_1 = __pyx_convert_vector_to_py_int((__pyx_v_append_mesh[__pyx_v_mesh_id])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 183, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_vector_to_py_int((__pyx_v_append_mesh[__pyx_v_mesh_id])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 281, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_4 == ((Py_ssize_t)-1))) __PYX_ERR(0, 183, __pyx_L1_error)
+  __pyx_t_4 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_4 == ((Py_ssize_t)-1))) __PYX_ERR(0, 281, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_my_len = __pyx_t_4;
 
-  /* "KudoCop/analyze/neighbor.pyx":186
+  /* "KudoCop/analyze/neighbor.pyx":284
  * 
  *     add_index = (
  *         [0,0,0],             # <<<<<<<<<<<<<<
  *         [1,0,0],
  *         [-1,1,0],
  */
-  __pyx_t_1 = PyList_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 284, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_int_0);
   __Pyx_GIVEREF(__pyx_int_0);
@@ -3697,14 +4982,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_0);
   PyList_SET_ITEM(__pyx_t_1, 2, __pyx_int_0);
 
-  /* "KudoCop/analyze/neighbor.pyx":187
+  /* "KudoCop/analyze/neighbor.pyx":285
  *     add_index = (
  *         [0,0,0],
  *         [1,0,0],             # <<<<<<<<<<<<<<
  *         [-1,1,0],
  *         [0,1,0],
  */
-  __pyx_t_5 = PyList_New(3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 187, __pyx_L1_error)
+  __pyx_t_5 = PyList_New(3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_INCREF(__pyx_int_1);
   __Pyx_GIVEREF(__pyx_int_1);
@@ -3716,14 +5001,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_0);
   PyList_SET_ITEM(__pyx_t_5, 2, __pyx_int_0);
 
-  /* "KudoCop/analyze/neighbor.pyx":188
+  /* "KudoCop/analyze/neighbor.pyx":286
  *         [0,0,0],
  *         [1,0,0],
  *         [-1,1,0],             # <<<<<<<<<<<<<<
  *         [0,1,0],
  *         [1,1,0],
  */
-  __pyx_t_6 = PyList_New(3); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __pyx_t_6 = PyList_New(3); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 286, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_INCREF(__pyx_int_neg_1);
   __Pyx_GIVEREF(__pyx_int_neg_1);
@@ -3735,14 +5020,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_0);
   PyList_SET_ITEM(__pyx_t_6, 2, __pyx_int_0);
 
-  /* "KudoCop/analyze/neighbor.pyx":189
+  /* "KudoCop/analyze/neighbor.pyx":287
  *         [1,0,0],
  *         [-1,1,0],
  *         [0,1,0],             # <<<<<<<<<<<<<<
  *         [1,1,0],
  *         [-1,0,1],
  */
-  __pyx_t_7 = PyList_New(3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_t_7 = PyList_New(3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 287, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_INCREF(__pyx_int_0);
   __Pyx_GIVEREF(__pyx_int_0);
@@ -3754,14 +5039,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_0);
   PyList_SET_ITEM(__pyx_t_7, 2, __pyx_int_0);
 
-  /* "KudoCop/analyze/neighbor.pyx":190
+  /* "KudoCop/analyze/neighbor.pyx":288
  *         [-1,1,0],
  *         [0,1,0],
  *         [1,1,0],             # <<<<<<<<<<<<<<
  *         [-1,0,1],
  *         [0,0,1],
  */
-  __pyx_t_8 = PyList_New(3); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 190, __pyx_L1_error)
+  __pyx_t_8 = PyList_New(3); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 288, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_INCREF(__pyx_int_1);
   __Pyx_GIVEREF(__pyx_int_1);
@@ -3773,14 +5058,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_0);
   PyList_SET_ITEM(__pyx_t_8, 2, __pyx_int_0);
 
-  /* "KudoCop/analyze/neighbor.pyx":191
+  /* "KudoCop/analyze/neighbor.pyx":289
  *         [0,1,0],
  *         [1,1,0],
  *         [-1,0,1],             # <<<<<<<<<<<<<<
  *         [0,0,1],
  *         [1,0,1],
  */
-  __pyx_t_9 = PyList_New(3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_t_9 = PyList_New(3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 289, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_INCREF(__pyx_int_neg_1);
   __Pyx_GIVEREF(__pyx_int_neg_1);
@@ -3792,14 +5077,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_1);
   PyList_SET_ITEM(__pyx_t_9, 2, __pyx_int_1);
 
-  /* "KudoCop/analyze/neighbor.pyx":192
+  /* "KudoCop/analyze/neighbor.pyx":290
  *         [1,1,0],
  *         [-1,0,1],
  *         [0,0,1],             # <<<<<<<<<<<<<<
  *         [1,0,1],
  *         [-1,-1,1],
  */
-  __pyx_t_10 = PyList_New(3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 192, __pyx_L1_error)
+  __pyx_t_10 = PyList_New(3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 290, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_INCREF(__pyx_int_0);
   __Pyx_GIVEREF(__pyx_int_0);
@@ -3811,14 +5096,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_1);
   PyList_SET_ITEM(__pyx_t_10, 2, __pyx_int_1);
 
-  /* "KudoCop/analyze/neighbor.pyx":193
+  /* "KudoCop/analyze/neighbor.pyx":291
  *         [-1,0,1],
  *         [0,0,1],
  *         [1,0,1],             # <<<<<<<<<<<<<<
  *         [-1,-1,1],
  *         [0,-1,1],
  */
-  __pyx_t_11 = PyList_New(3); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 193, __pyx_L1_error)
+  __pyx_t_11 = PyList_New(3); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 291, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   __Pyx_INCREF(__pyx_int_1);
   __Pyx_GIVEREF(__pyx_int_1);
@@ -3830,14 +5115,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_1);
   PyList_SET_ITEM(__pyx_t_11, 2, __pyx_int_1);
 
-  /* "KudoCop/analyze/neighbor.pyx":194
+  /* "KudoCop/analyze/neighbor.pyx":292
  *         [0,0,1],
  *         [1,0,1],
  *         [-1,-1,1],             # <<<<<<<<<<<<<<
  *         [0,-1,1],
  *         [1,-1,1],
  */
-  __pyx_t_12 = PyList_New(3); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 194, __pyx_L1_error)
+  __pyx_t_12 = PyList_New(3); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
   __Pyx_INCREF(__pyx_int_neg_1);
   __Pyx_GIVEREF(__pyx_int_neg_1);
@@ -3849,14 +5134,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_1);
   PyList_SET_ITEM(__pyx_t_12, 2, __pyx_int_1);
 
-  /* "KudoCop/analyze/neighbor.pyx":195
+  /* "KudoCop/analyze/neighbor.pyx":293
  *         [1,0,1],
  *         [-1,-1,1],
  *         [0,-1,1],             # <<<<<<<<<<<<<<
  *         [1,-1,1],
  *         [-1,1,1],
  */
-  __pyx_t_13 = PyList_New(3); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 195, __pyx_L1_error)
+  __pyx_t_13 = PyList_New(3); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 293, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_13);
   __Pyx_INCREF(__pyx_int_0);
   __Pyx_GIVEREF(__pyx_int_0);
@@ -3868,14 +5153,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_1);
   PyList_SET_ITEM(__pyx_t_13, 2, __pyx_int_1);
 
-  /* "KudoCop/analyze/neighbor.pyx":196
+  /* "KudoCop/analyze/neighbor.pyx":294
  *         [-1,-1,1],
  *         [0,-1,1],
  *         [1,-1,1],             # <<<<<<<<<<<<<<
  *         [-1,1,1],
  *         [0,1,1],
  */
-  __pyx_t_14 = PyList_New(3); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 196, __pyx_L1_error)
+  __pyx_t_14 = PyList_New(3); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 294, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_14);
   __Pyx_INCREF(__pyx_int_1);
   __Pyx_GIVEREF(__pyx_int_1);
@@ -3887,14 +5172,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_1);
   PyList_SET_ITEM(__pyx_t_14, 2, __pyx_int_1);
 
-  /* "KudoCop/analyze/neighbor.pyx":197
+  /* "KudoCop/analyze/neighbor.pyx":295
  *         [0,-1,1],
  *         [1,-1,1],
  *         [-1,1,1],             # <<<<<<<<<<<<<<
  *         [0,1,1],
  *         [1,1,1],
  */
-  __pyx_t_15 = PyList_New(3); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 197, __pyx_L1_error)
+  __pyx_t_15 = PyList_New(3); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 295, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_15);
   __Pyx_INCREF(__pyx_int_neg_1);
   __Pyx_GIVEREF(__pyx_int_neg_1);
@@ -3906,14 +5191,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_1);
   PyList_SET_ITEM(__pyx_t_15, 2, __pyx_int_1);
 
-  /* "KudoCop/analyze/neighbor.pyx":198
+  /* "KudoCop/analyze/neighbor.pyx":296
  *         [1,-1,1],
  *         [-1,1,1],
  *         [0,1,1],             # <<<<<<<<<<<<<<
  *         [1,1,1],
  *     )
  */
-  __pyx_t_16 = PyList_New(3); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 198, __pyx_L1_error)
+  __pyx_t_16 = PyList_New(3); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 296, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_INCREF(__pyx_int_0);
   __Pyx_GIVEREF(__pyx_int_0);
@@ -3925,14 +5210,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_1);
   PyList_SET_ITEM(__pyx_t_16, 2, __pyx_int_1);
 
-  /* "KudoCop/analyze/neighbor.pyx":199
+  /* "KudoCop/analyze/neighbor.pyx":297
  *         [-1,1,1],
  *         [0,1,1],
  *         [1,1,1],             # <<<<<<<<<<<<<<
  *     )
  * 
  */
-  __pyx_t_17 = PyList_New(3); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 199, __pyx_L1_error)
+  __pyx_t_17 = PyList_New(3); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 297, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_17);
   __Pyx_INCREF(__pyx_int_1);
   __Pyx_GIVEREF(__pyx_int_1);
@@ -3944,14 +5229,14 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_GIVEREF(__pyx_int_1);
   PyList_SET_ITEM(__pyx_t_17, 2, __pyx_int_1);
 
-  /* "KudoCop/analyze/neighbor.pyx":186
+  /* "KudoCop/analyze/neighbor.pyx":284
  * 
  *     add_index = (
  *         [0,0,0],             # <<<<<<<<<<<<<<
  *         [1,0,0],
  *         [-1,1,0],
  */
-  __pyx_t_18 = PyTuple_New(14); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_18 = PyTuple_New(14); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 284, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_18);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_18, 0, __pyx_t_1);
@@ -3998,7 +5283,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __pyx_v_add_index = ((PyObject*)__pyx_t_18);
   __pyx_t_18 = 0;
 
-  /* "KudoCop/analyze/neighbor.pyx":202
+  /* "KudoCop/analyze/neighbor.pyx":300
  *     )
  * 
  *     for add in add_index:             # <<<<<<<<<<<<<<
@@ -4009,15 +5294,15 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   for (;;) {
     if (__pyx_t_4 >= PyTuple_GET_SIZE(__pyx_t_18)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_17 = PyTuple_GET_ITEM(__pyx_t_18, __pyx_t_4); __Pyx_INCREF(__pyx_t_17); __pyx_t_4++; if (unlikely(0 < 0)) __PYX_ERR(0, 202, __pyx_L1_error)
+    __pyx_t_17 = PyTuple_GET_ITEM(__pyx_t_18, __pyx_t_4); __Pyx_INCREF(__pyx_t_17); __pyx_t_4++; if (unlikely(0 < 0)) __PYX_ERR(0, 300, __pyx_L1_error)
     #else
-    __pyx_t_17 = PySequence_ITEM(__pyx_t_18, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 202, __pyx_L1_error)
+    __pyx_t_17 = PySequence_ITEM(__pyx_t_18, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 300, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_17);
     #endif
     __Pyx_XDECREF_SET(__pyx_v_add, ((PyObject*)__pyx_t_17));
     __pyx_t_17 = 0;
 
-    /* "KudoCop/analyze/neighbor.pyx":203
+    /* "KudoCop/analyze/neighbor.pyx":301
  * 
  *     for add in add_index:
  *         for dim in range(3):             # <<<<<<<<<<<<<<
@@ -4027,31 +5312,31 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
     for (__pyx_t_3 = 0; __pyx_t_3 < 3; __pyx_t_3+=1) {
       __pyx_v_dim = __pyx_t_3;
 
-      /* "KudoCop/analyze/neighbor.pyx":204
+      /* "KudoCop/analyze/neighbor.pyx":302
  *     for add in add_index:
  *         for dim in range(3):
  *             add_ix[dim] = ix[dim] + add[dim]             # <<<<<<<<<<<<<<
  *         NeigborList(add_ix, append_mesh, mx, search_list)
  * 
  */
-      __pyx_t_17 = __Pyx_PyInt_From_int((__pyx_v_ix[__pyx_v_dim])); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 204, __pyx_L1_error)
+      __pyx_t_17 = __Pyx_PyInt_From_int((__pyx_v_ix[__pyx_v_dim])); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 302, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_17);
       if (unlikely(__pyx_v_add == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 204, __pyx_L1_error)
+        __PYX_ERR(0, 302, __pyx_L1_error)
       }
-      __pyx_t_16 = __Pyx_GetItemInt_List(__pyx_v_add, __pyx_v_dim, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 204, __pyx_L1_error)
+      __pyx_t_16 = __Pyx_GetItemInt_List(__pyx_v_add, __pyx_v_dim, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 302, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
-      __pyx_t_15 = PyNumber_Add(__pyx_t_17, __pyx_t_16); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 204, __pyx_L1_error)
+      __pyx_t_15 = PyNumber_Add(__pyx_t_17, __pyx_t_16); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 302, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_15);
       __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-      __pyx_t_19 = __Pyx_PyInt_As_int(__pyx_t_15); if (unlikely((__pyx_t_19 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 204, __pyx_L1_error)
+      __pyx_t_19 = __Pyx_PyInt_As_int(__pyx_t_15); if (unlikely((__pyx_t_19 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 302, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
       (__pyx_v_add_ix[__pyx_v_dim]) = __pyx_t_19;
     }
 
-    /* "KudoCop/analyze/neighbor.pyx":205
+    /* "KudoCop/analyze/neighbor.pyx":303
  *         for dim in range(3):
  *             add_ix[dim] = ix[dim] + add[dim]
  *         NeigborList(add_ix, append_mesh, mx, search_list)             # <<<<<<<<<<<<<<
@@ -4060,7 +5345,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
  */
     __pyx_f_7KudoCop_7analyze_8neighbor_NeigborList(__pyx_v_add_ix, __pyx_v_append_mesh, __pyx_v_mx, __pyx_v_search_list);
 
-    /* "KudoCop/analyze/neighbor.pyx":202
+    /* "KudoCop/analyze/neighbor.pyx":300
  *     )
  * 
  *     for add in add_index:             # <<<<<<<<<<<<<<
@@ -4070,20 +5355,20 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   }
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-  /* "KudoCop/analyze/neighbor.pyx":207
+  /* "KudoCop/analyze/neighbor.pyx":305
  *         NeigborList(add_ix, append_mesh, mx, search_list)
  * 
  *     search_len = len(search_list)             # <<<<<<<<<<<<<<
  *     for i in range(my_len):
  *         iid = search_list[i]
  */
-  __pyx_t_18 = __pyx_convert_vector_to_py_int(__pyx_v_search_list); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 207, __pyx_L1_error)
+  __pyx_t_18 = __pyx_convert_vector_to_py_int(__pyx_v_search_list); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 305, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_18);
-  __pyx_t_4 = PyObject_Length(__pyx_t_18); if (unlikely(__pyx_t_4 == ((Py_ssize_t)-1))) __PYX_ERR(0, 207, __pyx_L1_error)
+  __pyx_t_4 = PyObject_Length(__pyx_t_18); if (unlikely(__pyx_t_4 == ((Py_ssize_t)-1))) __PYX_ERR(0, 305, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
   __pyx_v_search_len = __pyx_t_4;
 
-  /* "KudoCop/analyze/neighbor.pyx":208
+  /* "KudoCop/analyze/neighbor.pyx":306
  * 
  *     search_len = len(search_list)
  *     for i in range(my_len):             # <<<<<<<<<<<<<<
@@ -4095,7 +5380,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   for (__pyx_t_20 = 0; __pyx_t_20 < __pyx_t_19; __pyx_t_20+=1) {
     __pyx_v_i = __pyx_t_20;
 
-    /* "KudoCop/analyze/neighbor.pyx":209
+    /* "KudoCop/analyze/neighbor.pyx":307
  *     search_len = len(search_list)
  *     for i in range(my_len):
  *         iid = search_list[i]             # <<<<<<<<<<<<<<
@@ -4104,7 +5389,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
  */
     __pyx_v_iid = (__pyx_v_search_list[__pyx_v_i]);
 
-    /* "KudoCop/analyze/neighbor.pyx":210
+    /* "KudoCop/analyze/neighbor.pyx":308
  *     for i in range(my_len):
  *         iid = search_list[i]
  *         for j in range(i+1,search_len):             # <<<<<<<<<<<<<<
@@ -4116,7 +5401,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
     for (__pyx_t_23 = (__pyx_v_i + 1); __pyx_t_23 < __pyx_t_22; __pyx_t_23+=1) {
       __pyx_v_j = __pyx_t_23;
 
-      /* "KudoCop/analyze/neighbor.pyx":211
+      /* "KudoCop/analyze/neighbor.pyx":309
  *         iid = search_list[i]
  *         for j in range(i+1,search_len):
  *             jid = search_list[j]             # <<<<<<<<<<<<<<
@@ -4125,7 +5410,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
  */
       __pyx_v_jid = (__pyx_v_search_list[__pyx_v_j]);
 
-      /* "KudoCop/analyze/neighbor.pyx":212
+      /* "KudoCop/analyze/neighbor.pyx":310
  *         for j in range(i+1,search_len):
  *             jid = search_list[j]
  *             for dim in range(3):             # <<<<<<<<<<<<<<
@@ -4135,7 +5420,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
       for (__pyx_t_24 = 0; __pyx_t_24 < 3; __pyx_t_24+=1) {
         __pyx_v_dim = __pyx_t_24;
 
-        /* "KudoCop/analyze/neighbor.pyx":213
+        /* "KudoCop/analyze/neighbor.pyx":311
  *             jid = search_list[j]
  *             for dim in range(3):
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]             # <<<<<<<<<<<<<<
@@ -4145,7 +5430,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
         (__pyx_v_dx[__pyx_v_dim]) = (((__pyx_v_catoms[__pyx_v_jid]).x[__pyx_v_dim]) - ((__pyx_v_catoms[__pyx_v_iid]).x[__pyx_v_dim]));
       }
 
-      /* "KudoCop/analyze/neighbor.pyx":214
+      /* "KudoCop/analyze/neighbor.pyx":312
  *             for dim in range(3):
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
  *             min_length(dx, cell)             # <<<<<<<<<<<<<<
@@ -4154,7 +5439,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
  */
       __pyx_f_7KudoCop_7analyze_8neighbor_min_length(__pyx_v_dx, __pyx_v_cell);
 
-      /* "KudoCop/analyze/neighbor.pyx":215
+      /* "KudoCop/analyze/neighbor.pyx":313
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
  *             min_length(dx, cell)
  *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= CL2:             # <<<<<<<<<<<<<<
@@ -4164,7 +5449,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
       __pyx_t_25 = ((((((__pyx_v_dx[0]) * (__pyx_v_dx[0])) + ((__pyx_v_dx[1]) * (__pyx_v_dx[1]))) + ((__pyx_v_dx[2]) * (__pyx_v_dx[2]))) <= __pyx_v_CL2) != 0);
       if (__pyx_t_25) {
 
-        /* "KudoCop/analyze/neighbor.pyx":216
+        /* "KudoCop/analyze/neighbor.pyx":314
  *             min_length(dx, cell)
  *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= CL2:
  *                 neighbor_list[iid].append(jid)             # <<<<<<<<<<<<<<
@@ -4173,17 +5458,17 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
  */
         if (unlikely(__pyx_v_neighbor_list == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 216, __pyx_L1_error)
+          __PYX_ERR(0, 314, __pyx_L1_error)
         }
-        __pyx_t_18 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_iid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 216, __pyx_L1_error)
+        __pyx_t_18 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_iid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 314, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_18);
-        __pyx_t_15 = __Pyx_PyInt_From_int(__pyx_v_jid); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 216, __pyx_L1_error)
+        __pyx_t_15 = __Pyx_PyInt_From_int(__pyx_v_jid); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 314, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_15);
-        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_18, __pyx_t_15); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 216, __pyx_L1_error)
+        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_18, __pyx_t_15); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 314, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
         __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
-        /* "KudoCop/analyze/neighbor.pyx":217
+        /* "KudoCop/analyze/neighbor.pyx":315
  *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= CL2:
  *                 neighbor_list[iid].append(jid)
  *                 neighbor_list[jid].append(iid)             # <<<<<<<<<<<<<<
@@ -4192,32 +5477,32 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
  */
         if (unlikely(__pyx_v_neighbor_list == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 217, __pyx_L1_error)
+          __PYX_ERR(0, 315, __pyx_L1_error)
         }
-        __pyx_t_15 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_jid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 217, __pyx_L1_error)
+        __pyx_t_15 = __Pyx_GetItemInt_List(__pyx_v_neighbor_list, __pyx_v_jid, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 315, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_15);
-        __pyx_t_18 = __Pyx_PyInt_From_int(__pyx_v_iid); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 217, __pyx_L1_error)
+        __pyx_t_18 = __Pyx_PyInt_From_int(__pyx_v_iid); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 315, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_18);
-        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_15, __pyx_t_18); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 217, __pyx_L1_error)
+        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_15, __pyx_t_18); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 315, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
         __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-        /* "KudoCop/analyze/neighbor.pyx":218
+        /* "KudoCop/analyze/neighbor.pyx":316
  *                 neighbor_list[iid].append(jid)
  *                 neighbor_list[jid].append(iid)
  *                 relative_coordinates_list[iid].append(dx)             # <<<<<<<<<<<<<<
  *                 for dim in range(3):
  *                     dx[dim] *= 1
  */
-        __pyx_t_18 = __Pyx_GetItemInt(__pyx_v_relative_coordinates_list, __pyx_v_iid, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 218, __pyx_L1_error)
+        __pyx_t_18 = __Pyx_GetItemInt(__pyx_v_relative_coordinates_list, __pyx_v_iid, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 316, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_18);
-        __pyx_t_15 = __Pyx_carray_to_py_double(__pyx_v_dx, 3); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 218, __pyx_L1_error)
+        __pyx_t_15 = __Pyx_carray_to_py_double(__pyx_v_dx, 3); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 316, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_15);
-        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_18, __pyx_t_15); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 218, __pyx_L1_error)
+        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_18, __pyx_t_15); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 316, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
         __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
-        /* "KudoCop/analyze/neighbor.pyx":219
+        /* "KudoCop/analyze/neighbor.pyx":317
  *                 neighbor_list[jid].append(iid)
  *                 relative_coordinates_list[iid].append(dx)
  *                 for dim in range(3):             # <<<<<<<<<<<<<<
@@ -4227,7 +5512,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
         for (__pyx_t_24 = 0; __pyx_t_24 < 3; __pyx_t_24+=1) {
           __pyx_v_dim = __pyx_t_24;
 
-          /* "KudoCop/analyze/neighbor.pyx":220
+          /* "KudoCop/analyze/neighbor.pyx":318
  *                 relative_coordinates_list[iid].append(dx)
  *                 for dim in range(3):
  *                     dx[dim] *= 1             # <<<<<<<<<<<<<<
@@ -4238,22 +5523,22 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
           (__pyx_v_dx[__pyx_t_27]) = ((__pyx_v_dx[__pyx_t_27]) * 1.0);
         }
 
-        /* "KudoCop/analyze/neighbor.pyx":221
+        /* "KudoCop/analyze/neighbor.pyx":319
  *                 for dim in range(3):
  *                     dx[dim] *= 1
  *                 relative_coordinates_list[jid].append(dx)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-        __pyx_t_15 = __Pyx_GetItemInt(__pyx_v_relative_coordinates_list, __pyx_v_jid, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 221, __pyx_L1_error)
+        __pyx_t_15 = __Pyx_GetItemInt(__pyx_v_relative_coordinates_list, __pyx_v_jid, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 319, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_15);
-        __pyx_t_18 = __Pyx_carray_to_py_double(__pyx_v_dx, 3); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 221, __pyx_L1_error)
+        __pyx_t_18 = __Pyx_carray_to_py_double(__pyx_v_dx, 3); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 319, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_18);
-        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_15, __pyx_t_18); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 221, __pyx_L1_error)
+        __pyx_t_26 = __Pyx_PyObject_Append(__pyx_t_15, __pyx_t_18); if (unlikely(__pyx_t_26 == ((int)-1))) __PYX_ERR(0, 319, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
         __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-        /* "KudoCop/analyze/neighbor.pyx":215
+        /* "KudoCop/analyze/neighbor.pyx":313
  *                 dx[dim] = catoms[jid].x[dim] - catoms[iid].x[dim]
  *             min_length(dx, cell)
  *             if dx[0]*dx[0]+dx[1]*dx[1]+dx[2]*dx[2] <= CL2:             # <<<<<<<<<<<<<<
@@ -4264,7 +5549,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
     }
   }
 
-  /* "KudoCop/analyze/neighbor.pyx":169
+  /* "KudoCop/analyze/neighbor.pyx":267
  * 
  * 
  * cdef void search_relative_coordinates(atom_t *catoms, double cell[3], int mesh_id, vector[vector[int]] &append_mesh, list neighbor_list, relative_coordinates_list, int mx[3], double CL2):             # <<<<<<<<<<<<<<
@@ -4297,7 +5582,7 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
   __Pyx_RefNannyFinishContext();
 }
 
-/* "KudoCop/analyze/neighbor.pyx":224
+/* "KudoCop/analyze/neighbor.pyx":322
  * 
  * 
  * def make_relative_coordinates(data , CL_):             # <<<<<<<<<<<<<<
@@ -4306,9 +5591,9 @@ static void __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(stru
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_5make_relative_coordinates(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_7KudoCop_7analyze_8neighbor_5make_relative_coordinates = {"make_relative_coordinates", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7KudoCop_7analyze_8neighbor_5make_relative_coordinates, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_5make_relative_coordinates(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_7make_relative_coordinates(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_7KudoCop_7analyze_8neighbor_7make_relative_coordinates = {"make_relative_coordinates", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7KudoCop_7analyze_8neighbor_7make_relative_coordinates, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_7make_relative_coordinates(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_data = 0;
   PyObject *__pyx_v_CL_ = 0;
   int __pyx_lineno = 0;
@@ -4340,11 +5625,11 @@ static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_5make_relative_coordinates
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_CL)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("make_relative_coordinates", 1, 2, 2, 1); __PYX_ERR(0, 224, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("make_relative_coordinates", 1, 2, 2, 1); __PYX_ERR(0, 322, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "make_relative_coordinates") < 0)) __PYX_ERR(0, 224, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "make_relative_coordinates") < 0)) __PYX_ERR(0, 322, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -4357,20 +5642,20 @@ static PyObject *__pyx_pw_7KudoCop_7analyze_8neighbor_5make_relative_coordinates
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("make_relative_coordinates", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 224, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("make_relative_coordinates", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 322, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("KudoCop.analyze.neighbor.make_relative_coordinates", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates(__pyx_self, __pyx_v_data, __pyx_v_CL_);
+  __pyx_r = __pyx_pf_7KudoCop_7analyze_8neighbor_6make_relative_coordinates(__pyx_self, __pyx_v_data, __pyx_v_CL_);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_) {
+static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_6make_relative_coordinates(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_data, PyObject *__pyx_v_CL_) {
   double __pyx_v_cell[3];
   double __pyx_v_msx[3];
   double __pyx_v_imx[3];
@@ -4405,30 +5690,30 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("make_relative_coordinates", 0);
 
-  /* "KudoCop/analyze/neighbor.pyx":229
+  /* "KudoCop/analyze/neighbor.pyx":327
  *         double msx[3]
  *         double imx[3]
  *         double CL = CL_             # <<<<<<<<<<<<<<
  *         int mx[3], ix[3]
  *         int nm, total = data.total_particle
  */
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_CL_); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 229, __pyx_L1_error)
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_CL_); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 327, __pyx_L1_error)
   __pyx_v_CL = __pyx_t_1;
 
-  /* "KudoCop/analyze/neighbor.pyx":231
+  /* "KudoCop/analyze/neighbor.pyx":329
  *         double CL = CL_
  *         int mx[3], ix[3]
  *         int nm, total = data.total_particle             # <<<<<<<<<<<<<<
  *         int i, j, dim, index, summ, ind_pos
  *         atom_t *catoms =  <atom_t *>malloc(total * sizeof(atom_t))
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_total_particle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 231, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_total_particle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 329, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 231, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 329, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_total = __pyx_t_3;
 
-  /* "KudoCop/analyze/neighbor.pyx":233
+  /* "KudoCop/analyze/neighbor.pyx":331
  *         int nm, total = data.total_particle
  *         int i, j, dim, index, summ, ind_pos
  *         atom_t *catoms =  <atom_t *>malloc(total * sizeof(atom_t))             # <<<<<<<<<<<<<<
@@ -4437,19 +5722,19 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
  */
   __pyx_v_catoms = ((struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t *)malloc((__pyx_v_total * (sizeof(struct __pyx_t_7KudoCop_7analyze_8neighbor_atom_t)))));
 
-  /* "KudoCop/analyze/neighbor.pyx":237
+  /* "KudoCop/analyze/neighbor.pyx":335
  * 
  * 
  *     pos = data.particles['pos'].tolist()             # <<<<<<<<<<<<<<
  *     make_cbodies(pos, catoms)
  * 
  */
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_particles); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 237, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_particles); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 335, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_t_4, __pyx_n_s_pos); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 237, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_t_4, __pyx_n_s_pos); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 335, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_tolist); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 237, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_tolist); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 335, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_5 = NULL;
@@ -4464,23 +5749,23 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
   }
   __pyx_t_2 = (__pyx_t_5) ? __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5) : __Pyx_PyObject_CallNoArg(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 237, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 335, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_pos = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "KudoCop/analyze/neighbor.pyx":238
+  /* "KudoCop/analyze/neighbor.pyx":336
  * 
  *     pos = data.particles['pos'].tolist()
  *     make_cbodies(pos, catoms)             # <<<<<<<<<<<<<<
  * 
  *     nm = 1
  */
-  if (!(likely(PyList_CheckExact(__pyx_v_pos))||((__pyx_v_pos) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_pos)->tp_name), 0))) __PYX_ERR(0, 238, __pyx_L1_error)
+  if (!(likely(PyList_CheckExact(__pyx_v_pos))||((__pyx_v_pos) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_pos)->tp_name), 0))) __PYX_ERR(0, 336, __pyx_L1_error)
   __pyx_f_7KudoCop_7analyze_8neighbor_make_cbodies(((PyObject*)__pyx_v_pos), __pyx_v_catoms);
 
-  /* "KudoCop/analyze/neighbor.pyx":240
+  /* "KudoCop/analyze/neighbor.pyx":338
  *     make_cbodies(pos, catoms)
  * 
  *     nm = 1             # <<<<<<<<<<<<<<
@@ -4489,7 +5774,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
  */
   __pyx_v_nm = 1;
 
-  /* "KudoCop/analyze/neighbor.pyx":241
+  /* "KudoCop/analyze/neighbor.pyx":339
  * 
  *     nm = 1
  *     for dim in range(3):             # <<<<<<<<<<<<<<
@@ -4499,23 +5784,23 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
   for (__pyx_t_3 = 0; __pyx_t_3 < 3; __pyx_t_3+=1) {
     __pyx_v_dim = __pyx_t_3;
 
-    /* "KudoCop/analyze/neighbor.pyx":242
+    /* "KudoCop/analyze/neighbor.pyx":340
  *     nm = 1
  *     for dim in range(3):
  *         cell[dim] = data.newcell[dim]             # <<<<<<<<<<<<<<
  *         mx[dim] = int(cell[dim]/CL)
  *         nm *= mx[dim]
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_newcell); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 242, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_newcell); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 340, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_GetItemInt(__pyx_t_2, __pyx_v_dim, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 242, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetItemInt(__pyx_t_2, __pyx_v_dim, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 340, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_t_4); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 242, __pyx_L1_error)
+    __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_t_4); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 340, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     (__pyx_v_cell[__pyx_v_dim]) = __pyx_t_1;
 
-    /* "KudoCop/analyze/neighbor.pyx":243
+    /* "KudoCop/analyze/neighbor.pyx":341
  *     for dim in range(3):
  *         cell[dim] = data.newcell[dim]
  *         mx[dim] = int(cell[dim]/CL)             # <<<<<<<<<<<<<<
@@ -4524,11 +5809,11 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
  */
     if (unlikely(__pyx_v_CL == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 243, __pyx_L1_error)
+      __PYX_ERR(0, 341, __pyx_L1_error)
     }
     (__pyx_v_mx[__pyx_v_dim]) = ((int)((__pyx_v_cell[__pyx_v_dim]) / __pyx_v_CL));
 
-    /* "KudoCop/analyze/neighbor.pyx":244
+    /* "KudoCop/analyze/neighbor.pyx":342
  *         cell[dim] = data.newcell[dim]
  *         mx[dim] = int(cell[dim]/CL)
  *         nm *= mx[dim]             # <<<<<<<<<<<<<<
@@ -4537,7 +5822,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
  */
     __pyx_v_nm = (__pyx_v_nm * (__pyx_v_mx[__pyx_v_dim]));
 
-    /* "KudoCop/analyze/neighbor.pyx":246
+    /* "KudoCop/analyze/neighbor.pyx":344
  *         nm *= mx[dim]
  * 
  *         msx[dim] = cell[dim] / mx[dim]             # <<<<<<<<<<<<<<
@@ -4546,11 +5831,11 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
  */
     if (unlikely((__pyx_v_mx[__pyx_v_dim]) == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 246, __pyx_L1_error)
+      __PYX_ERR(0, 344, __pyx_L1_error)
     }
     (__pyx_v_msx[__pyx_v_dim]) = ((__pyx_v_cell[__pyx_v_dim]) / (__pyx_v_mx[__pyx_v_dim]));
 
-    /* "KudoCop/analyze/neighbor.pyx":247
+    /* "KudoCop/analyze/neighbor.pyx":345
  * 
  *         msx[dim] = cell[dim] / mx[dim]
  *         imx[dim] = 1.0 / msx[dim]             # <<<<<<<<<<<<<<
@@ -4559,12 +5844,12 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
  */
     if (unlikely((__pyx_v_msx[__pyx_v_dim]) == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 247, __pyx_L1_error)
+      __PYX_ERR(0, 345, __pyx_L1_error)
     }
     (__pyx_v_imx[__pyx_v_dim]) = (1.0 / (__pyx_v_msx[__pyx_v_dim]));
   }
 
-  /* "KudoCop/analyze/neighbor.pyx":249
+  /* "KudoCop/analyze/neighbor.pyx":347
  *         imx[dim] = 1.0 / msx[dim]
  * 
  *     append_mesh.resize(nm)             # <<<<<<<<<<<<<<
@@ -4575,10 +5860,10 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
     __pyx_v_append_mesh.resize(__pyx_v_nm);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 249, __pyx_L1_error)
+    __PYX_ERR(0, 347, __pyx_L1_error)
   }
 
-  /* "KudoCop/analyze/neighbor.pyx":251
+  /* "KudoCop/analyze/neighbor.pyx":349
  *     append_mesh.resize(nm)
  * 
  *     for i in range(total):             # <<<<<<<<<<<<<<
@@ -4590,7 +5875,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_i = __pyx_t_7;
 
-    /* "KudoCop/analyze/neighbor.pyx":252
+    /* "KudoCop/analyze/neighbor.pyx":350
  * 
  *     for i in range(total):
  *         for dim in range(3):             # <<<<<<<<<<<<<<
@@ -4600,7 +5885,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
     for (__pyx_t_8 = 0; __pyx_t_8 < 3; __pyx_t_8+=1) {
       __pyx_v_dim = __pyx_t_8;
 
-      /* "KudoCop/analyze/neighbor.pyx":253
+      /* "KudoCop/analyze/neighbor.pyx":351
  *     for i in range(total):
  *         for dim in range(3):
  *             ix[dim] = int(catoms[i].x[dim] * imx[dim])             # <<<<<<<<<<<<<<
@@ -4609,7 +5894,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
  */
       (__pyx_v_ix[__pyx_v_dim]) = ((int)(((__pyx_v_catoms[__pyx_v_i]).x[__pyx_v_dim]) * (__pyx_v_imx[__pyx_v_dim])));
 
-      /* "KudoCop/analyze/neighbor.pyx":254
+      /* "KudoCop/analyze/neighbor.pyx":352
  *         for dim in range(3):
  *             ix[dim] = int(catoms[i].x[dim] * imx[dim])
  *             if ix[dim] < 0:             # <<<<<<<<<<<<<<
@@ -4619,7 +5904,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
       __pyx_t_9 = (((__pyx_v_ix[__pyx_v_dim]) < 0) != 0);
       if (__pyx_t_9) {
 
-        /* "KudoCop/analyze/neighbor.pyx":255
+        /* "KudoCop/analyze/neighbor.pyx":353
  *             ix[dim] = int(catoms[i].x[dim] * imx[dim])
  *             if ix[dim] < 0:
  *                 ix[dim] += mx[dim]             # <<<<<<<<<<<<<<
@@ -4629,7 +5914,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
         __pyx_t_10 = __pyx_v_dim;
         (__pyx_v_ix[__pyx_t_10]) = ((__pyx_v_ix[__pyx_t_10]) + (__pyx_v_mx[__pyx_v_dim]));
 
-        /* "KudoCop/analyze/neighbor.pyx":254
+        /* "KudoCop/analyze/neighbor.pyx":352
  *         for dim in range(3):
  *             ix[dim] = int(catoms[i].x[dim] * imx[dim])
  *             if ix[dim] < 0:             # <<<<<<<<<<<<<<
@@ -4638,7 +5923,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
  */
       }
 
-      /* "KudoCop/analyze/neighbor.pyx":256
+      /* "KudoCop/analyze/neighbor.pyx":354
  *             if ix[dim] < 0:
  *                 ix[dim] += mx[dim]
  *             if ix[dim] >= mx[dim]:             # <<<<<<<<<<<<<<
@@ -4648,7 +5933,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
       __pyx_t_9 = (((__pyx_v_ix[__pyx_v_dim]) >= (__pyx_v_mx[__pyx_v_dim])) != 0);
       if (__pyx_t_9) {
 
-        /* "KudoCop/analyze/neighbor.pyx":257
+        /* "KudoCop/analyze/neighbor.pyx":355
  *                 ix[dim] += mx[dim]
  *             if ix[dim] >= mx[dim]:
  *                 ix[dim] -= mx[dim]             # <<<<<<<<<<<<<<
@@ -4658,7 +5943,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
         __pyx_t_10 = __pyx_v_dim;
         (__pyx_v_ix[__pyx_t_10]) = ((__pyx_v_ix[__pyx_t_10]) - (__pyx_v_mx[__pyx_v_dim]));
 
-        /* "KudoCop/analyze/neighbor.pyx":256
+        /* "KudoCop/analyze/neighbor.pyx":354
  *             if ix[dim] < 0:
  *                 ix[dim] += mx[dim]
  *             if ix[dim] >= mx[dim]:             # <<<<<<<<<<<<<<
@@ -4668,7 +5953,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
       }
     }
 
-    /* "KudoCop/analyze/neighbor.pyx":259
+    /* "KudoCop/analyze/neighbor.pyx":357
  *                 ix[dim] -= mx[dim]
  * 
  *         index = ix[0] + ix[1] * mx[0] + ix[2] * mx[0] * mx[1]             # <<<<<<<<<<<<<<
@@ -4677,7 +5962,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
  */
     __pyx_v_index = (((__pyx_v_ix[0]) + ((__pyx_v_ix[1]) * (__pyx_v_mx[0]))) + (((__pyx_v_ix[2]) * (__pyx_v_mx[0])) * (__pyx_v_mx[1])));
 
-    /* "KudoCop/analyze/neighbor.pyx":260
+    /* "KudoCop/analyze/neighbor.pyx":358
  * 
  *         index = ix[0] + ix[1] * mx[0] + ix[2] * mx[0] * mx[1]
  *         append_mesh[index].push_back(i)             # <<<<<<<<<<<<<<
@@ -4688,53 +5973,53 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
       (__pyx_v_append_mesh[__pyx_v_index]).push_back(__pyx_v_i);
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 260, __pyx_L1_error)
+      __PYX_ERR(0, 358, __pyx_L1_error)
     }
   }
 
-  /* "KudoCop/analyze/neighbor.pyx":262
+  /* "KudoCop/analyze/neighbor.pyx":360
  *         append_mesh[index].push_back(i)
  * 
  *     neighbor_list = [[] for _ in range(total)]             # <<<<<<<<<<<<<<
  *     relative_coordinates_list = [[] for _ in range(total)]
  * 
  */
-  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 262, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 360, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_3 = __pyx_v_total;
   __pyx_t_6 = __pyx_t_3;
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v__ = __pyx_t_7;
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 262, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 360, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 262, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 360, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
   __pyx_v_neighbor_list = ((PyObject*)__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "KudoCop/analyze/neighbor.pyx":263
+  /* "KudoCop/analyze/neighbor.pyx":361
  * 
  *     neighbor_list = [[] for _ in range(total)]
  *     relative_coordinates_list = [[] for _ in range(total)]             # <<<<<<<<<<<<<<
  * 
  *     for i in range(nm):
  */
-  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 361, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_3 = __pyx_v_total;
   __pyx_t_6 = __pyx_t_3;
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v__ = __pyx_t_7;
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 263, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 361, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 263, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 361, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
   __pyx_v_relative_coordinates_list = ((PyObject*)__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "KudoCop/analyze/neighbor.pyx":265
+  /* "KudoCop/analyze/neighbor.pyx":363
  *     relative_coordinates_list = [[] for _ in range(total)]
  * 
  *     for i in range(nm):             # <<<<<<<<<<<<<<
@@ -4746,7 +6031,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_i = __pyx_t_7;
 
-    /* "KudoCop/analyze/neighbor.pyx":266
+    /* "KudoCop/analyze/neighbor.pyx":364
  * 
  *     for i in range(nm):
  *         search_relative_coordinates(catoms, cell, i, append_mesh, neighbor_list, relative_coordinates_list, mx, CL*CL)             # <<<<<<<<<<<<<<
@@ -4756,13 +6041,13 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
     __pyx_f_7KudoCop_7analyze_8neighbor_search_relative_coordinates(__pyx_v_catoms, __pyx_v_cell, __pyx_v_i, __pyx_v_append_mesh, __pyx_v_neighbor_list, __pyx_v_relative_coordinates_list, __pyx_v_mx, (__pyx_v_CL * __pyx_v_CL));
   }
 
-  /* "KudoCop/analyze/neighbor.pyx":268
+  /* "KudoCop/analyze/neighbor.pyx":366
  *         search_relative_coordinates(catoms, cell, i, append_mesh, neighbor_list, relative_coordinates_list, mx, CL*CL)
  * 
  *     return neighbor_list, relative_coordinates_list             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 268, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 366, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_INCREF(__pyx_v_neighbor_list);
   __Pyx_GIVEREF(__pyx_v_neighbor_list);
@@ -4774,7 +6059,7 @@ static PyObject *__pyx_pf_7KudoCop_7analyze_8neighbor_4make_relative_coordinates
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "KudoCop/analyze/neighbor.pyx":224
+  /* "KudoCop/analyze/neighbor.pyx":322
  * 
  * 
  * def make_relative_coordinates(data , CL_):             # <<<<<<<<<<<<<<
@@ -5257,6 +6542,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_KudoCop_analyze_neighbor_pyx, __pyx_k_KudoCop_analyze_neighbor_pyx, sizeof(__pyx_k_KudoCop_analyze_neighbor_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_append, __pyx_k_append, sizeof(__pyx_k_append), 0, 0, 1, 1},
   {&__pyx_n_s_append_mesh, __pyx_k_append_mesh, sizeof(__pyx_k_append_mesh), 0, 0, 1, 1},
+  {&__pyx_n_s_atom_types, __pyx_k_atom_types, sizeof(__pyx_k_atom_types), 0, 0, 1, 1},
   {&__pyx_n_s_catoms, __pyx_k_catoms, sizeof(__pyx_k_catoms), 0, 0, 1, 1},
   {&__pyx_n_s_cell, __pyx_k_cell, sizeof(__pyx_k_cell), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
@@ -5276,6 +6562,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_make_brute_neighbor, __pyx_k_make_brute_neighbor, sizeof(__pyx_k_make_brute_neighbor), 0, 0, 1, 1},
   {&__pyx_n_s_make_neighbor, __pyx_k_make_neighbor, sizeof(__pyx_k_make_neighbor), 0, 0, 1, 1},
+  {&__pyx_n_s_make_neighbor_pairwise_cutoff, __pyx_k_make_neighbor_pairwise_cutoff, sizeof(__pyx_k_make_neighbor_pairwise_cutoff), 0, 0, 1, 1},
   {&__pyx_n_s_make_relative_coordinates, __pyx_k_make_relative_coordinates, sizeof(__pyx_k_make_relative_coordinates), 0, 0, 1, 1},
   {&__pyx_n_s_msx, __pyx_k_msx, sizeof(__pyx_k_msx), 0, 0, 1, 1},
   {&__pyx_n_s_mx, __pyx_k_mx, sizeof(__pyx_k_mx), 0, 0, 1, 1},
@@ -5285,6 +6572,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_nm, __pyx_k_nm, sizeof(__pyx_k_nm), 0, 0, 1, 1},
   {&__pyx_n_s_np, __pyx_k_np, sizeof(__pyx_k_np), 0, 0, 1, 1},
   {&__pyx_n_s_numpy, __pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 0, 1, 1},
+  {&__pyx_n_s_pair_cut_off2, __pyx_k_pair_cut_off2, sizeof(__pyx_k_pair_cut_off2), 0, 0, 1, 1},
   {&__pyx_n_s_particles, __pyx_k_particles, sizeof(__pyx_k_particles), 0, 0, 1, 1},
   {&__pyx_n_s_pos, __pyx_k_pos, sizeof(__pyx_k_pos), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
@@ -5320,29 +6608,41 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__2);
   __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(2, 0, 21, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__2, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_KudoCop_analyze_neighbor_pyx, __pyx_n_s_make_neighbor, 93, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(0, 93, __pyx_L1_error)
 
-  /* "KudoCop/analyze/neighbor.pyx":140
+  /* "KudoCop/analyze/neighbor.pyx":191
+ *                 neighbor_list[jid].append(iid)
+ * 
+ * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         double cell[3]
+ */
+  __pyx_tuple__4 = PyTuple_Pack(23, __pyx_n_s_data, __pyx_n_s_CL, __pyx_n_s_atom_types, __pyx_n_s_pair_cut_off2, __pyx_n_s_cell, __pyx_n_s_msx, __pyx_n_s_imx, __pyx_n_s_CL_2, __pyx_n_s_mx, __pyx_n_s_ix, __pyx_n_s_nm, __pyx_n_s_total, __pyx_n_s_i, __pyx_n_s_j, __pyx_n_s_dim, __pyx_n_s_index, __pyx_n_s_summ, __pyx_n_s_ind_pos, __pyx_n_s_catoms, __pyx_n_s_append_mesh, __pyx_n_s_pos, __pyx_n_s_neighbor_list, __pyx_n_s_); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__4);
+  __Pyx_GIVEREF(__pyx_tuple__4);
+  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(4, 0, 23, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_KudoCop_analyze_neighbor_pyx, __pyx_n_s_make_neighbor_pairwise_cutoff, 191, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 191, __pyx_L1_error)
+
+  /* "KudoCop/analyze/neighbor.pyx":238
  * 
  * #####for debug
  * def make_brute_neighbor(data, CL):             # <<<<<<<<<<<<<<
  * 
  *     cdef:
  */
-  __pyx_tuple__4 = PyTuple_Pack(12, __pyx_n_s_data, __pyx_n_s_CL_2, __pyx_n_s_iid, __pyx_n_s_jid, __pyx_n_s_dim, __pyx_n_s_total, __pyx_n_s_dx, __pyx_n_s_cell, __pyx_n_s_catoms, __pyx_n_s_pos, __pyx_n_s_neighbor_list, __pyx_n_s_); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 140, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__4);
-  __Pyx_GIVEREF(__pyx_tuple__4);
-  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(2, 0, 12, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_KudoCop_analyze_neighbor_pyx, __pyx_n_s_make_brute_neighbor, 140, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 140, __pyx_L1_error)
+  __pyx_tuple__6 = PyTuple_Pack(12, __pyx_n_s_data, __pyx_n_s_CL_2, __pyx_n_s_iid, __pyx_n_s_jid, __pyx_n_s_dim, __pyx_n_s_total, __pyx_n_s_dx, __pyx_n_s_cell, __pyx_n_s_catoms, __pyx_n_s_pos, __pyx_n_s_neighbor_list, __pyx_n_s_); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 238, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__6);
+  __Pyx_GIVEREF(__pyx_tuple__6);
+  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(2, 0, 12, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_KudoCop_analyze_neighbor_pyx, __pyx_n_s_make_brute_neighbor, 238, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) __PYX_ERR(0, 238, __pyx_L1_error)
 
-  /* "KudoCop/analyze/neighbor.pyx":224
+  /* "KudoCop/analyze/neighbor.pyx":322
  * 
  * 
  * def make_relative_coordinates(data , CL_):             # <<<<<<<<<<<<<<
  *     cdef:
  *         double cell[3]
  */
-  __pyx_tuple__6 = PyTuple_Pack(22, __pyx_n_s_data, __pyx_n_s_CL, __pyx_n_s_cell, __pyx_n_s_msx, __pyx_n_s_imx, __pyx_n_s_CL_2, __pyx_n_s_mx, __pyx_n_s_ix, __pyx_n_s_nm, __pyx_n_s_total, __pyx_n_s_i, __pyx_n_s_j, __pyx_n_s_dim, __pyx_n_s_index, __pyx_n_s_summ, __pyx_n_s_ind_pos, __pyx_n_s_catoms, __pyx_n_s_append_mesh, __pyx_n_s_pos, __pyx_n_s_neighbor_list, __pyx_n_s_relative_coordinates_list, __pyx_n_s_); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 224, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__6);
-  __Pyx_GIVEREF(__pyx_tuple__6);
-  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(2, 0, 22, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_KudoCop_analyze_neighbor_pyx, __pyx_n_s_make_relative_coordinates, 224, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) __PYX_ERR(0, 224, __pyx_L1_error)
+  __pyx_tuple__8 = PyTuple_Pack(22, __pyx_n_s_data, __pyx_n_s_CL, __pyx_n_s_cell, __pyx_n_s_msx, __pyx_n_s_imx, __pyx_n_s_CL_2, __pyx_n_s_mx, __pyx_n_s_ix, __pyx_n_s_nm, __pyx_n_s_total, __pyx_n_s_i, __pyx_n_s_j, __pyx_n_s_dim, __pyx_n_s_index, __pyx_n_s_summ, __pyx_n_s_ind_pos, __pyx_n_s_catoms, __pyx_n_s_append_mesh, __pyx_n_s_pos, __pyx_n_s_neighbor_list, __pyx_n_s_relative_coordinates_list, __pyx_n_s_); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 322, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__8);
+  __Pyx_GIVEREF(__pyx_tuple__8);
+  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(2, 0, 22, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_KudoCop_analyze_neighbor_pyx, __pyx_n_s_make_relative_coordinates, 322, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 322, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -5648,28 +6948,40 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_make_neighbor, __pyx_t_1) < 0) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "KudoCop/analyze/neighbor.pyx":140
+  /* "KudoCop/analyze/neighbor.pyx":191
+ *                 neighbor_list[jid].append(iid)
+ * 
+ * def make_neighbor_pairwise_cutoff(data , CL_,list atom_types,  list pair_cut_off2):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         double cell[3]
+ */
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7KudoCop_7analyze_8neighbor_3make_neighbor_pairwise_cutoff, NULL, __pyx_n_s_KudoCop_analyze_neighbor); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_make_neighbor_pairwise_cutoff, __pyx_t_1) < 0) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "KudoCop/analyze/neighbor.pyx":238
  * 
  * #####for debug
  * def make_brute_neighbor(data, CL):             # <<<<<<<<<<<<<<
  * 
  *     cdef:
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7KudoCop_7analyze_8neighbor_3make_brute_neighbor, NULL, __pyx_n_s_KudoCop_analyze_neighbor); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 140, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7KudoCop_7analyze_8neighbor_5make_brute_neighbor, NULL, __pyx_n_s_KudoCop_analyze_neighbor); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_make_brute_neighbor, __pyx_t_1) < 0) __PYX_ERR(0, 140, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_make_brute_neighbor, __pyx_t_1) < 0) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "KudoCop/analyze/neighbor.pyx":224
+  /* "KudoCop/analyze/neighbor.pyx":322
  * 
  * 
  * def make_relative_coordinates(data , CL_):             # <<<<<<<<<<<<<<
  *     cdef:
  *         double cell[3]
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7KudoCop_7analyze_8neighbor_5make_relative_coordinates, NULL, __pyx_n_s_KudoCop_analyze_neighbor); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 224, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7KudoCop_7analyze_8neighbor_7make_relative_coordinates, NULL, __pyx_n_s_KudoCop_analyze_neighbor); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 322, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_make_relative_coordinates, __pyx_t_1) < 0) __PYX_ERR(0, 224, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_make_relative_coordinates, __pyx_t_1) < 0) __PYX_ERR(0, 322, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "KudoCop/analyze/neighbor.pyx":1
@@ -6677,6 +7989,27 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
     return __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL);
 }
 #endif
+
+/* ArgTypeTest */
+static int __Pyx__ArgTypeTest(PyObject *obj, PyTypeObject *type, const char *name, int exact)
+{
+    if (unlikely(!type)) {
+        PyErr_SetString(PyExc_SystemError, "Missing type object");
+        return 0;
+    }
+    else if (exact) {
+        #if PY_MAJOR_VERSION == 2
+        if ((type == &PyBaseString_Type) && likely(__Pyx_PyBaseString_CheckExact(obj))) return 1;
+        #endif
+    }
+    else {
+        if (likely(__Pyx_TypeCheck(obj, type))) return 1;
+    }
+    PyErr_Format(PyExc_TypeError,
+        "Argument '%.200s' has incorrect type (expected %.200s, got %.200s)",
+        name, type->tp_name, Py_TYPE(obj)->tp_name);
+    return 0;
+}
 
 /* Import */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
