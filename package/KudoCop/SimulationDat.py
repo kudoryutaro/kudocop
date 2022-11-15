@@ -4,7 +4,11 @@ import numpy as np
 from .io.export_file import ExportFile
 from .io.import_file import ImportFile
 from .analyze.analyze import Analyze
-from .analyze import neighbor
+
+try:
+    from .analyze import neighbor
+except:
+    pass
 
 
 class SimulationDat(

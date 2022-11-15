@@ -206,7 +206,8 @@ class DMol3KudoCopForSDats():
             self.atoms_calc[step_idx] = Atoms(
                 positions=positions,
                 symbols=symbols,
-                cell=cell)
+                cell=cell,
+                pbc=[1, 1, 1])
             calc = DMol3(**kwargs)
             calc.directory = calc_directory / f'calc_step_idx_{step_idx}'
             self.atoms_calc[step_idx].calc = calc
