@@ -4,7 +4,12 @@ import numpy as np
 from .io.export_file import ExportFile
 from .io.import_file import ImportFile
 from .analyze.analyze import Analyze
-from .analyze import neighbor
+from copy import deepcopy
+
+try:
+    from .analyze import neighbor
+except:
+    pass
 
 
 class SimulationDat(
@@ -239,15 +244,34 @@ class SimulationDat(
 
         Parameters
         ----------
-        cut_off : float
+        cut_off : float or list
             cut_offの単位はÅ
             ある原子からcut_off以下の距離にある原子は結合しているとみなす
+            cut_off のタイプがlistの時
+                cut_off[atom_type][nex_atom_type] : float
+                atom_typeは1-indexed
         """
         self.particles = dict()
         self.particles['pos'] = self.atoms[['x', 'y', 'z']].values
         self.total_particle = self.get_total_atoms()
         self.newcell = self.cell
-        self.connect_list_from_dumppos = neighbor.make_neighbor(self, cut_off)
+        if type(cut_off) is float or type(cut_off) is int:
+            self.connect_list_from_dumppos = neighbor.make_neighbor(self, cut_off)
+        elif type(cut_off) is list:
+            max_cut_off = 0
+            cut_off2 = [None] * ((len(self.atom_type_to_symbol) + 1) ** 2)
+            for atom_type in range(1, len(self.atom_type_to_symbol) + 1):
+                for nex_atom_type in range(1, len(self.atom_type_to_symbol) + 1):
+                    try:
+                        max_cut_off = max(max_cut_off, cut_off[atom_type][nex_atom_type])
+                        cut_off2[atom_type*len(self.atom_type_to_symbol)+nex_atom_type] = cut_off[atom_type][nex_atom_type]**2
+                    except:
+                        pass
+            atom_types = self.atoms['type'].to_list()
+
+            connect_list_from_dumppos = neighbor.make_neighbor_pairwise_cutoff(self, max_cut_off, atom_types, cut_off2, len(self.atom_type_to_symbol))
+            self.connect_list_from_dumppos = connect_list_from_dumppos
+            
         return self.connect_list_from_dumppos
 
     def replicate_atoms(self, replicate_directions=[1, 1, 1]) -> None:

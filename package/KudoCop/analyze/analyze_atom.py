@@ -3,6 +3,13 @@ import itertools
 import pandas as pd
 import numpy as np
 
+try:
+    from . import neighbor
+    import ase
+    from ase.atoms import Atoms
+    import torch
+except:
+    pass
 
 class AnalyzeAtom():
     def __init__():
@@ -194,6 +201,59 @@ class AnalyzeAtom():
             count_structure_target_group[current_neighbor_atom_type_count] += 1
         return count_structure_target_group
 
+    # def get_relative_coordinates_info(self, cut_off:float):
+    #     """それぞれの原子から見て、距離がcut_off以下の原子を探し、相対座標, 距離, タイプ, atom_idxを返す関数
+    #     Parameters
+    #     ----------
+    #         cut_off : float
+    #             カットオフ 単位はÅ
+
+    #     Returns
+    #     -------
+    #         connect_list : list
+    #             連結リスト
+    #         relative_coordinates : list
+    #             relative_coordinates[atom_idx] = [[x_ij, y_ij, z_ij],
+    #                                               [x_ij, y_ij, z_ij],
+    #                                               [x_ij, y_ij, z_ij],
+    #                                               [x_ij, y_ij, z_ij]]
+    #     Note
+    #     ----
+    #         connect_list[atom_idx]中のインデックスと
+    #         relative_coordinates[atom_idx]中のインデックスは一致している
+    #         Example
+    #         -------
+    #             connect_list[3] = [0, 1, 4]
+    #             relative_coordinates[atom_idx] = [[2.1, 4.2, 2.3],
+    #                                               [6.3, -3.1, 1.8],
+    #                                               [2.1, 1.2, -2.1]]
+    #             の場合はatomのインデックスが3の原子の周りにatomのインデックスが0, 1, 4の原子がある
+    #             atomのインデックスが3の原子から見て、atomのインデックスが0の原子は[2.1, 4.2, 2.3]方向にある
+    #             atomのインデックスが3の原子から見て、atomのインデックスが1の原子は[6.3, -3.1, 1.8]方向にある
+    #             atomのインデックスが3の原子から見て、atomのインデックスが4の原子は[2.1, 1.2, -2.1]方向にある
+
+    #     """
+    #     ase_atoms = Atoms(
+    #         positions=self.atoms[['x','y','z']],
+    #         symbols=self.atoms['type'].map(self.atom_type_to_symbol),
+    #         cell=self.cell,
+    #         pbc=[1, 1, 1])
+    #     atom_types = self.atoms['type'].values
+    #     ovito_data = ase_to_ovito(ase_atoms)
+    #     ovito_neighbor_finder = ovito.data.CutoffNeighborFinder(cut_off, ovito_data)
+    #     relative_coordinates_list = [[] for _ in range(self.get_total_atoms())]
+    #     relative_atom_type_list = [[] for _ in range(self.get_total_atoms())]
+    #     relative_dist_list = [[] for _ in range(self.get_total_atoms())]
+    #     connect_list = [[] for _ in range(self.get_total_atoms())]
+    #     for atom_idx in range(self.get_total_atoms()):
+    #         for neighbor_atom in ovito_neighbor_finder.find(atom_idx):
+    #             relative_coordinates_list[atom_idx].append(neighbor_atom.index)
+    #             relative_dist_list[atom_idx].append(neighbor_atom.distance)
+    #             relative_coordinates_list[atom_idx].append(neighbor_atom.delta)
+    #             relative_atom_type_list[atom_idx].append(atom_types[neighbor_atom.index])
+    #             connect_list[atom_idx].append(neighbor_atom.index)
+
+    #     return connect_list, relative_coordinates_list, relative_atom_type_list, relative_dist_list
 
 class AnalyzeAtomForSDats():
     def __init__():

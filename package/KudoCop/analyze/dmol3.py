@@ -56,7 +56,7 @@ class DMol3KudoCop():
 
     def dmol3_md(self, calc_label='dmol3_md', calc_directory='dmol3_md', np=1,
                 ensemble='NVE', temperature=300.0, time_step=1.0, number_of_steps=1000, exist_ok=False, max_memory=2048, print_outmol=True, scf_density_convergence=1.000000e-05, 
-                integration_grid='medium', basis='dnp', cutoff_Global=3.2000, scf_iterations=50):
+                integration_grid='medium', basis='dnp', cutoff_Global=3.2000, scf_iterations=50, run=False, save_rundmol3_sh=False, save_qsub_script=False):
         """DMol3を用いて第一原理分子動力学を行う.
 
         Parameters
@@ -67,6 +67,9 @@ class DMol3KudoCop():
             計算するディレクトリ
         np : int
             並列計算数
+        run : bool
+            run=Trueのときは実際にdmol3で第一原理計算MDを実行する
+            run=Falseのときは設定ファイルを書き込むだけ
         ensemble : str ['NVE', 'NVT']
             アンサンブルの種類
         temperature : float
@@ -143,6 +146,16 @@ Cutoff_Global                 {cutoff_Global:.4f} angstrom
         with open(dmol3_input_path, 'w') as f:
             f.write(dmol3_input_lines)
         self.export_car(calc_directory / f'{calc_label}.car')
+        with open(calc_directory / 'RunDMol3.sh', 'w') as f:
+            f.write(RunDMol3_sh)
+        
+        with open(calc_directory / 'qsub_script.sh', 'w') as f:
+            qsub_script = get_qsub_script(calc_label)
+            f.write(qsub_script)
+
+        if not run:
+            return
+            
         cmd = f'RunDMol3.sh {calc_label} -np {np}'
         dmol_md_process = subprocess.Popen(cmd, cwd=calc_directory, shell=True)
         time.sleep(5)
@@ -193,7 +206,8 @@ class DMol3KudoCopForSDats():
             self.atoms_calc[step_idx] = Atoms(
                 positions=positions,
                 symbols=symbols,
-                cell=cell)
+                cell=cell,
+                pbc=[1, 1, 1])
             calc = DMol3(**kwargs)
             calc.directory = calc_directory / f'calc_step_idx_{step_idx}'
             self.atoms_calc[step_idx].calc = calc
@@ -226,3 +240,46 @@ class DMol3KudoCopForSDats():
         return forces
     
 
+RunDMol3_sh = """#!/bin/sh
+# ---------------------------------------------------------------------------
+#
+# Script for stand-alone DMol3 execution.
+#
+# This program and all subroutines, data, and files used by it
+# are protected by Copyright and hence may not be used, copied,
+# modified, transmitted, inspected, or executed by any means including
+# the use of electronic data processing equipment, xerography, or
+# any other methods without the express written permission of the
+# copyright holder.
+#
+# Copyright (c) 2015, Dassault Systemes, All Rights Reserved
+#
+# ***************************************************************************
+MS_INSTALL_ROOT=/work/app/MaterialsStudio2021HF1/MaterialsStudio21.1
+export MS_INSTALL_ROOT
+server=DMol3
+$MS_INSTALL_ROOT/share/bin/runMSserver.sh $server "$@"
+if [ $? != 6 ]; then
+    exit $?
+fi
+
+cat $MS_INSTALL_ROOT/etc/DMol3/bin/RunDMol3.Readme"""
+
+def get_qsub_script(calc_label):
+    qsub_script = f"""#!/bin/sh
+#PBS -l select=1
+#PBS -l dmol3=1
+#PBS -q C_002
+#PBS -N {calc_label}
+
+DIRNAME=`basename $PBS_O_WORKDIR`
+WORKDIR=/work/$USER/$PBS_JOBID
+mkdir -p $WORKDIR
+cp -raf  $PBS_O_WORKDIR $WORKDIR
+cd $WORKDIR/$DIRNAME
+
+./RunDMol3.sh -np 18 {calc_label}
+
+cd; if cp -raf $WORKDIR/$DIRNAME $PBS_O_WORKDIR/.. ; then rm -rf $WORKDIR; fi
+    """
+    return qsub_script

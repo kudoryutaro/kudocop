@@ -14,7 +14,7 @@ from .analyze import neighbor
 from .io.export_dp_system_multi_frames import ExportDPSystemMultiFrames
 from .analyze.dmol3 import DMol3KudoCopForSDats
 from .io.import_outmol import ImportOutmolForSDats
-from .io.import_lammps_dumppos import ImportLammpsDumppos
+from .io.import_lammps_dumpposes import ImportLammpsDumpposes
 from .io.export_lammps_dumpposes import ExportLammpsDumpposes
 
 class SimulationDats(
@@ -27,7 +27,7 @@ class SimulationDats(
     AnalyzeForSDats,
     DMol3KudoCopForSDats,
     ExportDPSystemMultiFrames,
-    ImportLammpsDumppos,
+    ImportLammpsDumpposes,
     ExportLammpsDumpposes,
 ):
     """シミュレーションしたデータを読み込み、書き込み、分析するためのクラス
@@ -155,14 +155,29 @@ class SimulationDats(
             sys.exit(-1)
 
         self.connect_lists_from_dumpposes = [None for _ in range(len(self.step_nums))]
-
+        if type(cut_off) is list:
+            max_cut_off = 0
+            cut_off2 = [None] * ((len(self.atom_type_to_symbol) + 1) ** 2)
+            for atom_type in range(1, len(self.atom_type_to_symbol) + 1):
+                for nex_atom_type in range(1, len(self.atom_type_to_symbol) + 1):
+                    try:
+                        max_cut_off = max(max_cut_off, cut_off[atom_type][nex_atom_type])
+                        cut_off2[atom_type*len(self.atom_type_to_symbol)+nex_atom_type] = cut_off[atom_type][nex_atom_type]**2
+                    except:
+                        pass
         for step_idx in trange(len(self.step_nums), desc='[creating connect_lists]'):
             sdat = SimulationDat()
             sdat.particles = dict()
             sdat.particles['pos'] = self.atoms[step_idx][['x', 'y', 'z']].values
             sdat.total_particle = self.get_total_atoms()
             sdat.newcell = self.cell
-            self.connect_lists_from_dumpposes[step_idx] = neighbor.make_neighbor(sdat, cut_off)
+            if type(cut_off) is int or type(cut_off) is float:
+                self.connect_lists_from_dumpposes[step_idx] = neighbor.make_neighbor(sdat, cut_off)
+            elif type(cut_off) is list:
+                atom_types = self.atoms[step_idx]['type'].to_list()
+                self.connect_lists_from_dumpposes[step_idx] = neighbor.make_neighbor_pairwise_cutoff(sdat, max_cut_off, atom_types, 
+                    cut_off2, len(self.atom_type_to_symbol))
+
         return self.connect_lists_from_dumpposes
 
 
