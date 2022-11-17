@@ -57,12 +57,26 @@ class ExportLammpsInput():
         # 1-indexed
         self.atoms.index = self.atoms.index + 1
 
-        self.atoms[out_columns].to_csv(
+        self.atoms[['type', 'x', 'y', 'z']].to_csv(
             ofn,
             sep=' ',
             mode='a',
             header=None,
         )
+
+        if 'vx' in out_columns and 'vy' in out_columns and 'vz' in out_columns:
+            with open(ofn, 'a') as ofs:
+                ofs.writelines([
+                    '\n',
+                    'Velocities\n',
+                    '\n',
+                ])
+            self.atoms[['vx', 'vy', 'vz']].to_csv(
+                ofn,
+                sep=' ',
+                mode='a',
+                header=None,
+            )
 
         # 0-indexed
         self.atoms.index = self.atoms.index - 1
