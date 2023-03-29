@@ -278,7 +278,7 @@ mkdir -p $WORKDIR
 cp -raf  $PBS_O_WORKDIR $WORKDIR
 cd $WORKDIR/$DIRNAME
 
-./RunDMol3.sh -np 18 {calc_label}
+./RunDMol3.sh -np 48 {calc_label}
 
 cd; if cp -raf $WORKDIR/$DIRNAME $PBS_O_WORKDIR/.. ; then rm -rf $WORKDIR; fi
     """
