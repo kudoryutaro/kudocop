@@ -431,3 +431,14 @@ sdat1.packmol(sdat_list=[sdat2, sdat3], pack_numbers_list=[5, 8], xyz_condition=
 とすると, sdat1にsdat2が5個, sdat3が8個詰められる
 sdat2は2 <= x <= 8 かつ 2 <= y <= 18 かつ 2 <= z <= 28 の位置のみに詰められる
 sdat3は2 <= x <= 8 かつ 2 <= y <= 10 かつ 2 <= z <= 10 の位置のみに詰められる
+
+## laich_md(calc_directory='laich_calc', para_file_path='para.rd', laich_cmd='laich', time_step=0.25, total_step=10000, file_step=1000, save_restart_step=10000, mpi_grid_x=1, mpi_grid_y=1, mpi_grid_z=1, cut_off=10.0, margin=1.0,     ghost_factor=20.0, show_mask=1, read_velocity=0, thermo='Langevin',aim_temp=300.0, init_temp=300.0, final_temp=300.0, thermo_freq=0.005, sel=50, weight_path='./script_model.pth', ngpus=1,   exist_ok=False)
+Laichを使って分子動力学計算をする関数
+
+
+## laich_opt(calc_directory='laich_calc', para_file_path='para.rd', laich_cmd='laich', time_step=0.25, total_step=10000, file_step=1000, save_restart_step=10000, mpi_grid_x=1, mpi_grid_y=1, mpi_grid_z=1, cut_off=10.0, margin=1.0, sel=50, weight_path='./script_model.pth', ngpus=1, ghost_factor=20.0, del_r=0.0001, max_r=0.1, exist_ok=False)
+Laichを使って構造最適化計算をする関数
+
+
+## dmol3_md(self, calc_label='dmol3_md', calc_directory='dmol3_md', np=1, ensemble='NVE', temperature=300.0, time_step=1.0, number_of_steps=1000, exist_ok=False, max_memory=2048, print_outmol=True, scf_density_convergence=1.000000e-05,  integration_grid='medium', basis='dnp', cutoff_Global=3.2000, scf_iterations=50, run=False, save_rundmol3_sh=False, save_qsub_script=False):
+DMol3を用いて第一原理分子動力学を行う関数
