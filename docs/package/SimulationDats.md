@@ -180,7 +180,7 @@ dp_system_dir : Path
       systemのディレクトリのパス
 set_dir_name : str
       system内のsetの名前
-
+```
 作成されるデータセットの形式
       dp_system_dir
             ├── type_map.raw         # 原子のsymbolとtypeの対応関係
@@ -196,3 +196,4 @@ set_dir_name : str
             │   ├── energy.npy       # それぞれのフレームのpotential energy
             │   └── box.npy          # それぞれのフレームのセルの大きさ
             ├....
+```
