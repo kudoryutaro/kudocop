@@ -14,8 +14,10 @@ class Laich():
 
     def laich_md(self, calc_directory='laich_calc', para_file_path='para.rd', laich_cmd='laich',
                 time_step=0.25, total_step=10000, file_step=1000, save_restart_step=10000, mpi_grid_x=1, mpi_grid_y=1, mpi_grid_z=1, cut_off=10.0, margin=1.0, 
-                ghost_factor=20.0, show_mask=1, read_velocity=0, thremo='Langevin',aim_temp=300.0, 
-                init_temp=300.0, final_temp=300.0, thermo_freq=0.005, exist_ok=False):
+                ghost_factor=20.0, show_mask=1, read_velocity=0, thermo='Langevin',aim_temp=300.0, 
+                init_temp=300.0, final_temp=300.0, thermo_freq=0.005, 
+                sel=50, weight_path='./script_model.pth', ngpus=1, 
+                exist_ok=False):
         """laichで分子動力学を実行する関数
             calc_directory : str or Path
                 laichで構造最適化をする時に使用するディレクトリ
@@ -59,6 +61,9 @@ ObserveStep 1
 FileStep {file_step}
 BondStep {file_step}
 SaveRestartStep {save_restart_step}
+SEL {sel}
+NPUGS {ngpus}
+WEIGHTPATH {weight_path}
 MPIGridX {mpi_grid_x}
 MPIGridY {mpi_grid_y}
 MPIGridZ {mpi_grid_z}
@@ -66,7 +71,7 @@ CUTOFF {cut_off}
 MARGIN {margin}
 ShowMask {show_mask}
 ReadVelocity {read_velocity}
-Thermo  {thremo}
+Thermo  {thermo}
 AimTemp {aim_temp}
 InitTemp {init_temp}
 FinalTemp {final_temp}
@@ -101,6 +106,7 @@ GhostFactor {ghost_factor}
 
     def laich_opt(self, calc_directory='laich_calc', para_file_path='para.rd', laich_cmd='laich',
                 time_step=0.25, total_step=10000, file_step=1000, save_restart_step=10000, mpi_grid_x=1, mpi_grid_y=1, mpi_grid_z=1, cut_off=10.0, margin=1.0, 
+                sel=50, weight_path='./script_model.pth', ngpus=1, 
                 ghost_factor=20.0, del_r=0.0001, max_r=0.1, exist_ok=False):
         """laichで構造最適化する関数
         Parameters
@@ -145,6 +151,9 @@ SaveRestartStep {save_restart_step}
 MPIGridX {mpi_grid_x}
 MPIGridY {mpi_grid_y}
 MPIGridZ {mpi_grid_z}
+SEL {sel}
+NPUGS {ngpus}
+WEIGHTPATH {weight_path}
 CUTOFF {cut_off}
 MARGIN {margin}
 GhostFactor {ghost_factor}
