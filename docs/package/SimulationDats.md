@@ -169,7 +169,30 @@ rename_colummsをFalseにするとカラム名はタプルのままになる
 ```
 
 
-## export_dumpposes(self, output_folder, out_columns=None)
+## export_dumpposes(output_folder, out_columns=None)
 dumpposを出力する。
 第一引数(output_folder) : 保存するフォルダー名
 out_columns : 出力する列を指定ないときは自動で決定される
+
+## export_dp_system(dp_system_dir:Path, set_dir_name:str, export_properties=['coord', 'box', 'energy', 'force'])
+NNP4laich, DeePMD-kitで読み込むことの出来るdp形式のデータセットを作成する.
+dp_system_dir : Path
+      systemのディレクトリのパス
+set_dir_name : str
+      system内のsetの名前
+
+作成されるデータセットの形式
+      dp_system_dir
+            ├── type_map.raw         # 原子のsymbolとtypeの対応関係
+            ├── type.raw             # 原子のtype
+            ├── set_dir_name.0
+            │   ├── coord.npy        # 原子の座標
+            │   ├── force.npy        # それぞれの原子にかかる力
+            │   ├── energy.npy       # それぞれのフレームのpotential energy
+            │   └── box.npy          # それぞれのフレームのセルの大きさ
+            ├── set_dir_name.1
+            │   ├── coord.npy        # 原子の座標
+            │   ├── force.npy        # それぞれの原子にかかる力
+            │   ├── energy.npy       # それぞれのフレームのpotential energy
+            │   └── box.npy          # それぞれのフレームのセルの大きさ
+            ├....
