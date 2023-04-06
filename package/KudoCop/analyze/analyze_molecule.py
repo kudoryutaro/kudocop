@@ -9,7 +9,7 @@ class AnalyzeMolecule():
     def __init__():
         pass
 
-    def count_mols(self, cut_off=0.5, bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=10, condition=None) -> dict:
+    def count_mols(self, cut_off=0.5, bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=1000, condition=None) -> dict:
         """
         分子数をカウントする関数
 
@@ -304,7 +304,7 @@ class AnalyzeMoleculeForSDats():
     def __init__():
         pass
 
-    def count_mols(self, cut_off=0.5, bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=10, condition=None) -> pd.DataFrame:
+    def count_mols(self, cut_off=0.5, bond_type='dumpbond', lower_mol_limit=1, upper_mol_limit=1000, condition=None) -> pd.DataFrame:
         """
         分子数をカウントする関数
 
