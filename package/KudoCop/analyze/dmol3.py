@@ -140,8 +140,6 @@ Aux_density                   hexadecapole
 Integration_grid              {integration_grid}
 Occupation                    fermi
 Cutoff_Global                 {cutoff_Global:.4f} angstrom
-Spin_Polarization             {spin_polarization}
-Start_Spin_Populations         {start_spin_populations}
 
 # Calculated properties
 
