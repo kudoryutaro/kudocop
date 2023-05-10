@@ -55,7 +55,8 @@ class DMol3KudoCop():
         self.atoms_calc.calc = calc
 
     def dmol3_md(self, calc_label='dmol3_md', calc_directory='dmol3_md', np=1,
-                ensemble='NVE', temperature=300.0, time_step=1.0, number_of_steps=1000, exist_ok=False, max_memory=2048, print_outmol=True, scf_density_convergence=1.000000e-05, 
+                ensemble='NVT', temperature=300.0, time_step=1.0, number_of_steps=1000, exist_ok=False, max_memory=2048, print_outmol=True, scf_density_convergence=1.000000e-05, 
+                functional='pbe', 
                 integration_grid='medium', basis='dnp', cutoff_Global=3.2000, scf_iterations=50, run=False, save_rundmol3_sh=False, save_qsub_script=False):
         """DMol3を用いて第一原理分子動力学を行う.
 
@@ -133,7 +134,7 @@ Charge                        0
 Forces                        on
 Basis                         {basis}
 Pseudopotential               none
-Functional                    pwc
+Functional                    {functional}
 Harris                        off
 Aux_density                   hexadecapole
 Integration_grid              {integration_grid}
