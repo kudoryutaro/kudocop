@@ -4,6 +4,7 @@ from .analyze_molecule import AnalyzeMolecule, AnalyzeMoleculeForSDats
 from .dmol3 import DMol3KudoCop
 from .packmol import Packmol
 from .laich import Laich
+from .vasp import Vasp
 
 class Analyze(
     AnalyzeAtom,
@@ -12,6 +13,7 @@ class Analyze(
     DMol3KudoCop,
     Packmol,
     Laich,
+    Vasp,
 ):
     def __init__():
         pass
