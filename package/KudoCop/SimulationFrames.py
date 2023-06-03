@@ -110,12 +110,10 @@ class SimulationFrames(
                     cell_line_idx -= 1
                 potential_energy_idx = position_line_idx
                 while True:
-                    print(position_line_idx, len(self.sdat), len(splines), potential_energy_idx)
                     if len(splines[potential_energy_idx]) >= 4 and \
                         splines[potential_energy_idx][0] == "energy" and \
                         splines[potential_energy_idx][1] == "without" and \
                         splines[potential_energy_idx][2] == "entropy":
-                        print(lines[potential_energy_idx])
                         break
                     potential_energy_idx -= 1
                         
@@ -209,7 +207,7 @@ class SimulationFrames(
                 "atom_types":np.array,
                 "edge_index":np.array,
                 "edge_cell_shift":np.array,
-                "potential_energy":float
+                "potential_energy":np.array
                 },...
             ]
         """
@@ -221,15 +219,15 @@ class SimulationFrames(
         frames = []
         for step_idx in range(len(self.step_nums)):
             data = {}
-            data['cell'] = np.array(self.sdat[step_idx].cell)
-            data['pos'] = np.array(self.sdat[step_idx].atoms[['x', 'y', 'z']].values)
-            data['force'] = np.array(self.sdat[step_idx].atoms[['fx', 'fy', 'fz']].values)
+            data['cell'] = np.array(self.sdat[step_idx].cell, dtype=np.float32)
+            data['pos'] = np.array(self.sdat[step_idx].atoms[['x', 'y', 'z']].values, dtype=np.float32)
+            data['force'] = np.array(self.sdat[step_idx].atoms[['fx', 'fy', 'fz']].values, dtype=np.float32)
             data['atom_types'] = np.array(self.sdat[step_idx].atoms['type'].values)
 
             ase_atoms = ase.Atoms(positions=data['pos'], cell=data['cell'], pbc=[1, 1, 1])
 
 
-            i_idx, j_idx, edge_cell_shift= neighbor_list(
+            i_idx, j_idx, edge_cell_shift = neighbor_list(
                 'ijS', ase_atoms, cutoff=cut_off, self_interaction=False
             )
             edge_index = [[], []]
@@ -240,9 +238,9 @@ class SimulationFrames(
                     edge_index[0].append(atom_i_idx)
                     edge_index[1].append(atom_j_idx)
             edge_index = np.array(edge_index)
-            data['edge_cell_shift'] = edge_cell_shift.astype(float) * data['cell']
+            # data['edge_cell_shift'] = edge_cell_shift.astype(np.float32) * data['cell']
             data['edge_index'] = edge_index
-            data['potential_energy'] = self.sdat[step_idx].potential_energy
+            data['potential_energy'] = np.array(self.sdat[step_idx].potential_energy, dtype=np.float32)
             
             frames.append(data)
         
