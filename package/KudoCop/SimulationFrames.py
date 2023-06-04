@@ -40,9 +40,26 @@ class SimulationFrames(
         return len(self.step_nums)
 
     def __getitem__(self, key):
+        """sfs = SimulationFrames()
+        sfs[step_idx]でsfs.sdat[step_idx]を得ることができる
+        """
         return self.sdat[key]
     
-    def import_dumpposes(self, dir_name: str=None, step_nums: int=None, skip_num: int=None):
+    def import_dumpposes(self, dir_name: str=None, step_nums: list=None, skip_num: int=None):
+        """Laichで計算したdumpposを複数読み込む
+        Parameters
+        ----------
+            dir_name: str
+                dumpposが入っているフォルダのパス
+                指定しないときは、current directryになる
+            step_nums: listやイテレータ
+                指定したdumpposを読み込む, 
+                step_nums=range(0, 301, 100)とすると、
+                dump.pos.0, dump.pos.100, dump.pos.200, dump.pos.300を読み込む
+            skip_num: int
+                いくつおきにdumpposを読み込むのか
+                skip_num = 10とすると、10個飛ばしでdumpposを読み込む
+        """
         assert self.atom_symbol_to_type is not None, "import para first"
         assert self.atom_type_to_mass is not None, "import para first"
         assert self.atom_type_to_symbol is not None, "import para first"
@@ -98,6 +115,20 @@ class SimulationFrames(
         }
 
     def import_vasp(self, calc_directory: str):
+        """vaspで計算した第一原理MDファイルから、
+        原子の座標, cellの大きさ, 原子にかかる力, ポテンシャルエネルギーを読み込む
+        Parameters
+        ----------
+            calc_directory: str
+                vaspで計算したディレクトリ
+        Note
+        ----
+            読み込んだデータ
+                simulation_frames[step_idx][['x', 'y', 'z']] : 原子の座標
+                simulation_frames[step_idx][['fx', 'fy', 'fz']] : 原子にかかる力
+                simulation_frames[step_idx].potential_energy : ポテンシャルエネルギー
+                simulation_frames[step_idx].cell : セルの大きさ
+        """
         self.sdat = []
         calc_directory = pathlib.Path(calc_directory)
         with open(calc_directory / "POSCAR", "r") as f:
@@ -191,6 +222,13 @@ class SimulationFrames(
 
     def export_lammps_dumpposes(self, ofn: str, out_columns=None) -> None:
         """lammps形式のdumpposを出力する
+        Parameters
+        ----------
+            ofn: str
+                lammps形式のdumpposの出力先
+            out_columns: List[str]
+                sdat.atomsのどのカラムを出力するのか
+                デフォルトは['type', 'x', 'y', 'z']
         """
         if out_columns is None:
             out_columns = ['type', 'x', 'y', 'z']
