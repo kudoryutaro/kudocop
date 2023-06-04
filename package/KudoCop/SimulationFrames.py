@@ -7,6 +7,7 @@ import pathlib
 from ase.neighborlist import neighbor_list 
 import ase
 import pickle
+import random
 
 from .io.import_para import ImportPara
 from .SimulationDat import SimulationDat
@@ -39,9 +40,26 @@ class SimulationFrames(
         return len(self.step_nums)
 
     def __getitem__(self, key):
+        """sfs = SimulationFrames()
+        sfs[step_idx]でsfs.sdat[step_idx]を得ることができる
+        """
         return self.sdat[key]
     
-    def import_dumpposes(self, dir_name: str=None, step_nums: int=None, skip_num: int=None):
+    def import_dumpposes(self, dir_name: str=None, step_nums: list=None, skip_num: int=None):
+        """Laichで計算したdumpposを複数読み込む
+        Parameters
+        ----------
+            dir_name: str
+                dumpposが入っているフォルダのパス
+                指定しないときは、current directryになる
+            step_nums: listやイテレータ
+                指定したdumpposを読み込む, 
+                step_nums=range(0, 301, 100)とすると、
+                dump.pos.0, dump.pos.100, dump.pos.200, dump.pos.300を読み込む
+            skip_num: int
+                いくつおきにdumpposを読み込むのか
+                skip_num = 10とすると、10個飛ばしでdumpposを読み込む
+        """
         assert self.atom_symbol_to_type is not None, "import para first"
         assert self.atom_type_to_mass is not None, "import para first"
         assert self.atom_type_to_symbol is not None, "import para first"
@@ -74,8 +92,43 @@ class SimulationFrames(
             self.sdat[step_idx].atom_type_to_mass = self.atom_type_to_mass
             self.sdat[step_idx].atom_type_to_symbol = self.atom_type_to_symbol
             self.sdat[step_idx].import_dumppos(f'{dir_name}/dump.pos.{step_num}')
-    
+
+    def concat_simulation_frames(self, simulation_frames_list:list):
+        """sdatsを結合する
+        Parameters
+        ----------
+            simulation_frames_list : List[SimulationFrames]
+                結合するsdatsのリスト, 
+        Note
+        ----
+            concat_sdatsメソッドを使用するSimulationFramesは
+            import_para()後のを使う
+        """
+        self.sdat = []
+        for outer_sfs in simulation_frames_list:
+            for step_idx in range(len(outer_sfs.step_nums)):
+                self.sdat.append(outer_sfs.sdat[step_idx])
+        
+        self.step_nums = list(range(len(self.sdat)))
+        self.step_num_to_step_idx = {
+           step_num:step_idx for step_idx, step_num in enumerate(range(len(self.step_nums)))
+        }
+
     def import_vasp(self, calc_directory: str):
+        """vaspで計算した第一原理MDファイルから、
+        原子の座標, cellの大きさ, 原子にかかる力, ポテンシャルエネルギーを読み込む
+        Parameters
+        ----------
+            calc_directory: str
+                vaspで計算したディレクトリ
+        Note
+        ----
+            読み込んだデータ
+                simulation_frames[step_idx][['x', 'y', 'z']] : 原子の座標
+                simulation_frames[step_idx][['fx', 'fy', 'fz']] : 原子にかかる力
+                simulation_frames[step_idx].potential_energy : ポテンシャルエネルギー
+                simulation_frames[step_idx].cell : セルの大きさ
+        """
         self.sdat = []
         calc_directory = pathlib.Path(calc_directory)
         with open(calc_directory / "POSCAR", "r") as f:
@@ -146,6 +199,15 @@ class SimulationFrames(
             step_num: step_idx for step_idx, step_num in enumerate(self.step_nums)
         }
 
+    def shuffle_sdat(self, seed:int=1):
+        """SimulationFrames.sdatの順番をシャッフルする
+        Parameters
+        ----------
+            seed: int
+                乱数seed値
+        """
+        random.seed(seed)
+        random.shuffle(self.sdat)
 
     def export_dumpposes(self, output_folder: str, out_columns=None) -> None:
         try:
@@ -160,6 +222,13 @@ class SimulationFrames(
 
     def export_lammps_dumpposes(self, ofn: str, out_columns=None) -> None:
         """lammps形式のdumpposを出力する
+        Parameters
+        ----------
+            ofn: str
+                lammps形式のdumpposの出力先
+            out_columns: List[str]
+                sdat.atomsのどのカラムを出力するのか
+                デフォルトは['type', 'x', 'y', 'z']
         """
         if out_columns is None:
             out_columns = ['type', 'x', 'y', 'z']
@@ -188,35 +257,77 @@ class SimulationFrames(
             # 0-index
             self.sdat[step_idx].atoms.index -= 1
 
-    def export_allegro_frames(self, output_dir:str, output_file_name:str, cut_off:float):
+    def export_allegro_frames(self, 
+                              output_dir: str, 
+                              output_file_name: str, 
+                              cut_off: float,
+                              shuffle: bool=False,
+                              seed: int=1,
+                              test_size: float=None,
+                              test_output_dir: str=None,
+                              test_output_file_name: str=None,
+                              ):
         """allegro用のデータセットを保存する
         Parameter
         ---------
-        output_dir : str
+        output_dir: str
             作成するディレクトリのパス
-        output_file_name : str  
+        output_file_name: str  
             "output_file_name.pickle"という名前で保存する
+        cut_off: float
+            カットオフ半径
+        shuffle: bool
+            SimulationFrames.sdatをシャッフルするかどうか
+        seed: int
+            シャッフルする時のシード値
+        test_size: float
+            訓練に使わないテスト用のデータセットの割合
+            0.0 ~ 1.0の間で指定する
+        test_output_dir: str
+            テスト用のデータセットを保存するディレクトリのパス
+        test_output_file_name: str
+            "test_output_file_name.pickle"という名前で保存する
         Note
         ----
+        allegro datasetの保存形式
             frames : List[Dict[str, np.array]]
             frames = [
                 {
-                "pos":np.array, 
-                "force":np.array,
-                "cell":np.array,
-                "atom_types":np.array,
-                "edge_index":np.array,
-                "edge_cell_shift":np.array,
-                "potential_energy":np.array
+                "pos":np.array,             shape:[num_atoms, 3]
+                "force":np.array,           shape:[num_atoms, 3]
+                "cell":np.array,            shape:[3]
+                "atom_types":np.array,      shape:[num_atoms]
+                "edge_index":np.array,      shape:[2, num_edges]
+                "edge_cell_shift":np.array, shape:[num_edges, 3]
+                "potential_energy":np.array shape:[]
                 },...
             ]
+        train test splitの仕様
+            shuffle=Falseの場合は、
+            SimulationFrames.sdatの前半(1.0 - test_size)がtrain用となり、
+            SimulationFrames.sdatの後半(test_size)がtest用となる
         """
+        if test_size is not None:
+            assert 0.0 <= test_size <= 1.0
+            assert test_output_dir is not None
+            assert test_output_file_name is not None
+        if shuffle:
+            self.shuffle_sdat(seed=seed)
+
         output_dir = pathlib.Path(output_dir)
         output_file_name = pathlib.Path(output_file_name + ".pickle")
         frames_path = output_dir / output_file_name
+        
+        test_output_dir = pathlib.Path(test_output_dir)
+        test_output_file_name = pathlib.Path(test_output_file_name + ".pickle")
+        test_frames_path = test_output_dir / test_output_file_name
+
 
         os.makedirs(output_dir, exist_ok=True)
-        frames = []
+        os.makedirs(test_output_dir, exist_ok=True)
+
+        train_frames = []
+        test_frames = []
         for step_idx in range(len(self.step_nums)):
             data = {}
             data['cell'] = np.array(self.sdat[step_idx].cell, dtype=np.float32)
@@ -238,11 +349,17 @@ class SimulationFrames(
                     edge_index[0].append(atom_i_idx)
                     edge_index[1].append(atom_j_idx)
             edge_index = np.array(edge_index)
-            # data['edge_cell_shift'] = edge_cell_shift.astype(np.float32) * data['cell']
+            data['edge_cell_shift'] = edge_cell_shift.astype(np.float32) * data['cell']
             data['edge_index'] = edge_index
             data['potential_energy'] = np.array(self.sdat[step_idx].potential_energy, dtype=np.float32)
-            
-            frames.append(data)
+            if step_idx < int(len(self.step_nums) * (1.0 - test_size)):
+                train_frames.append(data)
+            else:
+                test_frames.append(data)
         
         with open(frames_path, "wb") as f:
-            pickle.dump(frames, f)
+            pickle.dump(train_frames, f)
+        
+        with open(test_frames_path, "wb") as f:
+            pickle.dump(test_frames, f)
+        
