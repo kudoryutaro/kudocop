@@ -60,6 +60,8 @@ class SimulationDats(
     
     """
     def __init__(self, para_file_name='para.rd', dir_name=None, import_dumpposes_flag=True, import_dumpbonds_flag=True, step_nums=None, skip_num=None,bond_type='dumpbond',max_coordination_num=6):
+        print("SimulationDatsは今後廃止されます")
+        print("かわりにSimulationFramesを使ってください")
 
         self.cell = [None] * 3
         self.bondorder_lists = None
