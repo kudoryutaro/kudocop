@@ -318,13 +318,15 @@ class SimulationFrames(
         output_file_name = pathlib.Path(output_file_name + ".pickle")
         frames_path = output_dir / output_file_name
         
-        test_output_dir = pathlib.Path(test_output_dir)
-        test_output_file_name = pathlib.Path(test_output_file_name + ".pickle")
-        test_frames_path = test_output_dir / test_output_file_name
+        if test_size is not None:
+            test_output_dir = pathlib.Path(test_output_dir)
+            test_output_file_name = pathlib.Path(test_output_file_name + ".pickle")
+            test_frames_path = test_output_dir / test_output_file_name
 
 
         os.makedirs(output_dir, exist_ok=True)
-        os.makedirs(test_output_dir, exist_ok=True)
+        if test_size is not None:
+            os.makedirs(test_output_dir, exist_ok=True)
 
         train_frames = []
         test_frames = []
@@ -353,14 +355,18 @@ class SimulationFrames(
             data['edge_cell_shift'] = edge_cell_shift.astype(np.float32) * data['cell']
             data['edge_index'] = edge_index
             data['potential_energy'] = np.array(self.sdat[step_idx].potential_energy, dtype=np.float32)
-            if step_idx < int(len(self.step_nums) * (1.0 - test_size)):
-                train_frames.append(data)
+            if test_size is not None:
+                if step_idx < int(len(self.step_nums) * (1.0 - test_size)):
+                    train_frames.append(data)
+                else:
+                    test_frames.append(data)
             else:
-                test_frames.append(data)
+                train_frames.append(data)
         
         with open(frames_path, "wb") as f:
             pickle.dump(train_frames, f)
         
-        with open(test_frames_path, "wb") as f:
-            pickle.dump(test_frames, f)
+        if test_size is not None:
+            with open(test_frames_path, "wb") as f:
+                pickle.dump(test_frames, f)
         
