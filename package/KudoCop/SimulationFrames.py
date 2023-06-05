@@ -333,10 +333,11 @@ class SimulationFrames(
             data['cell'] = np.array(self.sdat[step_idx].cell, dtype=np.float32)
             data['pos'] = np.array(self.sdat[step_idx].atoms[['x', 'y', 'z']].values, dtype=np.float32)
             data['force'] = np.array(self.sdat[step_idx].atoms[['fx', 'fy', 'fz']].values, dtype=np.float32)
-            data['atom_types'] = np.array(self.sdat[step_idx].atoms['type'].values)
+            data['atom_types'] = np.array(self.sdat[step_idx].atoms['type'].values) # 1-indexed
+            data['atom_types'] -= 1 # 0-indexed
 
             ase_atoms = ase.Atoms(positions=data['pos'], cell=data['cell'], pbc=[1, 1, 1])
-
+            data['cut_off'] = np.array(cut_off, dtype=np.float32)
 
             i_idx, j_idx, edge_cell_shift = neighbor_list(
                 'ijS', ase_atoms, cutoff=cut_off, self_interaction=False
