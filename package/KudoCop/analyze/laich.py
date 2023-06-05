@@ -12,11 +12,11 @@ class Laich():
     def __init__():
         pass
 
-    def laich_md(self, calc_directory='laich_calc', para_file_path='para.rd', laich_cmd='laich',
-                time_step=0.25, total_step=10000, file_step=1000, save_restart_step=10000, mpi_grid_x=1, mpi_grid_y=1, mpi_grid_z=1, cut_off=10.0, margin=1.0, 
+    def laich_md(self, calc_directory='laich_calc', para_file_path=None, laich_cmd='laich',
+                time_step=0.25, total_step=10000, file_step=1000, save_restart_step=10000, mpi_grid_x=1, mpi_grid_y=1, mpi_grid_z=1, omp_grid_x=1, omp_grid_y=1, omp_grid_z=1, cut_off=10.0, margin=1.0, 
                 ghost_factor=20.0, show_mask=1, read_velocity=0, thermo='Langevin',aim_temp=300.0, 
                 init_temp=300.0, final_temp=300.0, thermo_freq=0.005, 
-                sel=50, weight_path='./script_model.pth', ngpus=1, 
+                sel=50, weight_path='./script_model.pth', ngpus=1, nnp_model_path='script_model.pth', 
                 exist_ok=False):
         """laichで分子動力学を実行する関数
             calc_directory : str or Path
@@ -48,7 +48,8 @@ class Laich():
                 Laichのドキュメントを参照してください
         """
         calc_directory = Path(calc_directory) 
-        para_file_path = Path(para_file_path)
+        if para_file_path is not None:
+            para_file_path = Path(para_file_path)
         input_file_path = calc_directory / 'input.rd'
         config_file_path = calc_directory / 'config.rd'
         laich_md_config = f"""Mode MD
@@ -63,10 +64,14 @@ BondStep {file_step}
 SaveRestartStep {save_restart_step}
 SEL {sel}
 NPUGS {ngpus}
+NNPModelPath {nnp_model_path}
 WEIGHTPATH {weight_path}
 MPIGridX {mpi_grid_x}
 MPIGridY {mpi_grid_y}
 MPIGridZ {mpi_grid_z}
+OMPGridX {omp_grid_x}
+OMPGridY {omp_grid_y}
+OMPGridZ {omp_grid_z}
 CUTOFF {cut_off}
 MARGIN {margin}
 ShowMask {show_mask}
@@ -82,7 +87,9 @@ GhostFactor {ghost_factor}
         self.export_input(input_file_path)
         with open(config_file_path, 'w') as f:
             f.writelines(laich_md_config)
-        subprocess.run(f'cp {para_file_path} {calc_directory / "para.rd"}', shell=True)
+            
+        if para_file_path is not None:
+            subprocess.run(f'cp {para_file_path} {calc_directory / "para.rd"}', shell=True)
         
         np = mpi_grid_x * mpi_grid_y * mpi_grid_z
 
@@ -104,7 +111,7 @@ GhostFactor {ghost_factor}
         optimized_dumpbond_file_path = dumpbond_file_paths[0]
         self.import_dumpbond(optimized_dumpbond_file_path)
 
-    def laich_opt(self, calc_directory='laich_calc', para_file_path='para.rd', laich_cmd='laich',
+    def laich_opt(self, calc_directory='laich_calc', para_file_path=None, laich_cmd='laich',
                 time_step=0.25, total_step=10000, file_step=1000, save_restart_step=10000, mpi_grid_x=1, mpi_grid_y=1, mpi_grid_z=1, cut_off=10.0, margin=1.0, 
                 sel=50, weight_path='./script_model.pth', ngpus=1, 
                 ghost_factor=20.0, del_r=0.0001, max_r=0.1, exist_ok=False):
@@ -135,7 +142,8 @@ GhostFactor {ghost_factor}
                 Laichのドキュメントを参照してください
         """
         calc_directory = Path(calc_directory) 
-        para_file_path = Path(para_file_path)
+        if para_file_path is not None:
+            para_file_path = Path(para_file_path)
         input_file_path = calc_directory / 'input.rd'
         config_file_path = calc_directory / 'config.rd'
         lacih_opt_config = f"""Mode OPT
@@ -164,7 +172,12 @@ MaxR {max_r}
         self.export_input(input_file_path)
         with open(config_file_path, 'w') as f:
             f.writelines(lacih_opt_config)
-        subprocess.run(f'cp {para_file_path} {calc_directory / "para.rd"}', shell=True)
+        
+        if para_file_path is not None:
+            try:
+                subprocess.run(f'cp {para_file_path} {calc_directory / "para.rd"}', shell=True)
+            except:
+                pass
         
         np = mpi_grid_x * mpi_grid_y * mpi_grid_z
 
