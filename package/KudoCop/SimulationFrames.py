@@ -298,7 +298,6 @@ class SimulationFrames(
                 "cell":np.array,            shape:[3]
                 "atom_types":np.array,      shape:[num_atoms]
                 "edge_index":np.array,      shape:[2, num_edges]
-                "edge_cell_shift":np.array, shape:[num_edges, 3]
                 "potential_energy":np.array shape:[]
                 },...
             ]
@@ -341,7 +340,7 @@ class SimulationFrames(
             ase_atoms = ase.Atoms(positions=data['pos'], cell=data['cell'], pbc=[1, 1, 1])
             data['cut_off'] = np.array(cut_off, dtype=np.float32)
 
-            i_idx, j_idx, edge_cell_shift = neighbor_list(
+            i_idx, j_idx, _ = neighbor_list(
                 'ijS', ase_atoms, cutoff=cut_off, self_interaction=False
             )
             edge_index = [[], []]
@@ -352,7 +351,6 @@ class SimulationFrames(
                     edge_index[0].append(atom_i_idx)
                     edge_index[1].append(atom_j_idx)
             edge_index = np.array(edge_index)
-            data['edge_cell_shift'] = edge_cell_shift.astype(np.float32) * data['cell']
             data['edge_index'] = edge_index
             data['potential_energy'] = np.array(self.sdat[step_idx].potential_energy, dtype=np.float32)
             if test_size is not None:
