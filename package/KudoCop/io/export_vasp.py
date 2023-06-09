@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import pathlib
 import subprocess
+from typing import List
 import os
 import time
 
@@ -146,3 +147,39 @@ class ExportVasp():
 
 
 
+    def export_vasp_iconst(
+            self, 
+            ofn: str,
+            config: List[str],  
+        ):
+        """vaspのICONSTファイルを作成する.
+        Parameters
+        ----------
+            ofn: str
+                出力先のファイルパス
+            config: List[str]
+                vaspの設定
+                config['key'] = 'value'とすると、
+                INCARでは、
+                key value
+                となる
+        Examples
+        --------
+            VASPでNPT計算をする時で、セルの角度を固定したい時、
+            config = ['LA 1 2 0',
+                      'LA 1 3 0',
+                      'LA 2 3 0'
+                    ]
+            とすると、ICONSTには
+            ```
+            LA 1 2 0
+            LA 1 3 0
+            LA 2 3 0
+            ```
+            と出力される
+        """
+        for line_idx in range(len(config)):
+            config[line_idx] = config[line_idx].rstrip() + '\n'
+        
+        with open(ofn, "w") as ofp:
+            ofp.writelines(config)
