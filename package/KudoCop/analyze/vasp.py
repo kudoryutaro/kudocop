@@ -92,13 +92,13 @@ class Vasp():
             incar_config["KPAR"] = 1
         calc_directory = pathlib.Path(calc_directory)
         os.makedirs(calc_directory, exist_ok=exist_ok)
-        poscar_path = calc_directory / poscar_ofn
+        #poscar_path = calc_directory / poscar_ofn
         incar_path = calc_directory / incar_ofn
         potcar_path = calc_directory / potcar_ofn
         kpoints_path = calc_directory / kpoints_ofn
         iconst_path = calc_directory / iconst_ofn
         num_process = incar_config["NCORE"] * incar_config["NPAR"] * incar_config["KPAR"]
-        self.export_vasp_poscar(poscar_path, poscar_comment, poscar_scaling_factor)
+        #self.export_vasp_poscar(poscar_path, poscar_comment, poscar_scaling_factor)
         self.export_vasp_incar(incar_path, incar_config)
         self.export_vasp_potcar(potcar_path, potcar_root)
         self.export_vasp_kpoints(kpoints_path, kpoints_comment, 
@@ -106,7 +106,13 @@ class Vasp():
         if iconst_config is not None:
             self.export_vasp_iconst(iconst_path, iconst_config)
 
-        cmd = f'mpiexec -np {num_process} {vasp_command} > stdout'
+        # For kbox
+        #cmd = f'mpiexec -np {num_process} {vasp_command} > stdout'
+        # For MASAMUNE-IMR
+        if num_process <= 36:
+            cmd = f'aprun -n {num_process} -N {num_process} -j 1 {vasp_command} > stdout'
+        else:
+            cmd = f'aprun -n {num_process} -N 36 -j 1 {vasp_command} > stdout'
         dmol_md_process = subprocess.Popen(cmd, cwd=calc_directory, shell=True)
         time.sleep(5)
         if print_vasp:
