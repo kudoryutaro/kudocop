@@ -42,7 +42,7 @@ class Vasp():
             vasp_command: str="vasp_std",
             print_vasp: bool=True,
             exist_ok: bool=False
-            conti: bool=False
+            make_poscar: bool=False
         ):
         """vaspを実行する.
         Parameters
@@ -102,7 +102,7 @@ class Vasp():
         kpoints_path = calc_directory / kpoints_ofn
         iconst_path = calc_directory / iconst_ofn
         num_process = incar_config["NCORE"] * incar_config["NPAR"] * incar_config["KPAR"]
-        if conti:
+        if make_poscar:
             self.export_vasp_poscar(poscar_path, poscar_comment, poscar_scaling_factor)
         self.export_vasp_incar(incar_path, incar_config)
         self.export_vasp_potcar(potcar_path, potcar_root)
