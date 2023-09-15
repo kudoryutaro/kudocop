@@ -38,6 +38,7 @@ class Vasp():
             kpoints_kz: int=1,
             iconst_ofn: str="ICONST",
             iconst_config: List[str]=None,
+            mpi_command: str="aprun",
             vasp_command: str="vasp_std",
             print_vasp: bool=True,
             exist_ok: bool=False
@@ -73,6 +74,8 @@ class Vasp():
                 iconst_config = ['LA 1 2 0',
                             'LA 1 3 0',
                             'LA 2 3 0']
+            mpi_command: str
+                実行するmpiのコマンド、例えばmpirunなど
             vasp_command: str
                 実行するvaspのコマンド
             print_vasp: bool
@@ -110,9 +113,9 @@ class Vasp():
         #cmd = f'mpiexec -np {num_process} {vasp_command} > stdout'
         # For MASAMUNE-IMR
         if num_process <= 36:
-            cmd = f'aprun -n {num_process} -N {num_process} -j 1 {vasp_command} > stdout'
+            cmd = f'{mpi_command} -n {num_process} -N {num_process} -j 1 {vasp_command} > stdout'
         else:
-            cmd = f'aprun -n {num_process} -N 36 -j 1 {vasp_command} > stdout'
+            cmd = f'{mpi_command} -n {num_process} -N 36 -j 1 {vasp_command} > stdout'
         dmol_md_process = subprocess.Popen(cmd, cwd=calc_directory, shell=True)
         time.sleep(5)
         if print_vasp:
