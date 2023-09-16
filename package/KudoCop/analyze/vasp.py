@@ -41,7 +41,7 @@ class Vasp():
             mpi_command: str="aprun",
             vasp_command: str="vasp_std",
             print_vasp: bool=True,
-            exist_ok: bool=False
+            exist_ok: bool=False,
             make_poscar: bool=False
         ):
         """vaspを実行する.
